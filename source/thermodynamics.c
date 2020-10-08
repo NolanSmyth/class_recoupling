@@ -100,7 +100,7 @@
 
 const double PI = 3.14159265359;
 
-// (1/PI*(atan(z - pth->z_cutoff) - atan(-pth->z_cutoff)))
+// (1/PI*(atan((z - pth->z_cutoff)) - atan(-pth->z_cutoff)))
 
 int thermodynamics_at_z(
                         struct background * pba,
@@ -201,7 +201,7 @@ int thermodynamics_at_z(
       //   pvecthermo[pth->index_th_dddmu_idm_dr] = (pvecback[pba->index_bg_H]*pvecback[pba->index_bg_H]/ (1.+z) - pvecback[pba->index_bg_H_prime])
       //     *  pth->nindex_idm_dr / (1.+z) * pvecthermo[pth->index_th_dmu_idm_dr];
       //   }
-      pvecthermo[pth->index_th_dmu_idm_dr] = pth->a_idm_dr*(1/PI*(atan(z - pth->z_cutoff) - atan(-pth->z_cutoff)))*pow((1.+z)/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2);
+      pvecthermo[pth->index_th_dmu_idm_dr] = pth->a_idm_dr*(1/PI*(atan(pth->z_scale*(z - pth->z_cutoff)) - atan(-pth->z_cutoff)))*pow((1.+z)/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2);
       pvecthermo[pth->index_th_ddmu_idm_dr] =  -pvecback[pba->index_bg_H] * pth->nindex_idm_dr / (1+z) * pvecthermo[pth->index_th_dmu_idm_dr];
       pvecthermo[pth->index_th_dddmu_idm_dr] = (pvecback[pba->index_bg_H]*pvecback[pba->index_bg_H]/ (1.+z) - pvecback[pba->index_bg_H_prime])
         *  pth->nindex_idm_dr / (1.+z) * pvecthermo[pth->index_th_dmu_idm_dr];
@@ -527,7 +527,7 @@ int thermodynamics_init(
       //   pth->a_idm_dr*pow((1.+pth->z_table[index_tau])/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2);
       // }
       pth->thermodynamics_table[index_tau*pth->th_size+pth->index_th_dmu_idm_dr] =
-        pth->a_idm_dr*(1/PI*(atan(pth->z_table[index_tau] - pth->z_cutoff) - atan(-pth->z_cutoff)))*pow((1.+pth->z_table[index_tau])/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2);
+        pth->a_idm_dr*(1/PI*(atan(pth->z_scale*(pth->z_table[index_tau] - pth->z_cutoff)) - atan(-pth->z_cutoff)))*pow((1.+pth->z_table[index_tau])/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2);
 
         
 
@@ -897,7 +897,7 @@ int thermodynamics_init(
     // else{
     //   Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
     // }
-    Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*(1/PI*(atan(z - pth->z_cutoff) - atan(-pth->z_cutoff)))*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
+    Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*(1/PI*(atan(pth->z_scale*(z - pth->z_cutoff)) - atan(-pth->z_cutoff)))*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
 
     
     /* (A1) --> if Gamma is not much smaller than H, set T_idm_dr to T_idm_dr = T_idr = xi*T_gamma (tight coupling solution) */
@@ -961,7 +961,7 @@ int thermodynamics_init(
         //   Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
         // }
 
-        Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*(1/PI*(atan(z - pth->z_cutoff) - atan(-pth->z_cutoff)))*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
+        Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*(1/PI*(atan(pth->z_scale*(z - pth->z_cutoff)) - atan(-pth->z_cutoff)))*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
 
         class_call(background_tau_of_z(pba,z,&(tau)),
                    pba->error_message,
@@ -990,7 +990,7 @@ int thermodynamics_init(
           // else{
           //   Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
           // }
-          Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*(1/PI*(atan(z - pth->z_cutoff) - atan(-pth->z_cutoff)))*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
+          Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*(1/PI*(atan(pth->z_scale*(z - pth->z_cutoff)) - atan(-pth->z_cutoff)))*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
 
           class_call(background_tau_of_z(pba,z,&(tau)),
                      pba->error_message,
@@ -1028,7 +1028,7 @@ int thermodynamics_init(
             // else {
             //   Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
             // }
-            Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*(1/PI*(atan(z - pth->z_cutoff) - atan(-pth->z_cutoff)))*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
+            Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*(1/PI*(atan(pth->z_scale*(z - pth->z_cutoff)) - atan(-pth->z_cutoff)))*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
             
             class_call(background_tau_of_z(pba,z,&(tau)),
                        pba->error_message,
@@ -1058,7 +1058,7 @@ int thermodynamics_init(
         //   Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
         // }
 
-        Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*(1/PI*(atan(z - pth->z_cutoff) - atan(-pth->z_cutoff)))*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
+        Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*(1/PI*(atan(pth->z_scale*(z - pth->z_cutoff)) - atan(-pth->z_cutoff)))*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
 
         class_call(background_tau_of_z(pba,z,&(tau)),
                    pba->error_message,
