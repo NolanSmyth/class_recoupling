@@ -225,6 +225,7 @@ int input_init(
   struct fzerofun_workspace fzw;
 
   double z_scale;
+  double z_cutoff;
 
   /**
    * Before getting into the assignment of parameters,
@@ -248,12 +249,18 @@ int input_init(
                                    errmsg),
              errmsg,
              errmsg);
-  
-  //z_scale used to play with decoupling temperature of idm_dr
+
+  //z_scale determines the speed of the decoupling of the DM from DR
   class_call(parser_read_double(pfc,"z_scale",&z_scale,&flag1,errmsg),
              errmsg,
              errmsg);
   pth->z_scale = z_scale;
+
+  //z_cutoff is the redshift at which decoupling occurs between DM and DR
+  class_call(parser_read_double(pfc,"z_cutoff",&z_cutoff,&flag1,errmsg),
+             errmsg,
+             errmsg);
+  pth->z_cutoff = z_cutoff;
 
 
   /**
