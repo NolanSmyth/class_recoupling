@@ -94,7 +94,7 @@
  * @return the error status
  */
 
-//NS: these control the cutoff time
+//NS: these control the cutoff time and how fast it occurs
 // double z_cutoff = 800.;
 // double z_scale = 1.e-8;
 

@@ -224,8 +224,6 @@ int input_init(
 
   struct fzerofun_workspace fzw;
 
-  double z_scale;
-  double z_cutoff;
 
   /**
    * Before getting into the assignment of parameters,
@@ -250,17 +248,7 @@ int input_init(
              errmsg,
              errmsg);
 
-  //z_scale determines the speed of the decoupling of the DM from DR
-  class_call(parser_read_double(pfc,"z_scale",&z_scale,&flag1,errmsg),
-             errmsg,
-             errmsg);
-  pth->z_scale = z_scale;
 
-  //z_cutoff is the redshift at which decoupling occurs between DM and DR
-  class_call(parser_read_double(pfc,"z_cutoff",&z_cutoff,&flag1,errmsg),
-             errmsg,
-             errmsg);
-  pth->z_cutoff = z_cutoff;
 
 
   /**
@@ -676,6 +664,10 @@ int input_read_parameters(
   double PSR0,PSR1,PSR2,PSR3,PSR4;
   double HSR0,HSR1,HSR2,HSR3,HSR4;
 
+  double z_scale;
+  double z_cutoff;
+
+
   double z_max=0.;
   int bin;
   int input_verbose=0;
@@ -871,6 +863,22 @@ int input_read_parameters(
 
   /** - Omega_0_idr (interacting dark radiation) */
   /* Can take both the ethos parameters, and the NADM parameters */
+
+  //z_scale determines the speed of the decoupling of the DM from DR
+  // class_call(parser_read_double(pfc,"z_scale",&z_scale,&flag1,errmsg),
+  //            errmsg,
+  //            errmsg);
+  // pth->z_scale = z_scale;
+
+  // //z_cutoff is the redshift at which decoupling occurs between DM and DR
+  // class_call(parser_read_double(pfc,"z_cutoff",&z_cutoff,&flag1,errmsg),
+  //            errmsg,
+  //            errmsg);
+  // pth->z_cutoff = z_cutoff;
+
+  class_read_double("z_scale", pth->z_scale)
+  class_read_double("z_cutoff", pth->z_cutoff)
+
 
   class_read_double("stat_f_idr",stat_f_idr);
 
