@@ -224,6 +224,8 @@ int input_init(
 
   struct fzerofun_workspace fzw;
 
+  double z_scale;
+
   /**
    * Before getting into the assignment of parameters,
    * and before the shooting, we want to already fix our precision parameters.
@@ -246,7 +248,12 @@ int input_init(
                                    errmsg),
              errmsg,
              errmsg);
-
+  
+  //z_scale used to play with decoupling temperature of idm_dr
+  class_call(parser_read_double(pfc,"z_scale",&z_scale,&flag1,errmsg),
+             errmsg,
+             errmsg);
+  pth->z_scale = z_scale;
 
 
   /**
@@ -709,6 +716,8 @@ int input_read_parameters(
   }
 
   /** (a) background parameters */
+
+  
 
   /** - scale factor today (arbitrary) */
   class_read_double("a_today",pba->a_today);

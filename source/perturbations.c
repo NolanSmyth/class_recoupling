@@ -8431,9 +8431,11 @@ int perturb_derivs(double tau,
   a_prime_over_a = pvecback[pba->index_bg_H] * a;
   R = 4./3. * pvecback[pba->index_bg_rho_g]/pvecback[pba->index_bg_rho_b];
 
+  // NS: look at https://arxiv.org/pdf/1907.01496.pdf 3.8 for below
   if((pba->has_idm_dr==_TRUE_)){
     Sinv = 4./3. * pvecback[pba->index_bg_rho_idr]/ pvecback[pba->index_bg_rho_idm_dr];
     dmu_idm_dr = pvecthermo[pth->index_th_dmu_idm_dr];
+    // dmu_idr = pth->b_idr/pth->a_idm_dr*pba->Omega0_idr/pba->Omega0_idm_dr*dmu_idm_dr;
     dmu_idr = pth->b_idr/pth->a_idm_dr*pba->Omega0_idr/pba->Omega0_idm_dr*dmu_idm_dr;
   }
 

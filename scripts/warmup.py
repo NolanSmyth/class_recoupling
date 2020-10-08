@@ -23,7 +23,7 @@ LambdaCDM.compute()
 # get all C_l output
 cls = LambdaCDM.lensed_cl(2500)
 # To check the format of cls
-cls.viewkeys()
+# cls.viewkeys()
 
 
 # In[ ]:
@@ -54,7 +54,7 @@ plt.plot(ll,clTT*ll*(ll+1)/2./pi,'r-')
 
 # In[ ]:
 
-plt.savefig('warmup_cltt.pdf')
+# plt.savefig('warmup_cltt.pdf')
 
 
 # In[ ]:
