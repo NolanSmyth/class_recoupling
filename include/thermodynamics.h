@@ -65,6 +65,8 @@ struct thermo
 
   double z_scale;
 
+  double z_cutoff;
+
   double YHe;  /**< \f$ Y_{He} \f$: primordial helium fraction */
 
   enum recombination_algorithm recombination; /**< recombination code */
