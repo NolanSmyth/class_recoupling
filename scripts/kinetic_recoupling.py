@@ -11,7 +11,7 @@ import numpy as np
 
 
 z_pk = 0.0
-pk_max = 110.
+pk_max = 1.e3
 
 # # create instance of the class "Class"
 # LambdaCDM = Class()
@@ -59,8 +59,8 @@ mycos.set({'output':'tCl,pCl,lCl,mPk','lensing':'yes','P_k_max_1/Mpc':pk_max})
 
 mycos.set({'f_idm_dr':1., 'xi_idr':0.5, 'a_idm_dr':1.e3, 'nindex_idm_dr':4., 'm_idm':1.0e11})
 mycos.set({'z_pk':z_pk})
-mycos.set({'z_scale':1.e-5})
-mycos.set({'z_cutoff':0.})
+mycos.set({'z_scale':1.e-1})
+mycos.set({'z_cutoff':1.e9})
 
 # # run class
 mycos.compute()

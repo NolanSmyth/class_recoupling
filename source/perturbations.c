@@ -5887,8 +5887,14 @@ int perturb_approximations(
       if(ppw->pvecthermo[pth->index_th_dmu_idm_dr] == 0.){
         ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_off;
       }
+      
+      // if(abs(ppw->pvecthermo[pth->index_th_dmu_idm_dr]) < 1.e-10){
+      //   ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_off;
+      // }
+      //This caused issues for the integration solver ^
       else{
-
+        //This is where I'm having trouble. Try to see what's going on.
+        // printf("%f\n",ppw->pvecthermo[pth->index_th_dmu_idm_dr] );
         class_test(1./ppw->pvecthermo[pth->index_th_dmu_idm_dr] < 0.,
                    ppt->error_message,
                    "negative tau_idm_dr=1/dmu_idm_dr=%e at z=%e, conformal time=%e.\n",
@@ -8435,8 +8441,16 @@ int perturb_derivs(double tau,
   if((pba->has_idm_dr==_TRUE_)){
     Sinv = 4./3. * pvecback[pba->index_bg_rho_idr]/ pvecback[pba->index_bg_rho_idm_dr];
     dmu_idm_dr = pvecthermo[pth->index_th_dmu_idm_dr];
-    // dmu_idr = pth->b_idr/pth->a_idm_dr*pba->Omega0_idr/pba->Omega0_idm_dr*dmu_idm_dr;
+    //This last one doesn't matter for us since b_idr is 0
     dmu_idr = pth->b_idr/pth->a_idm_dr*pba->Omega0_idr/pba->Omega0_idm_dr*dmu_idm_dr;
+    // if(dmu_idm_dr < 0.){
+    //   printf("dmu_idm_dr = %f\n",dmu_idm_dr );  
+    // }
+
+    //Let's see if dmu_idm_dr goes negative.
+    // It doesn't
+
+    // dmu_idr = pth->b_idr/pth->a_idm_dr*(1/_PI_*(atan(pth->z_scale*(z - pth->z_cutoff)) - atan(pth->z_scale*(-pth->z_cutoff))))*pba->Omega0_idr/pba->Omega0_idm_dr*dmu_idm_dr;
   }
 
   /** - Compute 'generalised cotK function of argument \f$ \sqrt{|K|}*\tau \f$, for closing hierarchy.
