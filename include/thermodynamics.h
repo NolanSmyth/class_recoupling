@@ -63,9 +63,15 @@ struct thermo
 
   //@{
 
-  double z_scale;
+  // double z_scale;
 
-  double z_cutoff;
+  // double z_cutoff;
+
+  double zd1;
+
+  double zd2;
+
+  double z_recouple;
 
   double YHe;  /**< \f$ Y_{He} \f$: primordial helium fraction */
 

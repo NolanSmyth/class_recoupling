@@ -664,8 +664,12 @@ int input_read_parameters(
   double PSR0,PSR1,PSR2,PSR3,PSR4;
   double HSR0,HSR1,HSR2,HSR3,HSR4;
 
-  double z_scale;
-  double z_cutoff;
+  // double z_scale;
+  // double z_cutoff;
+
+  double zd1;
+  double zd2;
+  double z_recouple;
 
 
   double z_max=0.;
@@ -876,8 +880,12 @@ int input_read_parameters(
   //            errmsg);
   // pth->z_cutoff = z_cutoff;
 
-  class_read_double("z_scale", pth->z_scale)
-  class_read_double("z_cutoff", pth->z_cutoff)
+  // class_read_double("z_scale", pth->z_scale)
+  // class_read_double("z_cutoff", pth->z_cutoff)
+
+  class_read_double("zd1", pth->zd1)
+  class_read_double("zd2", pth->zd2)
+  class_read_double("z_recouple", pth->z_recouple)
 
 
   class_read_double("stat_f_idr",stat_f_idr);
