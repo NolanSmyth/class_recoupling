@@ -667,9 +667,20 @@ int input_read_parameters(
   // double z_scale;
   // double z_cutoff;
 
-  double zd1;
-  double zd2;
-  double z_recouple;
+  // double zd1;
+  // double zd2;
+  // double z_recouple;
+
+  double z1;
+  double z2;
+  double z3;
+  double z4;
+
+  double g1;
+  double g2;
+  double g3;
+  double g4;
+
 
 
   double z_max=0.;
@@ -883,9 +894,19 @@ int input_read_parameters(
   // class_read_double("z_scale", pth->z_scale)
   // class_read_double("z_cutoff", pth->z_cutoff)
 
-  class_read_double("zd1", pth->zd1)
-  class_read_double("zd2", pth->zd2)
-  class_read_double("z_recouple", pth->z_recouple)
+  // class_read_double("zd1", pth->zd1)
+  // class_read_double("zd2", pth->zd2)
+  // class_read_double("z_recouple", pth->z_recouple)
+
+  class_read_double("z1", pth->z1)
+  class_read_double("z2", pth->z2)
+  class_read_double("z3", pth->z3)
+  class_read_double("z4", pth->z4)
+
+  class_read_double("g1", pth->g1)
+  class_read_double("g2", pth->g2)
+  class_read_double("g3", pth->g3)
+  class_read_double("g4", pth->g4)
 
 
   class_read_double("stat_f_idr",stat_f_idr);

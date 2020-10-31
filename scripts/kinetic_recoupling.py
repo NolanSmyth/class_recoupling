@@ -14,13 +14,13 @@ z_pk = 0.0
 pk_max = 1.e2
 
 # # create instance of the class "Class"
-LambdaCDM = Class()
-# pass input parameters
-LambdaCDM.set({'omega_b':0.022032,'omega_cdm':0.12038,'h':0.67556,'A_s':2.215e-9,'n_s':0.9619,'tau_reio':0.0925})
-LambdaCDM.set({'output':'tCl,pCl,lCl,mPk','lensing':'yes','P_k_max_1/Mpc':pk_max})
-LambdaCDM.set({'z_pk':z_pk})
-# run class
-LambdaCDM.compute()
+# LambdaCDM = Class()
+# # pass input parameters
+# LambdaCDM.set({'omega_b':0.022032,'omega_cdm':0.12038,'h':0.67556,'A_s':2.215e-9,'n_s':0.9619,'tau_reio':0.0925})
+# LambdaCDM.set({'output':'tCl,pCl,lCl,mPk','lensing':'yes','P_k_max_1/Mpc':pk_max})
+# LambdaCDM.set({'z_pk':z_pk})
+# # run class
+# LambdaCDM.compute()
 
 
 # # get all C_l output
@@ -38,12 +38,12 @@ LambdaCDM.compute()
 
 # # get P(k) at redhsift z=0
 
-kk = np.logspace(-4,np.log10(3),1000) # k in h/Mpc
-kk = np.logspace(np.log10(2),np.log10(pk_max),500) # k in h/Mpc
-Pk = [] # P(k) in (Mpc/h)**3
-h = LambdaCDM.h() # get reduced Hubble for conversions to 1/Mpc
-for k in kk:
-    Pk.append(LambdaCDM.pk(k*h,z_pk)*h**3) # function .pk(k,z)
+# kk = np.logspace(-4,np.log10(3),1000) # k in h/Mpc
+# kk = np.logspace(np.log10(2),np.log10(pk_max),500) # k in h/Mpc
+# Pk = [] # P(k) in (Mpc/h)**3
+# h = LambdaCDM.h() # get reduced Hubble for conversions to 1/Mpc
+# for k in kk:
+#     Pk.append(LambdaCDM.pk(k*h,z_pk)*h**3) # function .pk(k,z)
 
 
 # # optional: clear content of LambdaCDM (to reuse it for another model)
@@ -57,10 +57,13 @@ mycos = Class()
 mycos.set({'omega_b':0.022032,'omega_cdm':0.12038,'h':0.67556,'A_s':2.215e-9,'n_s':0.9619,'tau_reio':0.0925})
 mycos.set({'output':'tCl,pCl,lCl,mPk','lensing':'yes','P_k_max_1/Mpc':pk_max})
 
-mycos.set({'f_idm_dr':1., 'xi_idr':0.5, 'a_idm_dr':1.e3, 'nindex_idm_dr':4., 'm_idm':1.0e6})
+mycos.set({'f_idm_dr':1., 'xi_idr':0.5, 'a_idm_dr':1.e3, 'nindex_idm_dr':4., 'm_idm':1.0e3})
 mycos.set({'z_pk':z_pk})
-mycos.set({'z_scale':1.e-1})
-mycos.set({'z_cutoff':1.e9})
+# mycos.set({'z_scale':1.e-1})
+# mycos.set({'z_cutoff':1.e9})
+mycos.set({'zd1': 1.e6, #redshift of first decoupling
+           'z_recouple': 1., #of recoupling
+           'zd2': 1.})
 
 # # run class
 mycos.compute()
@@ -74,11 +77,12 @@ mycos.compute()
 # # myclEE = mycls['ee'][2:]
 # # myclPP = mycls['pp'][2:]
 
-mykk = np.logspace(np.log10(2),np.log10(pk_max),500) # k in h/Mpc
+mykk = np.logspace(-2,np.log10(pk_max),500) # k in h/Mpc
 myPk = [] # P(k) in (Mpc/h)**3
 myh = mycos.h() # get reduced Hubble for conversions to 1/Mpc
 for k in mykk:
     myPk.append(mycos.pk(k*myh,z_pk)*myh**3) # function .pk(k,z)
+
 
 # mycos.struct_cleanup()
 # mycos.empty()
@@ -118,12 +122,13 @@ for k in mykk:
 
 # plt.savefig('figures/lambda_cdm_all.pdf')
 
-# plt.figure(2)
-# plt.xscale('log');plt.yscale('log');plt.xlim(mykk[0],mykk[-1])
-# plt.xlabel(r'$k \,\,\,\, [h/\mathrm{Mpc}]$')
-# plt.ylabel(r'$P(k) \,\,\,\, [\mathrm{Mpc}/h]^3$')
-# plt.title('recoupling')
-# plt.plot(mykk,myPk,'r-', label='idm_dr')
+plt.figure(2)
+plt.xscale('log');plt.yscale('log');plt.xlim(mykk[0],mykk[-1])
+plt.xlabel(r'$k \,\,\,\, [h/\mathrm{Mpc}]$')
+plt.ylabel(r'$P(k) \,\,\,\, [\mathrm{Mpc}/h]^3$')
+plt.title('smooth recoupling test')
+plt.savefig('figures/smooth_recoupling_1e-3')
+plt.plot(mykk,myPk,'r-')
 
 
 # CMBratio = [(myclTT[i]*myll[i]*(myll[i]+1)/2./pi)/(clTT[i]*ll[i]*(ll[i]+1)/2./pi) for i in range(len(ll))]
@@ -142,18 +147,18 @@ for k in mykk:
 
 # plt.legend()
 
-pkratio = [myPk[i]/Pk[i] for i in range(len(Pk))]
-# # pkratio2 = [myPk2[i]/Pk[i] for i in range(len(Pk))]
+# pkratio = [myPk[i]/Pk[i] for i in range(len(Pk))]
+# # # pkratio2 = [myPk2[i]/Pk[i] for i in range(len(Pk))]
 
-plt.figure(2)
-plt.xscale('log');plt.yscale('linear');plt.xlim(mykk[0],mykk[-1])
-plt.ylim(0,1)
-plt.xlabel(r'$k \,\,\,\, [h/\mathrm{Mpc}]$')
-plt.ylabel(r'$P(k)/P(k)_{\Lambda CDM} \,\,\,\,$')
-plt.title('recoupling test')
-plt.plot(mykk,pkratio,'k-', label=r'$\xi = 0.5, a = 1e3$')
-# # plt.plot(mykk,pkratio2,'m-', label=r'$\xi = 0.5, a = 1e2$')
-plt.savefig('figures/pk_double_decouple_1e9_1e4_1e3_MeV')
+# plt.figure(2)
+# plt.xscale('log');plt.yscale('linear');plt.xlim(mykk[0],mykk[-1])
+# plt.ylim(0,1)
+# plt.xlabel(r'$k \,\,\,\, [h/\mathrm{Mpc}]$')
+# plt.ylabel(r'$P(k)/P(k)_{\Lambda CDM} \,\,\,\,$')
+# plt.title('recoupling test')
+# plt.plot(mykk,pkratio,'k-', label=r'$\xi = 0.5, a = 1e3$')
+# # # plt.plot(mykk,pkratio2,'m-', label=r'$\xi = 0.5, a = 1e2$')
+# plt.savefig('figures/pk_double_decouple_1e9_1e4_1e3_MeV')
 
 
 

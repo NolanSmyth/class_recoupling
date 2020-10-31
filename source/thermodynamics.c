@@ -96,7 +96,7 @@
 
 //NS: these control first decoupling, recoupling, and 2nd decoupling time
 
-const double alpha = 10.;
+// const double alpha = 15;
 // const double zd1 = 1.e8;
 // const double zd2 = 1.e5;
 // const double z_recouple = 1.e7;
@@ -106,7 +106,26 @@ const double alpha = 10.;
 // const double zd2 = 1.e3;
 // const double z_recouple = 1.e4;
 
-// (1/PI*(atan((z - pth->z_cutoff)) - atan(-pth->z_cutoff)))
+//For recoupling test
+// const double aconst = 0.1;
+// const double recouple_z = 1.e6;
+
+//Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * (pow((z/pth->zd1),alpha) + aconst * exp(-pow((z-recouple_z),2) / pow(10.,9.)));
+ 
+// a * exp(-pow((x-recouple_z),2) / pow(10.,9.));
+
+// //Define Gamma/H by 4 points in (z, Gamma/H) space
+// //Connect each of the 4 points with a smooth power law
+// if(z >= pth->z2){
+//   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1;
+// }
+// else if(z >= pth->z3){
+//   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z2),log10(pth->g2/pth->g3)/log10(pth->z2/pth->z3)) * pth->g2;
+// } 
+// else {
+//   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z3),log10(pth->g3/pth->g4)/log10(pth->z3/pth->z4)) * pth->g3;
+// }
+
 
 int thermodynamics_at_z(
                         struct background * pba,
@@ -906,22 +925,33 @@ int thermodynamics_init(
     // NS: just edit Gamma_heat to breit wigner?
     // https://arxiv.org/pdf/1907.01496.pdf (3.7)
    
-    // Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*(1/PI*(atan(pth->z_scale*(z - pth->z_cutoff)) - atan(pth->z_scale*(-pth->z_cutoff))))*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
-    // Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z_cutoff),alpha);
 
     // stay in kinetic equilibrium until zd1
-    if(z > sqrt(pth->z_recouple*pth->zd1)){
-      Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->zd1),alpha);
+    // if(z > sqrt(pth->z_recouple*pth->zd1)){
+    //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->zd1),alpha);
+    // }
+    // // recouple at z_recouple
+    // else if(z > sqrt(pth->z_recouple*pth->zd2)){
+    //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] / pow((z/pth->z_recouple), alpha);
+    // } 
+    // // decouple again at zd2
+    // else {
+    //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->zd2),alpha);
+    // }
+
+    //Define Gamma/H by 4 points in (z, Gamma/H) space
+    //Connect each of the 4 points with a smooth power law
+    if(z >= pth->z2){
+      Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1;
     }
-    // recouple at z_recouple
-    else if(z > sqrt(pth->z_recouple*pth->zd2)){
-      Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] / pow((z/pth->z_recouple), alpha);
+    else if(z >= pth->z3){
+      Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z2),log10(pth->g2/pth->g3)/log10(pth->z2/pth->z3)) * pth->g2;
     } 
-    // decouple again at zd2
     else {
-      Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->zd2),alpha);
+      Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z3),log10(pth->g3/pth->g4)/log10(pth->z3/pth->z4)) * pth->g3;
     }
 
+    // Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * (pow((z/pth->zd1),alpha) + aconst * exp(-pow((z-recouple_z),2) / pow(10.,9.)));
     
     /* (A1) --> if Gamma is not much smaller than H, set T_idm_dr to T_idm_dr = T_idr = xi*T_gamma (tight coupling solution) */
     if(Gamma_heat_idm_dr > 1.e-3 * pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H]){
@@ -961,24 +991,33 @@ int thermodynamics_init(
 
       /* (B1) --> tight-coupling solution: Gamma >> H implies T_idm_dr=T_idr=xi*T_gamma */
 
-      printf("z: %f, Gamma_heat: %f\n",z, Gamma_heat_idm_dr/(pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H]));
 
       if(Gamma_heat_idm_dr > 1.e3 * pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H]){
         z = pth->z_table[index_tau];
         T_idr = pba->T_idr*(1.+z);
         T_idm_dr = T_idr;
 
+        // if(z > sqrt(pth->z_recouple*pth->zd1)){
+        //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->zd1),alpha);
+        // }
+        // else if(z > sqrt(pth->z_recouple*pth->zd2)){
+        //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] / pow((z/pth->z_recouple), alpha);
+        // } 
+        // else {
+        //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->zd2),alpha);
+        // }
+        // Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * (pow((z/pth->zd1),alpha) + aconst * exp(-pow((z-recouple_z),2) / pow(10.,9.)));
 
-        // Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*(1/PI*(atan(pth->z_scale*(z - pth->z_cutoff)) - atan(pth->z_scale*(-pth->z_cutoff))))*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
-        // Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z_cutoff),alpha);
-        if(z > sqrt(pth->z_recouple*pth->zd1)){
-          Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->zd1),alpha);
+        //Define Gamma/H by 4 points in (z, Gamma/H) space
+        //Connect each of the 4 points with a smooth power law
+        if(z >= pth->z2){
+          Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1;
         }
-        else if(z > sqrt(pth->z_recouple*pth->zd2)){
-          Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] / pow((z/pth->z_recouple), alpha);
+        else if(z >= pth->z3){
+          Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z2),log10(pth->g2/pth->g3)/log10(pth->z2/pth->z3)) * pth->g2;
         } 
         else {
-          Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->zd2),alpha);
+          Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z3),log10(pth->g3/pth->g4)/log10(pth->z3/pth->z4)) * pth->g3;
         }
 
         class_call(background_tau_of_z(pba,z,&(tau)),
@@ -1002,16 +1041,27 @@ int thermodynamics_init(
           T_idm_dr -= dTdz_idm_dr*dz;
 
 
-          // Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*(1/PI*(atan(pth->z_scale*(z - pth->z_cutoff)) - atan(pth->z_scale*(-pth->z_cutoff))))*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
-          // Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z_cutoff),alpha);
-          if(z > sqrt(pth->z_recouple*pth->zd1)){
-            Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->zd1),alpha);
+          // if(z > sqrt(pth->z_recouple*pth->zd1)){
+          //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->zd1),alpha);
+          // }
+          // else if(z > sqrt(pth->z_recouple*pth->zd2)){
+          //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] / pow((z/pth->z_recouple), alpha);
+          // } 
+          // else {
+          //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->zd2),alpha);
+          // }
+          // Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * (pow((z/pth->zd1),alpha) + aconst * exp(-pow((z-recouple_z),2) / pow(10.,9.)));
+
+          //Define Gamma/H by 4 points in (z, Gamma/H) space
+          //Connect each of the 4 points with a smooth power law
+          if(z >= pth->z2){
+            Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1;
           }
-          else if(z > sqrt(pth->z_recouple*pth->zd2)){
-            Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] / pow((z/pth->z_recouple), alpha);
+          else if(z >= pth->z3){
+            Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z2),log10(pth->g2/pth->g3)/log10(pth->z2/pth->z3)) * pth->g2;
           } 
           else {
-            Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->zd2),alpha);
+            Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z3),log10(pth->g3/pth->g4)/log10(pth->z3/pth->z4)) * pth->g3;
           }
 
           class_call(background_tau_of_z(pba,z,&(tau)),
@@ -1044,16 +1094,29 @@ int thermodynamics_init(
             T_idr = pba->T_idr*(1.+z);
             T_idm_dr -= dTdz_idm_dr*dz_sub_step;
 
-            // Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*(1/PI*(atan(pth->z_scale*(z - pth->z_cutoff)) - atan(pth->z_scale*(-pth->z_cutoff))))*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
-            // Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z_cutoff),alpha);
-            if(z > sqrt(pth->z_recouple*pth->zd1)){
-              Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->zd1),alpha);
+
+            // if(z > sqrt(pth->z_recouple*pth->zd1)){
+            //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->zd1),alpha);
+            // }
+            // else if(z > sqrt(pth->z_recouple*pth->zd2)){
+            //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] / pow((z/pth->z_recouple), alpha);
+            // } 
+            // else {
+            //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->zd2),alpha);
+            // }
+
+            // Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * (pow((z/pth->zd1),alpha) + aconst * exp(-pow((z-recouple_z),2) / pow(10.,9.)));
+
+            //Define Gamma/H by 4 points in (z, Gamma/H) space
+            //Connect each of the 4 points with a smooth power law
+            if(z >= pth->z2){
+              Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1;
             }
-            else if(z > sqrt(pth->z_recouple*pth->zd2)){
-              Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] / pow((z/pth->z_recouple), alpha);
+            else if(z >= pth->z3){
+              Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z2),log10(pth->g2/pth->g3)/log10(pth->z2/pth->z3)) * pth->g2;
             } 
             else {
-              Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->zd2),alpha);
+              Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z3),log10(pth->g3/pth->g4)/log10(pth->z3/pth->z4)) * pth->g3;
             }
 
             class_call(background_tau_of_z(pba,z,&(tau)),
@@ -1083,23 +1146,27 @@ int thermodynamics_init(
         T_idr = pba->T_idr*(1.+z);
         T_idm_dr = T_adia * pow((1.+z)/(1.+z_adia),2);
 
-        // if(z < 1.e6){
-        //   Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*1.*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
+        // if(z > sqrt(pth->z_recouple*pth->zd1)){
+        //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->zd1),alpha);
         // }
+        // else if(z > sqrt(pth->z_recouple*pth->zd2)){
+        //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] / pow((z/pth->z_recouple), alpha);
+        // } 
         // else {
-        //   Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
+        //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->zd2),alpha);
         // }
+        // Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * (pow((z/pth->zd1),alpha) + aconst * exp(-pow((z-recouple_z),2) / pow(10.,9.)));
 
-        //Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*(1/PI*(atan(pth->z_scale*(z - pth->z_cutoff)) - atan(pth->z_scale*(-pth->z_cutoff))))*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
-        // Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z_cutoff),alpha);
-        if(z > sqrt(pth->z_recouple*pth->zd1)){
-          Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->zd1),alpha);
+        //Define Gamma/H by 4 points in (z, Gamma/H) space
+        //Connect each of the 4 points with a smooth power law
+        if(z >= pth->z2){
+          Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1;
         }
-        else if(z > sqrt(pth->z_recouple*pth->zd2)){
-          Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] / pow((z/pth->z_recouple), alpha);
+        else if(z >= pth->z3){
+          Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z2),log10(pth->g2/pth->g3)/log10(pth->z2/pth->z3)) * pth->g2;
         } 
         else {
-          Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->zd2),alpha);
+          Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z3),log10(pth->g3/pth->g4)/log10(pth->z3/pth->z4)) * pth->g3;
         }
 
         class_call(background_tau_of_z(pba,z,&(tau)),
