@@ -307,6 +307,9 @@ struct thermo
 
 };
 
+double myfunc(struct thermo*, struct background * pba, double z);
+
+
 /**
  * Temporary structure where all the recombination history is defined and stored.
  *

@@ -1038,8 +1038,8 @@ int input_read_parameters(
     }
     else if (flag3 == _TRUE_){
       pth->a_idm_dr = param3*(3./4.)/(pba->h*pba->h*pba->Omega0_idr);
-      if (input_verbose > 1)
-        printf("You passed Gamma_0_nadm = %e, this is equivalent to a_idm_dr = a_dark = %e in the ETHOS notation. \n", param3, pth->a_idm_dr);
+      // if (input_verbose > 1)
+      //   printf("You passed Gamma_0_nadm = %e, this is equivalent to a_idm_dr = a_dark = %e in the ETHOS notation. \n", param3, myfunc(pth, pba, z));
     }
 
     /** - Load the rest of the parameters for idm and idr */

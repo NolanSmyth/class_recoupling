@@ -5884,34 +5884,54 @@ int perturb_approximations(
 
     if(pba->has_idm_dr == _TRUE_){
 
+
+      //NS: try direct evaluation
+      ppw->pvecthermo[pth->index_th_dmu_idm_dr] = myfunc(pth, pba, 1./ppw->pvecback[pba->index_bg_a]-1)*pow((1.+(1./ppw->pvecback[pba->index_bg_a]-1))/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2);
+ 
+
       if(ppw->pvecthermo[pth->index_th_dmu_idm_dr] == 0.){
         ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_off;
       }
       
-      // if(abs(ppw->pvecthermo[pth->index_th_dmu_idm_dr]) < 1.e-10){
-      //   ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_off;
+      //NS: Take absolute value
+      // if (1./ppw->pvecthermo[pth->index_th_dmu_idm_dr] < 0.)
+      // {
+      //   ppw->pvecthermo[pth->index_th_dmu_idm_dr] = fabs(ppw->pvecthermo[pth->index_th_dmu_idm_dr]);
       // }
-      //This caused issues for the integration solver ^
-      else{
-        //This is where I'm having trouble. Try to see what's going on.
-        // printf("%f\n",ppw->pvecthermo[pth->index_th_dmu_idm_dr] );
-        class_test(1./ppw->pvecthermo[pth->index_th_dmu_idm_dr] < 0.,
-                   ppt->error_message,
-                   "negative tau_idm_dr=1/dmu_idm_dr=%e at z=%e, conformal time=%e.\n",
-                   1./ppw->pvecthermo[pth->index_th_dmu_idm_dr],
-                   1./ppw->pvecback[pba->index_bg_a]-1.,
-                   tau);
 
-        if ((1./tau_h/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_h) &&
+      //NS: Turn on tight coupling only at very high z
+      else if((1./tau_h/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_h) &&
             (1./tau_k/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_k) &&
-            (pth->nindex_idm_dr>=2) && (ppt->idr_nature == idr_free_streaming)) {
+            (pth->nindex_idm_dr>=2) && (ppt->idr_nature == idr_free_streaming) && (1./ppw->pvecback[pba->index_bg_a]-1) > 1.e8) {
           ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_on;
-        }
-        else{
-          ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_off;
-          //printf("tca_idm_dr_off = %d\n",tau);
-        }
       }
+
+      //NS: Try turning tight coupling off always:
+      else{
+        ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_off;
+      }
+
+      // else{
+      //   printf("z: %f\n",1./ppw->pvecback[pba->index_bg_a]-1 );
+      //   printf("1/ppw->pvecthermo[pth->index_th_dmu_idm_dr]: %.3e\n",1./ppw->pvecthermo[pth->index_th_dmu_idm_dr] );
+
+      //   class_test(1./ppw->pvecthermo[pth->index_th_dmu_idm_dr] < 0.,
+      //              ppt->error_message,
+      //              "negative tau_idm_dr=1/dmu_idm_dr=%e at z=%e, conformal time=%e.\n",
+      //              1./ppw->pvecthermo[pth->index_th_dmu_idm_dr],
+      //              1./ppw->pvecback[pba->index_bg_a]-1.,
+      //              tau);
+
+      //   if ((1./tau_h/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_h) &&
+      //       (1./tau_k/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_k) &&
+      //       (pth->nindex_idm_dr>=2) && (ppt->idr_nature == idr_free_streaming)) {
+      //     ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_on;
+      //   }
+      //   else{
+      //     ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_off;
+      //     //printf("tca_idm_dr_off = %d\n",tau);
+      //   }
+      // }
     }
 
     /** - --> (c) free-streaming approximations */
@@ -8442,7 +8462,8 @@ int perturb_derivs(double tau,
     Sinv = 4./3. * pvecback[pba->index_bg_rho_idr]/ pvecback[pba->index_bg_rho_idm_dr];
     dmu_idm_dr = pvecthermo[pth->index_th_dmu_idm_dr];
     //This last one doesn't matter for us since b_idr is 0
-    dmu_idr = pth->b_idr/pth->a_idm_dr*pba->Omega0_idr/pba->Omega0_idm_dr*dmu_idm_dr;
+    // dmu_idr = pth->b_idr/myfunc(pth, pba, z)*pba->Omega0_idr/pba->Omega0_idm_dr*dmu_idm_dr;
+    dmu_idr = 0;
     // if(dmu_idm_dr < 0.){
     //   printf("dmu_idm_dr = %f\n",dmu_idm_dr );  
     // }
@@ -8450,7 +8471,7 @@ int perturb_derivs(double tau,
     //Let's see if dmu_idm_dr goes negative.
     // It doesn't
 
-    // dmu_idr = pth->b_idr/pth->a_idm_dr*(1/_PI_*(atan(pth->z_scale*(z - pth->z_cutoff)) - atan(pth->z_scale*(-pth->z_cutoff))))*pba->Omega0_idr/pba->Omega0_idm_dr*dmu_idm_dr;
+    // dmu_idr = pth->b_idr/myfunc(pth, pba, z)*(1/_PI_*(atan(pth->z_scale*(z - pth->z_cutoff)) - atan(pth->z_scale*(-pth->z_cutoff))))*pba->Omega0_idr/pba->Omega0_idm_dr*dmu_idm_dr;
   }
 
   /** - Compute 'generalised cotK function of argument \f$ \sqrt{|K|}*\tau \f$, for closing hierarchy.

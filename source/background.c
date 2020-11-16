@@ -198,6 +198,7 @@ int background_tau_of_z(
   int last_index;
 
   /** - check that \f$ z \f$ is in the pre-computed range */
+  //NS: Here's where I'm getting z=nan
   class_test(z < pba->z_table[pba->bt_size-1],
              pba->error_message,
              "out of range: z=%e < z_min=%e\n",z,pba->z_table[pba->bt_size-1]);
