@@ -5900,9 +5900,16 @@ int perturb_approximations(
       // }
 
       //NS: Turn on tight coupling only at very high z
+      // else if((1./tau_h/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_h) &&
+      //       (1./tau_k/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_k) &&
+      //       (pth->nindex_idm_dr>=2) && (ppt->idr_nature == idr_free_streaming) && (1./ppw->pvecback[pba->index_bg_a]-1) > 1.e8) {
+      //     ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_on;
+      // }
+
+      //NS: Turn on tight coupling 
       else if((1./tau_h/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_h) &&
             (1./tau_k/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_k) &&
-            (pth->nindex_idm_dr>=2) && (ppt->idr_nature == idr_free_streaming) && (1./ppw->pvecback[pba->index_bg_a]-1) > 1.e8) {
+            (pth->nindex_idm_dr>=2) && (ppt->idr_nature == idr_free_streaming)) {
           ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_on;
       }
 

@@ -116,26 +116,25 @@
 
 double myfunc(struct thermo* pth, struct background * pba, double z){
   
-  int sgn = 0;
   double val = 0.;
 
   if(z >= pth->z2){
     // return fabs(pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1);
     val = pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1 / (2.*pba->Omega0_idr*pow(pba->h,2)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr));
-    sgn = val>0.;
     }
   else if(z >= pth->z3){
     val = pow((z/pth->z2),log10(pth->g2/pth->g3)/log10(pth->z2/pth->z3)) * pth->g2 / (2.*pba->Omega0_idr*pow(pba->h,2)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr));
-    sgn = val>0.;
     } 
 
-  else {
+  else if(z >= pth->z4){
     val = pow((z/pth->z3),log10(pth->g3/pth->g4)/log10(pth->z3/pth->z4)) * pth->g3 / (2.*pba->Omega0_idr*pow(pba->h,2)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr));
-    sgn = val>0.;
+  }
+
+  else {
+    val = pow((z/pth->z4),log10(pth->g4/pth->g5)/log10(pth->z4/pth->z5)) * pth->g4 / (2.*pba->Omega0_idr*pow(pba->h,2)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr));
     }
 
-  // printf("sgn: %d\n",sgn);
-
+  // to avoid nan issues
   if (fabs(val) > 1e15){
     return 1e15;
   }

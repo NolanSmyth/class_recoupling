@@ -81,6 +81,8 @@ struct thermo
 
   double z4;
 
+  double z5;
+
   double g1;
 
   double g2;
@@ -88,6 +90,8 @@ struct thermo
   double g3;
 
   double g4;
+
+  double g5;
 
   double YHe;  /**< \f$ Y_{He} \f$: primordial helium fraction */
 

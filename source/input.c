@@ -675,11 +675,13 @@ int input_read_parameters(
   double z2;
   double z3;
   double z4;
+  double z5;
 
   double g1;
   double g2;
   double g3;
   double g4;
+  double g5;
 
 
 
@@ -902,11 +904,13 @@ int input_read_parameters(
   class_read_double("z2", pth->z2)
   class_read_double("z3", pth->z3)
   class_read_double("z4", pth->z4)
+  class_read_double("z5", pth->z5)
 
   class_read_double("g1", pth->g1)
   class_read_double("g2", pth->g2)
   class_read_double("g3", pth->g3)
   class_read_double("g4", pth->g4)
+  class_read_double("g5", pth->g5)
 
 
   class_read_double("stat_f_idr",stat_f_idr);
