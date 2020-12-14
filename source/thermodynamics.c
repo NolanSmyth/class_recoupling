@@ -135,8 +135,8 @@ double myfunc(struct thermo* pth, struct background * pba, double z){
     }
 
   // to avoid nan issues
-  if (fabs(val) > 1e15){
-    return 1e15;
+  if (fabs(val) > 1e4){
+    return 1e4;
   }
   return fabs(val);
   // return pth->a_idm_dr;  
@@ -283,9 +283,9 @@ int thermodynamics_at_z(
         *  pth->nindex_idm_dr / (1.+z) * pvecthermo[pth->index_th_dmu_idm_dr];
 
       // myfunc is not nan here
-      printf("myfunc: %f\n", myfunc(pth,pba,z));
-      printf("z1: %f\n",z );
-      printf("pvecthermo[pth->index_th_dmu_idm_dr]1: %f\n",pvecthermo[pth->index_th_dmu_idm_dr] );
+      // printf("myfunc: %f\n", myfunc(pth,pba,z));
+      // printf("z1: %f\n",z );
+      // printf("pvecthermo[pth->index_th_dmu_idm_dr]1: %f\n",pvecthermo[pth->index_th_dmu_idm_dr] );
 
       if (pvecthermo[pth->index_th_dmu_idm_dr] < 0.)
       {
@@ -624,10 +624,10 @@ int thermodynamics_init(
       // printf("pth->thermodynamics_table[index_tau*pth->th_size+pth->index_th_dmu_idm_dr]2: %f\n",pth->thermodynamics_table[index_tau*pth->th_size+pth->index_th_dmu_idm_dr]);
 
       // myfunc is nan here
-      printf("myfunc: %f\n", myfunc(pth,pba,z));
-      printf("pow((1.+pth->z_table[index_tau])/1.e7,pth->nindex_idm_dr): %f\n",pow((1.+pth->z_table[index_tau])/1.e7,pth->nindex_idm_dr));
-      printf(">Omega0_idm_dr*pow(pba->h,2): %f\n",pba->Omega0_idm_dr*pow(pba->h,2));
-      printf("dmu_idm_dr: %f\n",pth->thermodynamics_table[index_tau*pth->th_size+pth->index_th_dmu_idm_dr]);
+      // printf("myfunc: %f\n", myfunc(pth,pba,z));
+      // printf("pow((1.+pth->z_table[index_tau])/1.e7,pth->nindex_idm_dr): %f\n",pow((1.+pth->z_table[index_tau])/1.e7,pth->nindex_idm_dr));
+      // printf(">Omega0_idm_dr*pow(pba->h,2): %f\n",pba->Omega0_idm_dr*pow(pba->h,2));
+      // printf("dmu_idm_dr: %f\n",pth->thermodynamics_table[index_tau*pth->th_size+pth->index_th_dmu_idm_dr]);
         
 
       /* - --> idm_dr interaction rate with idr (i.e. idm_dr opacity
