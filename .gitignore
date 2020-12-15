@@ -3,6 +3,8 @@ output/
 build/
 cmake-build-debug/
 cmake-build-release/
+.vscode/
+.idea/
 .cache/
 class
 *.prof
@@ -17,3 +19,4 @@ RealSpaceInterface/cache/
 .DS_Store
 doc/manual/html
 doc/manual/latex
+class_main
