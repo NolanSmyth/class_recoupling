@@ -1,0 +1,137 @@
+[
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class_main2.dir/main/class.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/main/class.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/main/class.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/source/background.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/background.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/background.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/source/input.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/input.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/input.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/source/lensing.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/lensing.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/lensing.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/source/nonlinear.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/nonlinear.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/nonlinear.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/source/output.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/output.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/output.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/source/perturbations.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/perturbations.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/perturbations.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/source/primordial.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/primordial.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/primordial.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/source/spectra.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/spectra.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/spectra.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/source/thermodynamics.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/thermodynamics.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/thermodynamics.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/source/transfer.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/transfer.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/transfer.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/tools/arrays.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/arrays.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/arrays.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/tools/common.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/common.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/common.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/tools/dei_rkck.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/dei_rkck.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/dei_rkck.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/tools/evolver_ndf15.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/evolver_ndf15.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/evolver_ndf15.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/tools/evolver_rkck.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/evolver_rkck.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/evolver_rkck.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/tools/growTable.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/growTable.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/growTable.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/tools/hyperspherical.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/hyperspherical.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/hyperspherical.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/tools/parser.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/parser.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/parser.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/tools/quadrature.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/quadrature.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/quadrature.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/tools/sparse.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/sparse.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/sparse.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/tools/trigonometric_integrals.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/trigonometric_integrals.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/trigonometric_integrals.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/hyrec/helium.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec/helium.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec/helium.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/hyrec/history.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec/history.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec/history.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/hyrec/hydrogen.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec/hydrogen.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec/hydrogen.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/hyrec/hyrec.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec/hyrec.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec/hyrec.c"
+},
+{
+  "directory": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -DBBN_DATA_PATH=\\\"/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn\\\" -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include -I/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec  -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk   -o CMakeFiles/class.dir/hyrec/hyrectools.c.o   -c /Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec/hyrectools.c",
+  "file": "/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec/hyrectools.c"
+}
+]

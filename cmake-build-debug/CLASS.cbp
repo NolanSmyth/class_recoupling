@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="CLASS"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="class_main2">
+				<Option output="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/class_main2" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DBBN_DATA_PATH=&quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn&quot;"/>
+					<Add directory="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include"/>
+					<Add directory="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 class_main2"/>
+					<CompileFile command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="class_main2/fast">
+				<Option output="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/class_main2" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DBBN_DATA_PATH=&quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn&quot;"/>
+					<Add directory="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include"/>
+					<Add directory="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 class_main2/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="class">
+				<Option output="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/libclass.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DBBN_DATA_PATH=&quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn&quot;"/>
+					<Add directory="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include"/>
+					<Add directory="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 class"/>
+					<CompileFile command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="class/fast">
+				<Option output="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/libclass.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DBBN_DATA_PATH=&quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/bbn&quot;"/>
+					<Add directory="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/include"/>
+					<Add directory="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 class/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec/helium.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec/helium.h">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec/history.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec/history.h">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec/hydrogen.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec/hydrogen.h">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec/hyrec.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec/hyrec.h">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec/hyrectools.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/hyrec/hyrectools.h">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/main/class.c">
+			<Option target="class_main2"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/background.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/input.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/lensing.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/nonlinear.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/output.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/perturbations.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/primordial.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/spectra.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/thermodynamics.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/source/transfer.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/arrays.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/common.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/dei_rkck.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/evolver_ndf15.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/evolver_rkck.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/growTable.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/hyperspherical.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/parser.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/quadrature.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/sparse.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/tools/trigonometric_integrals.c">
+			<Option target="class"/>
+		</Unit>
+		<Unit filename="/Users/loganmorrison/Nextcloud/Research/KineticRecoupling/class_recoupling/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
