@@ -4,6 +4,7 @@ project(CLASS
 	DESCRIPTION "CLASS Implementation of Dark Matter Kinetic Recoupling."
 	LANGUAGES C)
 
+
 #============================================================================
 #---- Add preprocessor definitions ------------------------------------------
 #============================================================================
@@ -49,7 +50,11 @@ target_include_directories(class PUBLIC
 # ====================================
 # ---- Construct Main Entry Point ----
 # ====================================
-
+# Make compile the class.c into an executable
 add_executable(class_main "main/class.c")
+# Link to the CLASS library
 target_link_libraries(class_main class)
+# Place the executable in the project-root directory
+set_target_properties(class_main PROPERTIES
+		RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
 
