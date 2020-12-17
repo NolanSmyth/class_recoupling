@@ -37,7 +37,8 @@ with open(os.path.join(include_folder, 'common.h'), 'r') as v_file:
 classy_ext = Extension("classy", [os.path.join(classy_folder, "classy.pyx")],
                            include_dirs=[nm.get_include(), include_folder],
                            libraries=liblist,
-                           library_dirs=[root_folder, GCCPATH])
+                           library_dirs=[root_folder, GCCPATH],
+                           extra_link_args=['-lgomp', '-Wl,-rpath,/usr/local/opt/gcc/lib/gcc/10/'])
 import six
 classy_ext.cython_directives = {'language_level': "3" if six.PY3 else "2"}
         
