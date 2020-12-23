@@ -2593,6 +2593,7 @@ int perturb_workspace_init(
   if (_scalars_) {
 
     ppw->approx[ppw->index_ap_tca]=(int)tca_on;
+    // ppw->approx[ppw->index_ap_tca]=(int)tca_off;
     ppw->approx[ppw->index_ap_rsa]=(int)rsa_off;
 
     if (pba->has_idr == _TRUE_)
@@ -2611,6 +2612,7 @@ int perturb_workspace_init(
   if (_tensors_) {
 
     ppw->approx[ppw->index_ap_tca]=(int)tca_on;
+    // ppw->approx[ppw->index_ap_tca]=(int)tca_off;
     ppw->approx[ppw->index_ap_rsa]=(int)rsa_off;
   }
 
@@ -2983,6 +2985,8 @@ int perturb_solve(
 
     for (index_ap=0; index_ap<ppw->ap_size; index_ap++)
       ppw->approx[index_ap]=interval_approx[index_interval][index_ap];
+    //turn tca off 
+    // ppw->approx[ppw->index_ap_tca]=(int)tca_off;
 
     /** - --> (b) get the previous approximation scheme. If the current
         interval starts from the initial time tau_ini, the previous
@@ -5874,11 +5878,15 @@ int perturb_approximations(
 
       if ((tau_c/tau_h < ppr->tight_coupling_trigger_tau_c_over_tau_h) &&
           (tau_c/tau_k < ppr->tight_coupling_trigger_tau_c_over_tau_k)) {
-        ppw->approx[ppw->index_ap_tca] = (int)tca_on;
+        // ppw->approx[ppw->index_ap_tca] = (int)tca_on;
       }
       else {
         ppw->approx[ppw->index_ap_tca] = (int)tca_off;
       }
+
+      // Try tyring off tca always to try and avoid flag error
+      // ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_off;
+      // ppw->approx[ppw->index_ap_tca] = (int)tca_off;
 
     }
 
@@ -5888,33 +5896,32 @@ int perturb_approximations(
       // NS: directly evaluate this to avoid interpolation error on next class_test
       ppw->pvecthermo[pth->index_th_dmu_idm_dr] = myfunc(pth, pba, 1./ppw->pvecback[pba->index_bg_a]-1)*pow((1.+(1./ppw->pvecback[pba->index_bg_a]-1))/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2);
  
+    // Try tyring off tca always to try and avoid flag error
+      // ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_off;
+      // ppw->approx[ppw->index_ap_tca] = (int)tca_off;
 
       if(ppw->pvecthermo[pth->index_th_dmu_idm_dr] == 0.){
         ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_off;
       }
-      // Try tyring off tca always to try and avoid flag error
-      ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_off;
       
-      // else{
-      //   class_test(1./ppw->pvecthermo[pth->index_th_dmu_idm_dr] < 0.,
-      //              ppt->error_message,
-      //              "negative tau_idm_dr=1/dmu_idm_dr=%e at z=%e, conformal time=%e.\n",
-      //              1./ppw->pvecthermo[pth->index_th_dmu_idm_dr],
-      //              1./ppw->pvecback[pba->index_bg_a]-1.,
-      //              tau);
+      else{
+        class_test(1./ppw->pvecthermo[pth->index_th_dmu_idm_dr] < 0.,
+                   ppt->error_message,
+                   "negative tau_idm_dr=1/dmu_idm_dr=%e at z=%e, conformal time=%e.\n",
+                   1./ppw->pvecthermo[pth->index_th_dmu_idm_dr],
+                   1./ppw->pvecback[pba->index_bg_a]-1.,
+                   tau);
 
-      //   if ((1./tau_h/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_h) &&
-      //       (1./tau_k/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_k) &&
-      //       (pth->nindex_idm_dr>=2) && (ppt->idr_nature == idr_free_streaming)) {
-      //     ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_on;
-      //   }
-      //   else{
-      //     ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_off;
-      //     //printf("tca_idm_dr_off = %d\n",tau);
-      //   }
-
-
-      // }
+        if ((1./tau_h/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_h) &&
+            (1./tau_k/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_k) &&
+            (pth->nindex_idm_dr>=2) && (ppt->idr_nature == idr_free_streaming)) {
+          // ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_on;
+        }
+        else{
+          ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_off;
+          //printf("tca_idm_dr_off = %d\n",tau);
+        }
+      }
 
       //NS: Turn on tight coupling only at very high z
       // else if((1./tau_h/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_h) &&
@@ -6027,11 +6034,15 @@ int perturb_approximations(
       /** - ----> (b.2.b) check whether tight-coupling approximation should be on */
       if ((tau_c/tau_h < ppr->tight_coupling_trigger_tau_c_over_tau_h) &&
           (tau_c/tau_k < ppr->tight_coupling_trigger_tau_c_over_tau_k)) {
-        ppw->approx[ppw->index_ap_tca] = (int)tca_on;
+        // ppw->approx[ppw->index_ap_tca] = (int)tca_on;
       }
       else {
         ppw->approx[ppw->index_ap_tca] = (int)tca_off;
       }
+
+      // Try tyring off tca always to try and avoid flag error
+      // ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_off;
+      // ppw->approx[ppw->index_ap_tca] = (int)tca_off;
     }
 
     if ((tau/tau_k > ppr->radiation_streaming_trigger_tau_over_tau_k) &&
