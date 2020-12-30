@@ -138,10 +138,14 @@ double myfunc(struct thermo* pth, struct background * pba, double z){
   if (fabs(val) > 1e4){
     val = 1e4;
   }
-  return fabs(val) / (2.*pba->Omega0_idr*pow(pba->h,2)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr));
+  double mycoupling = fabs(val) / (2.*pba->Omega0_idr*pow(pba->h,2)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr));
+  return mycoupling*pth->myrho + pth->a_idm_dr*(1 - pth->myrho);
+
+  // return fabs(val) / (2.*pba->Omega0_idr*pow(pba->h,2)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr));
   // return pth->a_idm_dr;  
 }
 
+// Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
 
 // double myfunc(struct thermo* pth, double z){
   

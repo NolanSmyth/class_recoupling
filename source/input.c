@@ -683,6 +683,8 @@ int input_read_parameters(
   double g4;
   double g5;
 
+  double myrho;
+
 
 
   double z_max=0.;
@@ -911,6 +913,8 @@ int input_read_parameters(
   class_read_double("g3", pth->g3)
   class_read_double("g4", pth->g4)
   class_read_double("g5", pth->g5)
+
+  class_read_double("myrho", pth->myrho)
 
 
   class_read_double("stat_f_idr",stat_f_idr);

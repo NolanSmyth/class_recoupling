@@ -5878,7 +5878,7 @@ int perturb_approximations(
 
       if ((tau_c/tau_h < ppr->tight_coupling_trigger_tau_c_over_tau_h) &&
           (tau_c/tau_k < ppr->tight_coupling_trigger_tau_c_over_tau_k)) {
-        // ppw->approx[ppw->index_ap_tca] = (int)tca_on;
+        ppw->approx[ppw->index_ap_tca] = (int)tca_on;
       }
       else {
         ppw->approx[ppw->index_ap_tca] = (int)tca_off;
@@ -6034,7 +6034,7 @@ int perturb_approximations(
       /** - ----> (b.2.b) check whether tight-coupling approximation should be on */
       if ((tau_c/tau_h < ppr->tight_coupling_trigger_tau_c_over_tau_h) &&
           (tau_c/tau_k < ppr->tight_coupling_trigger_tau_c_over_tau_k)) {
-        // ppw->approx[ppw->index_ap_tca] = (int)tca_on;
+        ppw->approx[ppw->index_ap_tca] = (int)tca_on;
       }
       else {
         ppw->approx[ppw->index_ap_tca] = (int)tca_off;

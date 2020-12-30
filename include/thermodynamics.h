@@ -93,6 +93,8 @@ struct thermo
 
   double g5;
 
+  double myrho; //Controls whether using CLASS's Gamma_heat or our version (myfunc)
+
   double YHe;  /**< \f$ Y_{He} \f$: primordial helium fraction */
 
   enum recombination_algorithm recombination; /**< recombination code */
