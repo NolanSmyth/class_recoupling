@@ -101,45 +101,43 @@
 // Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*myfunc(pth, pba, z)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
 
 
-// //Define Gamma/H by 4 points in (z, Gamma/H) space
-// //Connect each of the 4 points with a smooth power law
-// if(z >= pth->z2){
-//   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1;
-// }
-// else if(z >= pth->z3){
-//   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z2),log10(pth->g2/pth->g3)/log10(pth->z2/pth->z3)) * pth->g2;
-// } 
-// else {
-//   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z3),log10(pth->g3/pth->g4)/log10(pth->z3/pth->z4)) * pth->g3;
-// }
-
 
 double myfunc(struct thermo* pth, struct background * pba, double z){
   
   double val = 0.;
+  double Gamma = 100.;
 
-  if(z >= pth->z2){
-    // return fabs(pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1);
-    val = pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1;
-    }
-  else if(z >= pth->z3){
-    val = pow((z/pth->z2),log10(pth->g2/pth->g3)/log10(pth->z2/pth->z3)) * pth->g2 ;
-    } 
+  // g1 height
+  // rho width
+  
+  val = (pth->g1*(pow(pth->z4*pth->myrho,2)) / (pow((pow(z,2) - pow(pth->z4,2)),2) + pow(pth->z4*pth->myrho,2)) + 1.) *pth->a_idm_dr;
 
-  else if(z >= pth->z4){
-    val = pow((z/pth->z3),log10(pth->g3/pth->g4)/log10(pth->z3/pth->z4)) * pth->g3;
-  }
+  return val;
 
-  else {
-    val = pow((z/pth->z4),log10(pth->g4/pth->g5)/log10(pth->z4/pth->z5)) * pth->g4;
-    }
 
-  // to avoid nan issues
-  if (fabs(val) > 1e4){
-    val = 1e4;
-  }
-  double mycoupling = fabs(val) / (2.*pba->Omega0_idr*pow(pba->h,2)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr));
-  return mycoupling*pth->myrho + pth->a_idm_dr*(1 - pth->myrho);
+
+  // if(z >= pth->z2){
+  //   // return fabs(pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1);
+  //   val = pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1;
+  //   }
+  // else if(z >= pth->z3){
+  //   val = pow((z/pth->z2),log10(pth->g2/pth->g3)/log10(pth->z2/pth->z3)) * pth->g2 ;
+  //   } 
+
+  // else if(z >= pth->z4){
+  //   val = pow((z/pth->z3),log10(pth->g3/pth->g4)/log10(pth->z3/pth->z4)) * pth->g3;
+  // }
+
+  // else {
+  //   val = pow((z/pth->z4),log10(pth->g4/pth->g5)/log10(pth->z4/pth->z5)) * pth->g4;
+  //   }
+
+  // // to avoid nan issues
+  // if (fabs(val) > 1e4){
+  //   val = 1e4;
+  // }
+  // double mycoupling = fabs(val) / (2.*pba->Omega0_idr*pow(pba->h,2)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr));
+  // return mycoupling*pth->myrho + pth->a_idm_dr*(1 - pth->myrho);
 
   // return fabs(val) / (2.*pba->Omega0_idr*pow(pba->h,2)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr));
   // return pth->a_idm_dr;  
@@ -147,29 +145,6 @@ double myfunc(struct thermo* pth, struct background * pba, double z){
 
 // Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
 
-// double myfunc(struct thermo* pth, double z){
-  
-//   int sgn = 0;
-//   double val = 0.;
-
-//   if(z >= pth->z2){
-//     // return fabs(pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1);
-//     val = pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1;
-//     sgn = val>0.;
-//     }
-//   else if(z >= pth->z3){
-//     val = pow((z/pth->z2),log10(pth->g2/pth->g3)/log10(pth->z2/pth->z3)) * pth->g2;
-//     sgn = val>0.;
-//     } 
-//   else {
-//     val = pow((z/pth->z3),log10(pth->g3/pth->g4)/log10(pth->z3/pth->z4)) * pth->g3;
-//     sgn = val>0.;
-//     }
-
-//   // printf("sgn: %d\n",sgn);
-//   return fabs(val);
-//   // return pth->a_idm_dr;  
-// }
 
 
 int thermodynamics_at_z(
@@ -619,20 +594,6 @@ int thermodynamics_init(
       pth->thermodynamics_table[index_tau*pth->th_size+pth->index_th_dmu_idm_dr] =
         myfunc(pth,pba,pth->z_table[index_tau])*pow((1.+pth->z_table[index_tau])/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2);
 
-      if (pth->thermodynamics_table[index_tau*pth->th_size+pth->index_th_dmu_idm_dr] < 0.)
-      {
-        printf('negative tau here 2');
-      }
-
-      // printf("z2: %f\n",pth->z_table[index_tau] );
-      // printf("pth->thermodynamics_table[index_tau*pth->th_size+pth->index_th_dmu_idm_dr]2: %f\n",pth->thermodynamics_table[index_tau*pth->th_size+pth->index_th_dmu_idm_dr]);
-
-      // myfunc is nan here
-      // printf("myfunc: %f\n", myfunc(pth,pba,z));
-      // printf("pow((1.+pth->z_table[index_tau])/1.e7,pth->nindex_idm_dr): %f\n",pow((1.+pth->z_table[index_tau])/1.e7,pth->nindex_idm_dr));
-      // printf(">Omega0_idm_dr*pow(pba->h,2): %f\n",pba->Omega0_idm_dr*pow(pba->h,2));
-      // printf("dmu_idm_dr: %f\n",pth->thermodynamics_table[index_tau*pth->th_size+pth->index_th_dmu_idm_dr]);
-        
 
       /* - --> idm_dr interaction rate with idr (i.e. idm_dr opacity
                to idr scattering), [Sinv*dmu_idm_dr] with Sinv = (4
@@ -996,20 +957,13 @@ int thermodynamics_init(
     // https://arxiv.org/pdf/1907.01496.pdf (3.7)
    
 
-    //Define Gamma/H by 4 points in (z, Gamma/H) space
-    //Connect each of the 4 points with a smooth power law
-    // if(z >= pth->z2){
-    //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1;
-    // }
-    // else if(z >= pth->z3){
-    //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z2),log10(pth->g2/pth->g3)/log10(pth->z2/pth->z3)) * pth->g2;
-    // } 
-    // else {
-    //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z3),log10(pth->g3/pth->g4)/log10(pth->z3/pth->z4)) * pth->g3;
-    // }
+  
 
     Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*myfunc(pth, pba, z)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
 
+    // printf("%f, %f, %f\n",z, Gamma_heat_idm_dr, myfunc(pth, pba, z));
+
+    // printf("%f",pba->Omega0_idr);
     
     /* (A1) --> if Gamma is not much smaller than H, set T_idm_dr to T_idm_dr = T_idr = xi*T_gamma (tight coupling solution) */
     if(Gamma_heat_idm_dr > 1.e-3 * pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H]){
@@ -1021,7 +975,6 @@ int thermodynamics_init(
        approximate analytic solution (Gamma/aH)/(1+(Gamma/aH)*T_idr)
        (eq. (A62) in ETHOS I ) */
     else {
-      printf(" @@@@@@@@@ A2 @@@@@@@@@@");
       T_idr = pba->T_idr*(1.+z);
       T_idm_dr = Gamma_heat_idm_dr/(pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H])
         /(1. + Gamma_heat_idm_dr/(pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H]))*T_idr;
@@ -1069,6 +1022,8 @@ int thermodynamics_init(
         // }
 
         Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*myfunc(pth, pba, z)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
+        // printf("%f, %f, %f\n",z, Gamma_heat_idm_dr, myfunc(pth, pba, z));
+        // printf("%f\n",pba->Omega0_idr);
 
         class_call(background_tau_of_z(pba,z,&(tau)),
                    pba->error_message,
@@ -1104,6 +1059,7 @@ int thermodynamics_init(
           // }
 
           Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*myfunc(pth, pba, z)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
+          // printf("%f, %f, %f\n",z, Gamma_heat_idm_dr, myfunc(pth, pba, z));
 
           class_call(background_tau_of_z(pba,z,&(tau)),
                      pba->error_message,
@@ -1148,6 +1104,7 @@ int thermodynamics_init(
             // }
 
             Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*myfunc(pth, pba, z)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
+            printf("%f, %f, %f\n",z, Gamma_heat_idm_dr, myfunc(pth, pba, z));
 
             class_call(background_tau_of_z(pba,z,&(tau)),
                        pba->error_message,
@@ -1167,29 +1124,17 @@ int thermodynamics_init(
       /* (B3) --> decoupled solution: T_idm_dr scales like a^-2 */
       else {
         z = pth->z_table[index_tau];
-        // Check if decoupling is really happening where we think (close to z_cutoff)
-        // if (z>1.e4){
-        //   printf("z = %f\n",z);
-        //   printf("H = %f\n",pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H]);
-        // }
+
         
         T_idr = pba->T_idr*(1.+z);
         T_idm_dr = T_adia * pow((1.+z)/(1.+z_adia),2);
 
       
-        //Define Gamma/H by 4 points in (z, Gamma/H) space
-        //Connect each of the 4 points with a smooth power law
-        // if(z >= pth->z2){
-        //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1;
-        // }
-        // else if(z >= pth->z3){
-        //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z2),log10(pth->g2/pth->g3)/log10(pth->z2/pth->z3)) * pth->g2;
-        // } 
-        // else {
-        //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z3),log10(pth->g3/pth->g4)/log10(pth->z3/pth->z4)) * pth->g3;
-        // }
 
         Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*myfunc(pth, pba, z)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
+        printf("%f, %f, %f\n",z, Gamma_heat_idm_dr, myfunc(pth, pba, z));
+        
+
 
         class_call(background_tau_of_z(pba,z,&(tau)),
                    pba->error_message,

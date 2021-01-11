@@ -5915,7 +5915,7 @@ int perturb_approximations(
         if ((1./tau_h/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_h) &&
             (1./tau_k/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_k) &&
             (pth->nindex_idm_dr>=2) && (ppt->idr_nature == idr_free_streaming)) {
-          // ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_on;
+          ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_on;
         }
         else{
           ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_off;
