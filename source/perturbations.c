@@ -5905,6 +5905,7 @@ int perturb_approximations(
       }
       
       else{
+        // printf("z = %f, tau_idm_dr_interp = %f, tau_idm_dr_eval = %f \n",1./ppw->pvecback[pba->index_bg_a]-1.,1./ppw->pvecthermo[pth->index_th_dmu_idm_dr],1/( myfunc(pth, pba, 1./ppw->pvecback[pba->index_bg_a]-1)*pow((1.+(1./ppw->pvecback[pba->index_bg_a]-1))/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2)));
         class_test(1./ppw->pvecthermo[pth->index_th_dmu_idm_dr] < 0.,
                    ppt->error_message,
                    "negative tau_idm_dr=1/dmu_idm_dr=%e at z=%e, conformal time=%e.\n",
@@ -8462,7 +8463,7 @@ int perturb_derivs(double tau,
   // NS: look at https://arxiv.org/pdf/1907.01496.pdf 3.8 for below
   if((pba->has_idm_dr==_TRUE_)){
     Sinv = 4./3. * pvecback[pba->index_bg_rho_idr]/ pvecback[pba->index_bg_rho_idm_dr];
-    dmu_idm_dr = pvecthermo[pth->index_th_dmu_idm_dr];
+    dmu_idm_dr = myfunc(pth, pba, 1./ppw->pvecback[pba->index_bg_a]-1)*pow((1.+(1./ppw->pvecback[pba->index_bg_a]-1))/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2);
     //This last one doesn't matter for us since b_idr is 0
     // dmu_idr = pth->b_idr/myfunc(pth, pba, z)*pba->Omega0_idr/pba->Omega0_idm_dr*dmu_idm_dr;
     dmu_idr = 0;
