@@ -5894,7 +5894,8 @@ int perturb_approximations(
 
 
       // NS: directly evaluate this to avoid interpolation error on next class_test
-      ppw->pvecthermo[pth->index_th_dmu_idm_dr] = myfunc(pth, pba, 1./ppw->pvecback[pba->index_bg_a]-1)*pow((1.+(1./ppw->pvecback[pba->index_bg_a]-1))/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2);
+    
+      //ppw->pvecthermo[pth->index_th_dmu_idm_dr] = myfunc(pth, pba, 1./ppw->pvecback[pba->index_bg_a]-1)*pow((1.+(1./ppw->pvecback[pba->index_bg_a]-1))/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2);
  
     // Try tyring off tca always to try and avoid flag error
       // ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_off;
@@ -5905,7 +5906,7 @@ int perturb_approximations(
       }
       
       else{
-        // printf("z = %f, tau_idm_dr_interp = %f, tau_idm_dr_eval = %f \n",1./ppw->pvecback[pba->index_bg_a]-1.,1./ppw->pvecthermo[pth->index_th_dmu_idm_dr],1/( myfunc(pth, pba, 1./ppw->pvecback[pba->index_bg_a]-1)*pow((1.+(1./ppw->pvecback[pba->index_bg_a]-1))/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2)));
+        //printf("z = %f, tau_idm_dr_interp = %f, tau_idm_dr_eval = %f \n",1./ppw->pvecback[pba->index_bg_a]-1.,1./ppw->pvecthermo[pth->index_th_dmu_idm_dr],1/( myfunc(pth, pba, 1./ppw->pvecback[pba->index_bg_a]-1)*pow((1.+(1./ppw->pvecback[pba->index_bg_a]-1))/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2)));
         class_test(1./ppw->pvecthermo[pth->index_th_dmu_idm_dr] < 0.,
                    ppt->error_message,
                    "negative tau_idm_dr=1/dmu_idm_dr=%e at z=%e, conformal time=%e.\n",
@@ -6016,7 +6017,7 @@ int perturb_approximations(
                                    ppw->pvecthermo),
                pth->error_message,
                ppt->error_message);
-
+  
     /** - ---> (b.1.) if \f$ \kappa'=0 \f$, recombination is finished; tight-coupling approximation must be off */
 
     if (ppw->pvecthermo[pth->index_th_dkappa] == 0.) {
@@ -8467,14 +8468,7 @@ int perturb_derivs(double tau,
     //This last one doesn't matter for us since b_idr is 0
     // dmu_idr = pth->b_idr/myfunc(pth, pba, z)*pba->Omega0_idr/pba->Omega0_idm_dr*dmu_idm_dr;
     dmu_idr = 0;
-    // if(dmu_idm_dr < 0.){
-    //   printf("dmu_idm_dr = %f\n",dmu_idm_dr );  
-    // }
-
-    //Let's see if dmu_idm_dr goes negative.
-    // It doesn't
-
-    // dmu_idr = pth->b_idr/myfunc(pth, pba, z)*(1/_PI_*(atan(pth->z_scale*(z - pth->z_cutoff)) - atan(pth->z_scale*(-pth->z_cutoff))))*pba->Omega0_idr/pba->Omega0_idm_dr*dmu_idm_dr;
+   
   }
 
   /** - Compute 'generalised cotK function of argument \f$ \sqrt{|K|}*\tau \f$, for closing hierarchy.
@@ -8764,12 +8758,13 @@ int perturb_derivs(double tau,
     }
 
     /** - ---> idm_dr */
+    //This is where it solves the actual perturbation equations
     if (pba->has_idm_dr == _TRUE_){
-
+      //This is eq (7) of https://arxiv.org/pdf/1512.05344.pdf
       dy[pv->index_pt_delta_idm_dr] = -(y[pv->index_pt_theta_idm_dr]+metric_continuity); /* idm_dr density */
 
       if (ppw->approx[ppw->index_ap_tca_idm_dr] == (int)tca_idm_dr_off) {
-
+        //This is eq (8) of https://arxiv.org/pdf/1512.05344.pdf
         dy[pv->index_pt_theta_idm_dr] = - a_prime_over_a*y[pv->index_pt_theta_idm_dr] + metric_euler; /* idm_dr velocity */
         dy[pv->index_pt_theta_idm_dr] -= (Sinv*dmu_idm_dr*(y[pv->index_pt_theta_idm_dr] - theta_idr) - k2*pvecthermo[pth->index_th_cidm_dr2]*y[pv->index_pt_delta_idm_dr]);
       }

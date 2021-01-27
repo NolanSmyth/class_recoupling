@@ -105,12 +105,11 @@
 double myfunc(struct thermo* pth, struct background * pba, double z){
   
   double val = 0.;
-  double Gamma = 100.;
 
   // g1 height
   // rho width
   
-  val = (pth->g1*(pow(pth->z4*pth->myrho,2)) / (pow((pow(z,2) - pow(pth->z4,2)),2) + pow(pth->z4*pth->myrho,2)) + 1.) *pth->a_idm_dr;
+  val = pth->a_idm_dr * (pth->g1*(pow(pth->z4*pth->myrho,2)) / (pow((pow(z,2) - pow(pth->z4,2)),2) + pow(pth->z4*pth->myrho,2)) + 1.);
 
   return val;
 
@@ -143,7 +142,6 @@ double myfunc(struct thermo* pth, struct background * pba, double z){
   // return pth->a_idm_dr;  
 }
 
-// Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*pth->a_idm_dr*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
 
 
 
@@ -244,22 +242,17 @@ int thermodynamics_at_z(
 
       // printf("pvecthermo[pth->index_th_dmu_idm_dr]: %f\n",pvecthermo[pth->index_th_dmu_idm_dr] );
 
-      pvecthermo[pth->index_th_dmu_idm_dr] = myfunc(pth, pba, z)*pow((1.+z)/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2);
-      // pvecthermo[pth->index_th_dmu_idm_dr] = pth->a_idm_dr*pow((1.+z)/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2);
+      // this is (3.7) in https://arxiv.org/pdf/1907.01496.pdf. i.e. exactly what shows up in perturbation equations
+      //pvecthermo[pth->index_th_dmu_idm_dr] = pth->a_idm_dr*pow((1.+z)/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2);
+      pvecthermo[pth->index_th_dmu_idm_dr] = myfunc(pth,pba,z)*pow((1.+z)/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2);
+
+
       // Are these derivatives still correct?
       pvecthermo[pth->index_th_ddmu_idm_dr] =  -pvecback[pba->index_bg_H] * pth->nindex_idm_dr / (1+z) * pvecthermo[pth->index_th_dmu_idm_dr];
       pvecthermo[pth->index_th_dddmu_idm_dr] = (pvecback[pba->index_bg_H]*pvecback[pba->index_bg_H]/ (1.+z) - pvecback[pba->index_bg_H_prime])
         *  pth->nindex_idm_dr / (1.+z) * pvecthermo[pth->index_th_dmu_idm_dr];
 
-      // myfunc is not nan here
-      // printf("myfunc: %f\n", myfunc(pth,pba,z));
-      // printf("z1: %f\n",z );
-      // printf("pvecthermo[pth->index_th_dmu_idm_dr]1: %f\n",pvecthermo[pth->index_th_dmu_idm_dr] );
-
-      if (pvecthermo[pth->index_th_dmu_idm_dr] < 0.)
-      {
-        printf("negative tau here 1\n");
-      }
+    
 
       /* calculate dmu_idr (self interaction) */
       pvecthermo[pth->index_th_dmu_idr] = pth->b_idr*pow((1.+z)/1.e7,pth->nindex_idm_dr)*pba->Omega0_idr*pow(pba->h,2);
@@ -268,6 +261,10 @@ int thermodynamics_at_z(
       pvecthermo[pth->index_th_tau_idm_dr] = pth->thermodynamics_table[(pth->tt_size-1)*pth->th_size+pth->index_th_tau_idm_dr]+
         (pth->thermodynamics_table[(pth->tt_size-1)*pth->th_size+pth->index_th_tau_idm_dr]-pth->thermodynamics_table[(pth->tt_size-2)*pth->th_size+pth->index_th_tau_idm_dr])
         *(z-pth->z_table[pth->tt_size-1])/(pth->z_table[pth->tt_size-1]-pth->z_table[pth->tt_size-2]);
+
+      if(pvecthermo[pth->index_th_tau_idm_dr] < 0.){
+        printf("HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      }
 
       pvecthermo[pth->index_th_tau_idr] = pth->thermodynamics_table[(pth->tt_size-1)*pth->th_size+pth->index_th_tau_idr]+
         (pth->thermodynamics_table[(pth->tt_size-1)*pth->th_size+pth->index_th_tau_idr]-pth->thermodynamics_table[(pth->tt_size-2)*pth->th_size+pth->index_th_tau_idr])
@@ -329,7 +326,7 @@ int thermodynamics_at_z(
                    pth->error_message);
       }
 
-      if (inter_mode == pth->inter_closeby) {
+      if  (inter_mode == pth->inter_closeby) {
 
         class_call(array_interpolate_spline_growing_closeby(
                                                             pth->z_table,
@@ -573,16 +570,10 @@ int thermodynamics_init(
     if(pba->has_idm_dr == _TRUE_) {
 
       /* - --> idr interaction rate with idm_dr (i.e. idr opacity to idm_dr scattering) */
-      //NS 
-
-      //THIS IS THE LINE CAUSING z=nan
-      // pth->thermodynamics_table[index_tau*pth->th_size+pth->index_th_dmu_idm_dr] =
-      //   pth->a_idm_dr*pow((1.+pth->z_table[index_tau])/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2);
-
 
 
       pth->thermodynamics_table[index_tau*pth->th_size+pth->index_th_dmu_idm_dr] =
-        myfunc(pth,pba,pth->z_table[index_tau])*pow((1.+pth->z_table[index_tau])/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2);
+      myfunc(pth,pba,pth->z_table[index_tau])*pow((1.+pth->z_table[index_tau])/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2);
 
 
       /* - --> idm_dr interaction rate with idr (i.e. idm_dr opacity
@@ -881,6 +872,13 @@ int thermodynamics_init(
       /* restore the correct sign for tau_idm_dr */
       pth->thermodynamics_table[index_tau*pth->th_size+pth->index_th_tau_idm_dr] *= -1.;
 
+      // if (pth->thermodynamics_table[index_tau*pth->th_size+pth->index_th_tau_idm_dr] < 0.0){
+      //   pth->thermodynamics_table[index_tau*pth->th_size+pth->index_th_tau_idm_dr] *= -1.;
+      // }
+      // if (pth->thermodynamics_table[index_tau*pth->th_size+pth->index_th_tau_idm_dr] < 0.0){
+      //   printf("OOPS");
+      // }
+
       /* restore the correct sign for tau_idr */
       pth->thermodynamics_table[index_tau*pth->th_size+pth->index_th_tau_idr] *= -1.;
 
@@ -946,17 +944,17 @@ int thermodynamics_init(
     // NS: just edit Gamma_heat to breit wigner?
     // https://arxiv.org/pdf/1907.01496.pdf (3.7)
    
-
   
 
     Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*myfunc(pth, pba, z)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
 
-    // printf("%f, %f, %f\n",z, Gamma_heat_idm_dr, myfunc(pth, pba, z));
+    // printf("%f, %f, %f, %f\n",z,Gamma_heat_idm_dr, Gamma_heat_idm_dr/(pvecback[pba->index_bg_H]), myfunc(pth, pba, z));
 
     // printf("%f",pba->Omega0_idr);
     
     /* (A1) --> if Gamma is not much smaller than H, set T_idm_dr to T_idm_dr = T_idr = xi*T_gamma (tight coupling solution) */
-    if(Gamma_heat_idm_dr > 1.e-3 * pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H]){
+    // if(Gamma_heat_idm_dr > 1.e-3 * pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H]){
+    if(Gamma_heat_idm_dr > 1.e-3 * pvecback[pba->index_bg_H]){
       T_idm_dr = pba->T_idr*(1.+z);
       dTdz_idm_dr = pba->T_idr;
     }
@@ -966,12 +964,16 @@ int thermodynamics_init(
        (eq. (A62) in ETHOS I ) */
     else {
       T_idr = pba->T_idr*(1.+z);
-      T_idm_dr = Gamma_heat_idm_dr/(pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H])
-        /(1. + Gamma_heat_idm_dr/(pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H]))*T_idr;
+      // T_idm_dr = Gamma_heat_idm_dr/(pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H])
+      //   /(1. + Gamma_heat_idm_dr/(pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H]))*T_idr;
+      T_idm_dr = Gamma_heat_idm_dr/(pvecback[pba->index_bg_H])
+        /(1. + Gamma_heat_idm_dr/(pvecback[pba->index_bg_H]))*T_idr;
       dTdz_idm_dr = 2.*T_idm_dr - Gamma_heat_idm_dr/pvecback[pba->index_bg_H] * (T_idr - T_idm_dr);
     }
 
+    //This is (11) of https://arxiv.org/pdf/1512.05344.pdf
     pth->thermodynamics_table[(pth->tt_size-1)*pth->th_size+pth->index_th_Tidm_dr] = T_idm_dr;
+    //This is the sound speed
     pth->thermodynamics_table[(pth->tt_size-1)*pth->th_size+pth->index_th_cidm_dr2] = _k_B_*T_idm_dr/_eV_/pth->m_idm*(1.+dTdz_idm_dr/3./T_idm_dr);
 
     /* T_adia and z_adia will be used later. They are defined as "the
@@ -993,26 +995,15 @@ int thermodynamics_init(
       /* (B1) --> tight-coupling solution: Gamma >> H implies T_idm_dr=T_idr=xi*T_gamma */
 
 
+      // if(Gamma_heat_idm_dr > 1.e3 * pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H]){
       if(Gamma_heat_idm_dr > 1.e3 * pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H]){
         z = pth->z_table[index_tau];
         T_idr = pba->T_idr*(1.+z);
         T_idm_dr = T_idr;
 
-        
-        //Define Gamma/H by 4 points in (z, Gamma/H) space
-        //Connect each of the 4 points with a smooth power law
-        // if(z >= pth->z2){
-        //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1;
-        // }
-        // else if(z >= pth->z3){
-        //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z2),log10(pth->g2/pth->g3)/log10(pth->z2/pth->z3)) * pth->g2;
-        // } 
-        // else {
-        //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z3),log10(pth->g3/pth->g4)/log10(pth->z3/pth->z4)) * pth->g3;
-        // }
 
         Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*myfunc(pth, pba, z)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
-        // printf("%f, %f, %f\n",z, Gamma_heat_idm_dr, myfunc(pth, pba, z));
+        //printf("%f, %f, %f, %f\n",z,Gamma_heat_idm_dr, Gamma_heat_idm_dr/(pvecback[pba->index_bg_H]), myfunc(pth, pba, z));
         // printf("%f\n",pba->Omega0_idr);
 
         class_call(background_tau_of_z(pba,z,&(tau)),
@@ -1025,7 +1016,7 @@ int thermodynamics_init(
       }
 
       /* (B2) --> intermediate solution: integrate differential equation equation dT_idm_dr/dz = 2 a T_DM - Gamma/H (T_idr - T_idm_dr) */
-      else if (Gamma_heat_idm_dr > 1.e-3 * pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H]) {
+      else if (Gamma_heat_idm_dr > 1.e-3 * pvecback[pba->index_bg_H]) {
       // else if (0) {
         dz = pth->z_table[index_tau+1] - pth->z_table[index_tau];
 
@@ -1036,20 +1027,8 @@ int thermodynamics_init(
           T_idm_dr -= dTdz_idm_dr*dz;
 
 
-          //Define Gamma/H by 4 points in (z, Gamma/H) space
-          //Connect each of the 4 points with a smooth power law
-          // if(z >= pth->z2){
-          //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1;
-          // }
-          // else if(z >= pth->z3){
-          //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z2),log10(pth->g2/pth->g3)/log10(pth->z2/pth->z3)) * pth->g2;
-          // } 
-          // else {
-          //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z3),log10(pth->g3/pth->g4)/log10(pth->z3/pth->z4)) * pth->g3;
-          // }
-
           Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*myfunc(pth, pba, z)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
-          // printf("%f, %f, %f\n",z, Gamma_heat_idm_dr, myfunc(pth, pba, z));
+          //printf("%f, %f, %f, %f\n",z,Gamma_heat_idm_dr, Gamma_heat_idm_dr/(pvecback[pba->index_bg_H]), myfunc(pth, pba, z));
 
           class_call(background_tau_of_z(pba,z,&(tau)),
                      pba->error_message,
@@ -1081,20 +1060,9 @@ int thermodynamics_init(
             T_idr = pba->T_idr*(1.+z);
             T_idm_dr -= dTdz_idm_dr*dz_sub_step;
 
-            //Define Gamma/H by 4 points in (z, Gamma/H) space
-            //Connect each of the 4 points with a smooth power law
-            // if(z >= pth->z2){
-            //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1;
-            // }
-            // else if(z >= pth->z3){
-            //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z2),log10(pth->g2/pth->g3)/log10(pth->z2/pth->z3)) * pth->g2;
-            // } 
-            // else {
-            //   Gamma_heat_idm_dr = pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H] * pow((z/pth->z3),log10(pth->g3/pth->g4)/log10(pth->z3/pth->z4)) * pth->g3;
-            // }
 
             Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*myfunc(pth, pba, z)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
-            // printf("%f, %f, %f\n",z, Gamma_heat_idm_dr, myfunc(pth, pba, z));
+            //printf("%f, %f, %f, %f\n",z,Gamma_heat_idm_dr, Gamma_heat_idm_dr/(pvecback[pba->index_bg_H]), myfunc(pth, pba, z));
 
             class_call(background_tau_of_z(pba,z,&(tau)),
                        pba->error_message,
@@ -1122,7 +1090,7 @@ int thermodynamics_init(
       
 
         Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*myfunc(pth, pba, z)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
-        // printf("%f, %f, %f\n",z, Gamma_heat_idm_dr, myfunc(pth, pba, z));
+        //printf("%f, %f, %f, %f\n",z,Gamma_heat_idm_dr, Gamma_heat_idm_dr/(pvecback[pba->index_bg_H]), myfunc(pth, pba, z));
         
 
 
@@ -1364,7 +1332,6 @@ int thermodynamics_init(
 
       // printf("z_idm_dr after: %f\n",z_idm_dr);
 
-      //GETTING ERROR HERE AFTER FIXING dmu_idm_dr   
       
       class_call(background_tau_of_z(pba,z_idm_dr,&(tau_idm_dr)),
                  pba->error_message,
