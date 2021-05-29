@@ -63,6 +63,38 @@ struct thermo
 
   //@{
 
+  // double z_scale;
+
+  // double z_cutoff;
+
+  // double zd1;
+
+  // double zd2;
+
+  // double z_recouple;
+
+  double z1;
+
+  double z2;
+
+  double z3;
+
+  double z4;
+
+  double z5;
+
+  double g1;
+
+  double g2;
+
+  double g3;
+
+  double g4;
+
+  double g5;
+
+  double myrho; //Controls whether using CLASS's Gamma_heat or our version (myfunc)
+
   double YHe;  /**< \f$ Y_{He} \f$: primordial helium fraction */
 
   enum recombination_algorithm recombination; /**< recombination code */
@@ -280,6 +312,9 @@ struct thermo
   //@}
 
 };
+
+double myfunc(struct thermo*, struct background * pba, double z);
+
 
 /**
  * Temporary structure where all the recombination history is defined and stored.

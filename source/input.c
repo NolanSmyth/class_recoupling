@@ -224,6 +224,7 @@ int input_init(
 
   struct fzerofun_workspace fzw;
 
+
   /**
    * Before getting into the assignment of parameters,
    * and before the shooting, we want to already fix our precision parameters.
@@ -246,6 +247,7 @@ int input_init(
                                    errmsg),
              errmsg,
              errmsg);
+
 
 
 
@@ -662,6 +664,29 @@ int input_read_parameters(
   double PSR0,PSR1,PSR2,PSR3,PSR4;
   double HSR0,HSR1,HSR2,HSR3,HSR4;
 
+  // double z_scale;
+  // double z_cutoff;
+
+  // double zd1;
+  // double zd2;
+  // double z_recouple;
+
+  double z1;
+  double z2;
+  double z3;
+  double z4;
+  double z5;
+
+  double g1;
+  double g2;
+  double g3;
+  double g4;
+  double g5;
+
+  double myrho;
+
+
+
   double z_max=0.;
   int bin;
   int input_verbose=0;
@@ -709,6 +734,8 @@ int input_read_parameters(
   }
 
   /** (a) background parameters */
+
+  
 
   /** - scale factor today (arbitrary) */
   class_read_double("a_today",pba->a_today);
@@ -856,6 +883,40 @@ int input_read_parameters(
   /** - Omega_0_idr (interacting dark radiation) */
   /* Can take both the ethos parameters, and the NADM parameters */
 
+  //z_scale determines the speed of the decoupling of the DM from DR
+  // class_call(parser_read_double(pfc,"z_scale",&z_scale,&flag1,errmsg),
+  //            errmsg,
+  //            errmsg);
+  // pth->z_scale = z_scale;
+
+  // //z_cutoff is the redshift at which decoupling occurs between DM and DR
+  // class_call(parser_read_double(pfc,"z_cutoff",&z_cutoff,&flag1,errmsg),
+  //            errmsg,
+  //            errmsg);
+  // pth->z_cutoff = z_cutoff;
+
+  // class_read_double("z_scale", pth->z_scale)
+  // class_read_double("z_cutoff", pth->z_cutoff)
+
+  // class_read_double("zd1", pth->zd1)
+  // class_read_double("zd2", pth->zd2)
+  // class_read_double("z_recouple", pth->z_recouple)
+
+  class_read_double("z1", pth->z1)
+  class_read_double("z2", pth->z2)
+  class_read_double("z3", pth->z3)
+  class_read_double("z4", pth->z4)
+  class_read_double("z5", pth->z5)
+
+  class_read_double("g1", pth->g1)
+  class_read_double("g2", pth->g2)
+  class_read_double("g3", pth->g3)
+  class_read_double("g4", pth->g4)
+  class_read_double("g5", pth->g5)
+
+  class_read_double("myrho", pth->myrho)
+
+
   class_read_double("stat_f_idr",stat_f_idr);
 
   class_call(parser_read_double(pfc,"N_idr",&param1,&flag1,errmsg),
@@ -888,6 +949,7 @@ int input_read_parameters(
   }
 
   pba->Omega0_idr = stat_f_idr*pow(pba->T_idr/pba->T_cmb,4.)*pba->Omega0_g;
+  printf("stat_f_idr = %f, T_idr = %f, T_CMB = %f, Omega0_g = %f", stat_f_idr, pba->T_idr, pba->T_cmb, pba->Omega0_g);
 
   Omega_tot += pba->Omega0_idr;
 
@@ -985,8 +1047,8 @@ int input_read_parameters(
     }
     else if (flag3 == _TRUE_){
       pth->a_idm_dr = param3*(3./4.)/(pba->h*pba->h*pba->Omega0_idr);
-      if (input_verbose > 1)
-        printf("You passed Gamma_0_nadm = %e, this is equivalent to a_idm_dr = a_dark = %e in the ETHOS notation. \n", param3, pth->a_idm_dr);
+      // if (input_verbose > 1)
+      //   printf("You passed Gamma_0_nadm = %e, this is equivalent to a_idm_dr = a_dark = %e in the ETHOS notation. \n", param3, myfunc(pth, pba, z));
     }
 
     /** - Load the rest of the parameters for idm and idr */

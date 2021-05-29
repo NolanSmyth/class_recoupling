@@ -112,7 +112,8 @@ class_precision_parameter(recfast_Nz0,int,20000)
  * For instance, if the three values are (10^9, 10^4, 10^2), then the intermediate timestep is Delta z simeq 10^3
 */
 class_precision_parameter(thermo_z_initial_idm_dr,double,1.0e9)
-class_precision_parameter(thermo_Nz1_idm_dr,int,10000)
+// class_precision_parameter(thermo_Nz1_idm_dr,int,10000)
+class_precision_parameter(thermo_Nz1_idm_dr,int,4000000)
 class_precision_parameter(thermo_Nz2_idm_dr,int,100)
 /**
  * Tolerance of the relative value of integral during thermodynamical integration
