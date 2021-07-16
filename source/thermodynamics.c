@@ -108,6 +108,10 @@ double myfunc(struct thermo* pth, struct background * pba, double z){
 
   // g1 height
   // rho width
+
+  // if(z <= 1.0044e6){
+  //   return 1.e-2 * (7.e11*(pow(1.e6*31.456,2)) / (pow((pow(z,2) - pow(1.e6,2)),2) + pow(1.e6*31.456,2)) + 1.);
+  // }
   
   val = pth->a_idm_dr * (pth->g1*(pow(pth->z4*pth->myrho,2)) / (pow((pow(z,2) - pow(pth->z4,2)),2) + pow(pth->z4*pth->myrho,2)) + 1.);
 

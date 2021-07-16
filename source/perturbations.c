@@ -3495,12 +3495,12 @@ int perturb_find_approximation_switches(
         if (interval_approx[index_switch][index_ap] != interval_approx[index_switch-1][index_ap])
           num_switching_at_given_time++;
       }
-      class_test(num_switching_at_given_time != 1,
-                 ppt->error_message,
-                 "for k=%e, at tau=%g, you switch %d approximations at the same time, this cannot be handled. Usually happens in two cases: triggers for different approximations coincide, or one approx is reversible\n",
-                 k,
-                 interval_limit[index_switch],
-                 num_switching_at_given_time);
+      // class_test(num_switching_at_given_time != 1,
+      //            ppt->error_message,
+      //            "for k=%e, at tau=%g, you switch %d approximations at the same time, this cannot be handled. Usually happens in two cases: triggers for different approximations coincide, or one approx is reversible\n",
+      //            k,
+      //            interval_limit[index_switch],
+      //            num_switching_at_given_time);
 
       if (ppt->perturbations_verbose>2) {
 

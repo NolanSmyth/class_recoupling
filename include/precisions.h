@@ -113,7 +113,7 @@ class_precision_parameter(recfast_Nz0,int,20000)
 */
 class_precision_parameter(thermo_z_initial_idm_dr,double,1.0e9)
 // class_precision_parameter(thermo_Nz1_idm_dr,int,10000)
-class_precision_parameter(thermo_Nz1_idm_dr,int,4000000)
+class_precision_parameter(thermo_Nz1_idm_dr,int,10000000)
 class_precision_parameter(thermo_Nz2_idm_dr,int,100)
 /**
  * Tolerance of the relative value of integral during thermodynamical integration
