@@ -72,6 +72,13 @@
  * -# thermodynamics_free() at the end, when no more calls to thermodynamics_at_z() are needed
  */
 
+#include <float.h>
+#include <gsl/gsl_errno.h>
+#include <gsl/gsl_integration.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "thermodynamics.h"
 
 #ifdef HYREC
@@ -96,10 +103,216 @@
 
 //NS: these control first decoupling, recoupling, and 2nd decoupling time
 
+// kappadotchi file from Logan
 
+static const int WS_SIZE = 1000;
 
-// Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*myfunc(pth, pba, z)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
+/**
+ * Compute the derivative of the Fermi-Dirac distribution w.r.t. momentum.
+ * @param p The momentum of the dark-radiation
+ * @param T The temperature of the equilibrium bath
+ */
+double fermi_dirac_der(double p, double T) {
+  const double e = exp(-p / T);
+  return (-1.0 / T) * e / pow(1.0 + e, 2);
+}
 
+/**
+ * Compute the derivative of the Bose-Einstein distribution w.r.t. momentum with
+ * factor of 1/2T removed.
+ * @param p The momentum of the dark-radiation
+ * @param T The temperature of the equilibrium bath
+ */
+double bose_einstein_deriv(double p, double T) {
+  const double e = exp(-p / T);
+  return (-1.0 / T) * e / pow(1.0 - e, 2);
+}
+
+/**
+ * Structure to hold the model parameters.
+ */
+struct Model {
+  // Mass-splitting between DM and mediator: dm = mMed - m
+  double dm;
+  // Dark matter mass in units of the mass-splitting: r = m / dm
+  double r;
+  // Width of the mediator in units of the mass-splitting: w = width / dm
+  double w;
+  // Coupling constant between DM, DR and mediator
+  double g;
+};
+
+/**
+ * Structure to hold parameters needed to perform integration of thermal
+ * scattering rate.
+ */
+struct IntegrationParams {
+  // Parameters of the model
+  struct Model *model;
+  // Dark-radiation temperature
+  double T;
+};
+
+/**
+ * Compute the squared matrix element integrated againts the first two Legendre
+ * polynomials: A_0(p) - A_0(q) for a model with Majorana DM, Majorana DR, and
+ * scalar mediator.
+ * @param q The dark-radiation momentum scaled by mass-splitting: q = p / dm.
+ * @param model Parameters of the model.
+ */
+double msqrd_mms(double q, struct Model *model) {
+  const double r = model->r;
+  const double w = model->w;
+  const double g4 = pow(model->g, 4);
+
+  // s-channel Briet-Wigner-like denominator
+  const double den = pow(2 * r * q - (1 + 2 * r), 2) + pow((1 + r) * w, 2);
+
+  const double ln = log(((2 * q + r) * (1 + 2 * (1 + q) * r)) /
+                        (2 * q * pow(1 + r, 2) + r * (1 + 2 * r)));
+
+  // Pure s-channel contribution - should dominate
+  const double schannel =
+      (4 * g4 * pow(q, 2) * pow(r, 4)) / (den * pow(2 * q + r, 2));
+
+  // Pure t-channel contribution - should be small
+  const double tchannel =
+      -0.5 *
+          (g4 * r *
+           (4 * pow(q, 3) * r * pow(1 + r, 2) +
+            3 * pow(r, 2) * pow(1 + 2 * r, 2) +
+            4 * q * r * (3 + 12 * r + 13 * pow(r, 2) + 2 * pow(r, 3)) +
+            2 * pow(q, 2) * (6 + 24 * r + 29 * pow(r, 2) + 10 * pow(r, 3)))) /
+          (pow(q, 2) * pow(2 * q + r, 2) *
+           (2 * q * pow(1 + r, 2) + r * (1 + 2 * r))) +
+      (g4 * ln * (1 + 2 * r) *
+       (8 * pow(q, 2) * r * pow(1 + r, 2) + 3 * r * pow(1 + 2 * r, 2) +
+        q * (6 + 24 * r + 34 * pow(r, 2) + 20 * pow(r, 3)))) /
+          (8. * pow(q, 4) * (2 * q * pow(1 + r, 2) + r * (1 + 2 * r)));
+
+  // s/t channel interference term - smaller than s but much bigger than t
+  const double interference =
+      (g4 * ln * r *
+       (4 * pow(q, 2) * pow(r, 3) * (1 + 2 * r) - r * pow(1 + 2 * r, 3) +
+        4 * pow(q, 3) * pow(r, 2) * (1 + 2 * r + 2 * pow(r, 2)) -
+        q * pow(1 + 2 * r, 2) * (1 + 2 * r + 2 * pow(r, 2)))) /
+          (4. * den * pow(q, 4)) +
+      (g4 * pow(r, 2) *
+       (-4 * pow(q, 4) * pow(r, 2) + 3 * q * r * pow(1 + 2 * r, 2) +
+        pow(r, 2) * pow(1 + 2 * r, 2) -
+        2 * pow(q, 3) * r * (1 + 2 * r + 6 * pow(r, 2)) +
+        pow(q, 2) * (2 + 8 * r + 8 * pow(r, 2) - 4 * pow(r, 4)))) /
+          (den * pow(q, 2) * pow(2 * q + r, 2));
+
+  return schannel; // + tchannel + interference;
+}
+
+/**
+ * Compute the squared matrix element integrated againts the first two Legendre
+ * polynomials: A_0(p) - A_0(q).
+ * @param p The momentum of the dark-radiation
+ * @param m The mass of the dark matter
+ * @param d Shift parameter for mediator mass: m_med = m * (1 + d)
+ * @param width Decay width of the mediator
+ * @param g Coupling of the DM-DR-Mediator vertex
+ */
+double thermal_scattering_rate_integrand(double q, void *params) {
+  struct IntegrationParams *pars = (struct IntegrationParams *)params;
+  return -msqrd_mms(q, pars->model) * pow(q, 4) *
+         fermi_dirac_der(q * pars->model->dm, pars->T);
+}
+
+/**
+ * Compute Gamma_heat / a
+ * @param T Temperature of the dark-radiation
+ * @param model Structure holding the model parameters
+ * @param ws_size Size of the workspace
+ * @param ws The workspace for the GSL integrator
+ * @param error Pointer to where the error should be stored. If NULL, error is
+ * not returned
+ */
+double thermal_scattering_rate(double T, struct Model *model, int ws_size, double *error) {
+  gsl_integration_workspace *ws = gsl_integration_workspace_alloc(WS_SIZE);
+
+  // GSL will abort on errors like roundoff which it shouldn't. Just turn the
+  // errors off. We will handle them ourselves.
+  gsl_set_error_handler_off();
+
+  // gx = d.o.f. of dark-matter
+  const double gx = 2.0;
+  // pre is the prefactor in font of Gamma_heat / a. This factor is
+  // 1 /(48 * pi^3 * gx * mx^3). Since we are integrating over q = p/dm, we get
+  // 4 extra factors of dm. Using mx = dm * r, we get
+  // dm^2 / (48 * gx * pi^3 * r^3 ). See ArXiv 1706.07433 Eqn.(6).
+  const double pre = pow(model->dm, 2) / (48 * pow(M_PI * model->r, 3) * gx);
+
+  // Integrator parameters
+  // TODO This relative accuracy might be overkill. Could probly be more like
+  // 1e-3.
+  const double epsrel = 1e-7;
+  const double epsabs = 0.0;
+  // breakpt is the rough location of the peak (basically dm for small w)
+  const double breakpt = model->dm * (1.0 + pow(model->w / 2.0, 2));
+  struct IntegrationParams params = {.model = model, .T = T};
+
+  gsl_function F;
+  F.function = &thermal_scattering_rate_integrand;
+  F.params = &params;
+
+  // Split integral into two piece: first from 0 to peak of the Briet-Wigner and
+  // the second from the peak to infinity
+
+  // Perform integration from 0 to breakpt
+  double res1 = 0.0;
+  double err1 = 0.0;
+  int status1 = gsl_integration_qag(&F, 0, breakpt, epsabs, epsrel, ws_size, 2,
+                                    ws, &res1, &err1);
+  // Perform integration from breakpt to infinity
+  double res2 = 0.0;
+  double err2 = 0.0;
+  int status2 = gsl_integration_qagiu(&F, breakpt, epsabs, epsrel, ws_size, ws,
+                                      &res2, &err2);
+
+  // Scale the results by the prefactor
+  res1 *= pre;
+  res2 *= pre;
+  err1 *= pre;
+  err2 *= pre;
+
+#ifdef DEBUG
+  if (status1 == GSL_EMAXITER) {
+    printf("1: GSL_EMAXITER\n");
+  } else if (status1 == GSL_EROUND) {
+    printf("1: GSL_EROUND\n");
+  } else if (status1 == GSL_ESING) {
+    printf("1: GSL_ESING\n");
+  } else if (status1 == GSL_EDIVERGE) {
+    printf("1: GSL_EDIVERGE\n");
+  } else if (status1 == GSL_EDOM) {
+    printf("1: GSL_EDOM\n");
+  }
+  if (status2 == GSL_EMAXITER) {
+    printf("2: GSL_EMAXITER\n");
+  } else if (status2 == GSL_EROUND) {
+    printf("2: GSL_EROUND\n");
+  } else if (status2 == GSL_ESING) {
+    printf("2: GSL_ESING\n");
+  } else if (status2 == GSL_EDIVERGE) {
+    printf("2: GSL_EDIVERGE\n");
+  } else if (status2 == GSL_EDOM) {
+    printf("2: GSL_EDOM\n");
+  }
+#endif
+
+  // Make sure we aren't setting a null-pointer.
+  if (error != NULL) {
+    *error = sqrt(err1 * err1 + err2 * err2);
+  }
+
+  return res1 + res2;
+}
+
+// end kappadotchi
 
 
 double myfunc(struct thermo* pth, struct background * pba, double z){

@@ -47,7 +47,7 @@ OMPFLAG   = -fopenmp
 CCFLAG = -g -fPIC 
 LDFLAG = -g -fPIC 
 
-LFLAGS = -L/usr/lib -lgsl -lgslcblas -lm -L/usr/local/Cellar/gsl/2.6/lib
+LFLAGS = -L/usr/lib -lgsl -lgslcblas -lm -L/usr/local/Cellar/gsl/2.6/lib 
 
 # leave blank to compile without HyRec, or put path to HyRec directory
 # (with no slash at the end: e.g. hyrec or ../hyrec)
@@ -61,7 +61,7 @@ HYREC = hyrec
 CCFLAG += -D__CLASSDIR__='"$(MDIR)"'
 
 # where to find include files *.h
-INCLUDES = -I../include
+INCLUDES = -I../include -I/usr/local/Cellar/gsl/2.6/include
 
 # automatically add external programs if needed. First, initialize to blank.
 EXTERNAL =
