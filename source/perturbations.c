@@ -3025,6 +3025,9 @@ int perturb_solve(
     else{
       generic_evolver = evolver_ndf15;
     }
+  
+    printf("interval lim: %f \n",interval_limit[index_interval]);
+    // singular matrix here at tau = 364.436828 
 
     class_call(generic_evolver(perturb_derivs,
                                interval_limit[index_interval],

@@ -75,6 +75,7 @@
 #include <float.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_integration.h>
+#include <gsl/gsl_sf_dilog.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -105,7 +106,15 @@
 
 // kappadotchi file from Logan
 
-static const int WS_SIZE = 1000;
+static const size_t WS_CQUAD_SIZE = 100;
+double error = 0.0;
+
+// double g = 1.0;
+// double r = 100.0;
+// double dm = 1.0;
+// double w = g * g / (2 * M_PI * r);
+// struct Model model = {.dm = dm, .w = w, .r = r, .g = g};
+
 
 /**
  * Compute the derivative of the Fermi-Dirac distribution w.r.t. momentum.
@@ -142,6 +151,8 @@ struct Model {
   double g;
 };
 
+struct Model model = {.dm = 1.0, .w = 1/(2 * M_PI * 100.0), .r = 100.0, .g = 1.0};
+
 /**
  * Structure to hold parameters needed to perform integration of thermal
  * scattering rate.
@@ -168,43 +179,11 @@ double msqrd_mms(double q, struct Model *model) {
   // s-channel Briet-Wigner-like denominator
   const double den = pow(2 * r * q - (1 + 2 * r), 2) + pow((1 + r) * w, 2);
 
-  const double ln = log(((2 * q + r) * (1 + 2 * (1 + q) * r)) /
-                        (2 * q * pow(1 + r, 2) + r * (1 + 2 * r)));
-
   // Pure s-channel contribution - should dominate
   const double schannel =
       (4 * g4 * pow(q, 2) * pow(r, 4)) / (den * pow(2 * q + r, 2));
 
-  // Pure t-channel contribution - should be small
-  const double tchannel =
-      -0.5 *
-          (g4 * r *
-           (4 * pow(q, 3) * r * pow(1 + r, 2) +
-            3 * pow(r, 2) * pow(1 + 2 * r, 2) +
-            4 * q * r * (3 + 12 * r + 13 * pow(r, 2) + 2 * pow(r, 3)) +
-            2 * pow(q, 2) * (6 + 24 * r + 29 * pow(r, 2) + 10 * pow(r, 3)))) /
-          (pow(q, 2) * pow(2 * q + r, 2) *
-           (2 * q * pow(1 + r, 2) + r * (1 + 2 * r))) +
-      (g4 * ln * (1 + 2 * r) *
-       (8 * pow(q, 2) * r * pow(1 + r, 2) + 3 * r * pow(1 + 2 * r, 2) +
-        q * (6 + 24 * r + 34 * pow(r, 2) + 20 * pow(r, 3)))) /
-          (8. * pow(q, 4) * (2 * q * pow(1 + r, 2) + r * (1 + 2 * r)));
-
-  // s/t channel interference term - smaller than s but much bigger than t
-  const double interference =
-      (g4 * ln * r *
-       (4 * pow(q, 2) * pow(r, 3) * (1 + 2 * r) - r * pow(1 + 2 * r, 3) +
-        4 * pow(q, 3) * pow(r, 2) * (1 + 2 * r + 2 * pow(r, 2)) -
-        q * pow(1 + 2 * r, 2) * (1 + 2 * r + 2 * pow(r, 2)))) /
-          (4. * den * pow(q, 4)) +
-      (g4 * pow(r, 2) *
-       (-4 * pow(q, 4) * pow(r, 2) + 3 * q * r * pow(1 + 2 * r, 2) +
-        pow(r, 2) * pow(1 + 2 * r, 2) -
-        2 * pow(q, 3) * r * (1 + 2 * r + 6 * pow(r, 2)) +
-        pow(q, 2) * (2 + 8 * r + 8 * pow(r, 2) - 4 * pow(r, 4)))) /
-          (den * pow(q, 2) * pow(2 * q + r, 2));
-
-  return schannel; // + tchannel + interference;
+  return schannel; 
 }
 
 /**
@@ -222,6 +201,10 @@ double thermal_scattering_rate_integrand(double q, void *params) {
          fermi_dirac_der(q * pars->model->dm, pars->T);
 }
 
+gsl_integration_cquad_workspace *get_cquad_integration_workspace() {
+  return gsl_integration_cquad_workspace_alloc(WS_CQUAD_SIZE);
+}
+
 /**
  * Compute Gamma_heat / a
  * @param T Temperature of the dark-radiation
@@ -231,12 +214,25 @@ double thermal_scattering_rate_integrand(double q, void *params) {
  * @param error Pointer to where the error should be stored. If NULL, error is
  * not returned
  */
-double thermal_scattering_rate(double T, struct Model *model, int ws_size, double *error) {
-  gsl_integration_workspace *ws = gsl_integration_workspace_alloc(WS_SIZE);
+double thermal_scattering_rate(double T, struct Model *model, double *error) {
+  static int got_ws = 0;
+  static __thread gsl_integration_cquad_workspace *ws = NULL;
+
+  if (got_ws == 0) {
+    ws = get_cquad_integration_workspace();
+    got_ws = 1;
+  }
 
   // GSL will abort on errors like roundoff which it shouldn't. Just turn the
   // errors off. We will handle them ourselves.
   gsl_set_error_handler_off();
+
+  // Extract model parameters
+  const double r = model->r;
+  const double g = model->g;
+  const double dm = model->dm;
+  const double d = dm / T;
+  const double x = r * d;
 
   // gx = d.o.f. of dark-matter
   const double gx = 2.0;
@@ -244,7 +240,7 @@ double thermal_scattering_rate(double T, struct Model *model, int ws_size, doubl
   // 1 /(48 * pi^3 * gx * mx^3). Since we are integrating over q = p/dm, we get
   // 4 extra factors of dm. Using mx = dm * r, we get
   // dm^2 / (48 * gx * pi^3 * r^3 ). See ArXiv 1706.07433 Eqn.(6).
-  const double pre = pow(model->dm, 2) / (48 * pow(M_PI * model->r, 3) * gx);
+  const double pre = pow(dm, 2) / (48 * pow(M_PI * r, 3) * gx);
 
   // Integrator parameters
   // TODO This relative accuracy might be overkill. Could probly be more like
@@ -252,8 +248,18 @@ double thermal_scattering_rate(double T, struct Model *model, int ws_size, doubl
   const double epsrel = 1e-7;
   const double epsabs = 0.0;
   // breakpt is the rough location of the peak (basically dm for small w)
-  const double breakpt = model->dm * (1.0 + pow(model->w / 2.0, 2));
+  const double breakpt_peak = model->dm * (1.0 + pow(model->w / 2.0, 2));
+  const double large_r_fac = 2.0;
+  const double breakpt_large_r = large_r_fac * r;
   struct IntegrationParams params = {.model = model, .T = T};
+
+// Appoximate result for integral from q >~r to infinity
+  const double xp = large_r_fac * x;
+  const double ex = exp(-xp);
+  const double large = pow(g * g * x, 2) * pre / (8 * T * pow(d, 5)) *
+                       (-4 * gsl_sf_dilog(-ex) +
+                        xp * (xp + 4 * log(1 + ex) - xp * tanh(xp / 2)));
+
 
   gsl_function F;
   F.function = &thermal_scattering_rate_integrand;
@@ -265,13 +271,15 @@ double thermal_scattering_rate(double T, struct Model *model, int ws_size, doubl
   // Perform integration from 0 to breakpt
   double res1 = 0.0;
   double err1 = 0.0;
-  int status1 = gsl_integration_qag(&F, 0, breakpt, epsabs, epsrel, ws_size, 2,
-                                    ws, &res1, &err1);
-  // Perform integration from breakpt to infinity
+  size_t nevals1 = 0;
+  gsl_integration_cquad(&F, 0.0, breakpt_peak, epsabs, epsrel, ws, &res1, &err1,
+                        &nevals1);
+  // Perform integral from peak to a cut-off for large r
   double res2 = 0.0;
   double err2 = 0.0;
-  int status2 = gsl_integration_qagiu(&F, breakpt, epsabs, epsrel, ws_size, ws,
-                                      &res2, &err2);
+  size_t nevals2 = 0;
+  gsl_integration_cquad(&F, breakpt_peak, breakpt_large_r, epsabs, epsrel, ws,
+                        &res2, &err2, &nevals2);
 
   // Scale the results by the prefactor
   res1 *= pre;
@@ -279,45 +287,34 @@ double thermal_scattering_rate(double T, struct Model *model, int ws_size, doubl
   err1 *= pre;
   err2 *= pre;
 
-#ifdef DEBUG
-  if (status1 == GSL_EMAXITER) {
-    printf("1: GSL_EMAXITER\n");
-  } else if (status1 == GSL_EROUND) {
-    printf("1: GSL_EROUND\n");
-  } else if (status1 == GSL_ESING) {
-    printf("1: GSL_ESING\n");
-  } else if (status1 == GSL_EDIVERGE) {
-    printf("1: GSL_EDIVERGE\n");
-  } else if (status1 == GSL_EDOM) {
-    printf("1: GSL_EDOM\n");
-  }
-  if (status2 == GSL_EMAXITER) {
-    printf("2: GSL_EMAXITER\n");
-  } else if (status2 == GSL_EROUND) {
-    printf("2: GSL_EROUND\n");
-  } else if (status2 == GSL_ESING) {
-    printf("2: GSL_ESING\n");
-  } else if (status2 == GSL_EDIVERGE) {
-    printf("2: GSL_EDIVERGE\n");
-  } else if (status2 == GSL_EDOM) {
-    printf("2: GSL_EDOM\n");
-  }
-#endif
-
   // Make sure we aren't setting a null-pointer.
   if (error != NULL) {
     *error = sqrt(err1 * err1 + err2 * err2);
   }
 
-  return res1 + res2;
+  return res1 + res2 + large;
 }
 
 // end kappadotchi
 
 
 double myfunc(struct thermo* pth, struct background * pba, double z){
+
+  double val = thermal_scattering_rate(pba->T_idr*(1.+z), &model, &error) * 1/(1.+z);
+  // printf("T = %f, tsr = %.16f,\n",pba->T_idr*(1.+z), val);
+  if(val < 0){
+    printf("Negative rate at T = %f, z = %f",pba->T_idr*(1.+z), z);
+  }
+  return val;
   
-  double val = 0.;
+  // double val = 0.;
+  // val = pth->a_idm_dr * (pth->g1*(pow(pth->z4*pth->myrho,2)) / (pow((pow(z,2) - pow(pth->z4,2)),2) + pow(pth->z4*pth->myrho,2)) + 1.);
+
+  // return val;
+
+
+
+
 
   // g1 height
   // rho width
@@ -326,11 +323,6 @@ double myfunc(struct thermo* pth, struct background * pba, double z){
   //   return 1.e-2 * (7.e11*(pow(1.e6*31.456,2)) / (pow((pow(z,2) - pow(1.e6,2)),2) + pow(1.e6*31.456,2)) + 1.);
   // }
   
-  val = pth->a_idm_dr * (pth->g1*(pow(pth->z4*pth->myrho,2)) / (pow((pow(z,2) - pow(pth->z4,2)),2) + pow(pth->z4*pth->myrho,2)) + 1.);
-
-  return val;
-
-
 
   // if(z >= pth->z2){
   //   // return fabs(pow((z/pth->z1),log10(pth->g1/pth->g2)/log10(pth->z1/pth->z2)) * pth->g1);
@@ -360,8 +352,6 @@ double myfunc(struct thermo* pth, struct background * pba, double z){
 }
 
 
-
-
 int thermodynamics_at_z(
                         struct background * pba,
                         struct thermo * pth,
@@ -371,6 +361,9 @@ int thermodynamics_at_z(
                         double * pvecback,
                         double * pvecthermo
                         ) {
+
+// double val = thermal_scattering_rate(1.e6, &model, WS_SIZE, &error);
+// printf("{%f, %.16f},\n", 1.e6, val);
 
   /** Summary: */
 

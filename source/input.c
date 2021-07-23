@@ -949,7 +949,7 @@ int input_read_parameters(
   }
 
   pba->Omega0_idr = stat_f_idr*pow(pba->T_idr/pba->T_cmb,4.)*pba->Omega0_g;
-  printf("stat_f_idr = %f, T_idr = %f, T_CMB = %f, Omega0_g = %f", stat_f_idr, pba->T_idr, pba->T_cmb, pba->Omega0_g);
+  // printf("stat_f_idr = %f, T_idr = %f, T_CMB = %f, Omega0_g = %f", stat_f_idr, pba->T_idr, pba->T_cmb, pba->Omega0_g);
 
   Omega_tot += pba->Omega0_idr;
 

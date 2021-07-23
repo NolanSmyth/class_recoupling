@@ -33,13 +33,13 @@ AR        = ar rv
 PYTHON ?= python
 
 # your optimization flag
-# OPTFLAG = -O0 -g #-march=native
-OPTFLAG = -O4 -ffast-math #-march=native
+OPTFLAG = -O0 -g #-march=native
+# OPTFLAG = -O4 -ffast-math #-march=native
 #OPTFLAG = -Ofast -ffast-math #-march=native
 #OPTFLAG = -fast
 
 # your openmp flag (comment for compiling without openmp)
-OMPFLAG   = -fopenmp
+OMPFLAG   = -fopenmp -lpthread
 #OMPFLAG   = -mp -mp=nonuma -mp=allcores -g
 # OMPFLAG   = -openmp
 
@@ -48,6 +48,7 @@ CCFLAG = -g -fPIC
 LDFLAG = -g -fPIC 
 
 LFLAGS = -L/usr/lib -lgsl -lgslcblas -lm -L/usr/local/Cellar/gsl/2.6/lib 
+# -L/usr/local/lib 
 
 # leave blank to compile without HyRec, or put path to HyRec directory
 # (with no slash at the end: e.g. hyrec or ../hyrec)
