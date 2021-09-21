@@ -685,6 +685,12 @@ int input_read_parameters(
 
   double myrho;
 
+  double rec_case;
+  double T_rec;
+  double nu_rec;
+  double A_rec;
+
+
 
 
   double z_max=0.;
@@ -916,6 +922,12 @@ int input_read_parameters(
 
   class_read_double("myrho", pth->myrho)
 
+  class_read_double("rec_case", pth->rec_case)
+  class_read_double("T_rec", pth->T_rec)
+  class_read_double("nu_rec", pth->nu_rec)
+  class_read_double("A_rec", pth->A_rec)
+  class_read_double("C_rec", pth->C_rec)
+  
 
   class_read_double("stat_f_idr",stat_f_idr);
 

@@ -3026,7 +3026,7 @@ int perturb_solve(
       generic_evolver = evolver_ndf15;
     }
   
-    printf("interval lim: %f \n",interval_limit[index_interval]);
+    // printf("interval lim: %f \n",interval_limit[index_interval]);
     // singular matrix here at tau = 364.436828 
 
     class_call(generic_evolver(perturb_derivs,
@@ -8437,7 +8437,9 @@ int perturb_derivs(double tau,
   if((pba->has_idm_dr==_TRUE_)){
     Sinv = 4./3. * pvecback[pba->index_bg_rho_idr]/ pvecback[pba->index_bg_rho_idm_dr];
     // dmu_idm_dr = pvecthermo[pth->index_th_dmu_idm_dr];
-    dmu_idm_dr = myfunc(pth, pba, 1./ppw->pvecback[pba->index_bg_a]-1)*pow((1.+(1./ppw->pvecback[pba->index_bg_a]-1))/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2);
+    // dmu_idm_dr = myfunc(pth, pba, 1./ppw->pvecback[pba->index_bg_a]-1)*pow((1.+(1./ppw->pvecback[pba->index_bg_a]-1))/1.e7,pth->nindex_idm_dr)*pba->Omega0_idm_dr*pow(pba->h,2);
+    // dmu_idm_dr = myfunc(pth, pba, 1./ppw->pvecback[pba->index_bg_a]-1);
+    dmu_idm_dr = myfunc(pth,pba,1./ppw->pvecback[pba->index_bg_a]-1) * 3/4 * pba->Omega0_idm_dr / pba->Omega0_idr * ppw->pvecback[pba->index_bg_a];
     dmu_idr = pth->b_idr/pth->a_idm_dr*pba->Omega0_idr/pba->Omega0_idm_dr*dmu_idm_dr;
   }
 
