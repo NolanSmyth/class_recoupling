@@ -5885,22 +5885,38 @@ int perturb_approximations(
 
     }
 
+    double dmu_idm_dr = myfunc(pth,pba,1./ppw->pvecback[pba->index_bg_a]-1);
+
     if(pba->has_idm_dr == _TRUE_){
 
-      if(ppw->pvecthermo[pth->index_th_dmu_idm_dr] == 0.){
+      // if(ppw->pvecthermo[pth->index_th_dmu_idm_dr] == 0.){
+      //   ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_off;
+      // }
+      if(dmu_idm_dr == 0.){
         ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_off;
       }
       else{
 
-        class_test(1./ppw->pvecthermo[pth->index_th_dmu_idm_dr] < 0.,
+        // class_test(1./ppw->pvecthermo[pth->index_th_dmu_idm_dr] < 0.,
+        //            ppt->error_message,
+        //            "negative tau_idm_dr=1/dmu_idm_dr=%e at z=%e, conformal time=%e.\n",
+        //            1./ppw->pvecthermo[pth->index_th_dmu_idm_dr],
+        //            1./ppw->pvecback[pba->index_bg_a]-1.,
+        //            tau);
+        class_test(1./dmu_idm_dr < 0.,
                    ppt->error_message,
                    "negative tau_idm_dr=1/dmu_idm_dr=%e at z=%e, conformal time=%e.\n",
-                   1./ppw->pvecthermo[pth->index_th_dmu_idm_dr],
+                   1./dmu_idm_dr,
                    1./ppw->pvecback[pba->index_bg_a]-1.,
                    tau);
 
-        if ((1./tau_h/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_h) &&
-            (1./tau_k/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_k) &&
+        // if ((1./tau_h/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_h) &&
+        //     (1./tau_k/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_k) &&
+        //     (pth->nindex_idm_dr>=2) && (ppt->idr_nature == idr_free_streaming)) {
+        //   ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_on;
+        // }
+        if ((1./tau_h/dmu_idm_dr < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_h) &&
+            (1./tau_k/dmu_idm_dr < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_k) &&
             (pth->nindex_idm_dr>=2) && (ppt->idr_nature == idr_free_streaming)) {
           ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_on;
         }

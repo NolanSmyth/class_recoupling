@@ -114,7 +114,7 @@ double myfunc(struct thermo* pth, struct background * pba, double z){
 
 // Power law
   if (pth->rec_case == 1) { 
-    my_dmu_idm_dr = base_rate + pth->C_rec * pow((pba->T_idr * (1. + z) - pth->T_rec), pth->nu_rec);
+    my_dmu_idm_dr = base_rate + pth->C_rec * pow(abs(pba->T_idr * (1. + z) - pth->T_rec), pth->nu_rec);
     }
 
 // Theta Function
@@ -136,6 +136,10 @@ double myfunc(struct thermo* pth, struct background * pba, double z){
     printf("Negative rate at T = %f, z = %f", pba->T_idr * (1. + z), z);
   }
 
+// Cap the upper value to avoid divergences
+  if (my_dmu_idm_dr >= 1.0e5) {
+    return 1.0e5;
+  }
   return my_dmu_idm_dr;
 
 }

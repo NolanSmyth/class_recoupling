@@ -87,7 +87,7 @@ class_string_parameter(sBBN_file,"/bbn/sBBN_2017.dat","sBBN file")
 /**
  * The initial z for the recfast calculation of the recombination history, e.g. 10^4
  */
-class_precision_parameter(recfast_z_initial,double,1.0e4)
+class_precision_parameter(recfast_z_initial,double,1.0e5)
 /**
  * Number of recfast integration steps, e.g. if this is 1.10^4 and the previous one is 10^4, the step will be Delta z = 0.5
  */
@@ -111,10 +111,10 @@ class_precision_parameter(recfast_Nz0,int,20000)
  * Delta z = (thermo_z_initial_idm_dr-recfast_z_initial)/thermo_Nz1_idm_dr/thermo_Nz1_idm_dr.
  * For instance, if the three values are (10^9, 10^4, 10^2), then the intermediate timestep is Delta z simeq 10^3
 */
-class_precision_parameter(thermo_z_initial_idm_dr,double,1.0e9)
+class_precision_parameter(thermo_z_initial_idm_dr,double,1.0e8)
 // class_precision_parameter(thermo_Nz1_idm_dr,int,10000)
 // class_precision_parameter(thermo_Nz1_idm_dr,int,10000000)
-class_precision_parameter(thermo_Nz1_idm_dr,int,100000)
+class_precision_parameter(thermo_Nz1_idm_dr,int,1000000)
 class_precision_parameter(thermo_Nz2_idm_dr,int,100)
 /**
  * Tolerance of the relative value of integral during thermodynamical integration
