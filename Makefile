@@ -33,13 +33,13 @@ AR        = ar rv
 PYTHON ?= python
 
 # your optimization flag
-OPTFLAG = -O0 -g #-march=native
-# OPTFLAG = -O4 -ffast-math #-march=native
+# OPTFLAG = -O0 -g #-march=native
+OPTFLAG = -O4 -ffast-math #-march=native
 #OPTFLAG = -Ofast -ffast-math #-march=native
 #OPTFLAG = -fast
 
 # your openmp flag (comment for compiling without openmp)
-OMPFLAG   = -fopenmp -lpthread
+OMPFLAG   = -fopenmp 
 #OMPFLAG   = -mp -mp=nonuma -mp=allcores -g
 # OMPFLAG   = -openmp
 
@@ -47,7 +47,7 @@ OMPFLAG   = -fopenmp -lpthread
 CCFLAG = -g -fPIC 
 LDFLAG = -g -fPIC 
 
-LFLAGS = -L/usr/lib -lgsl -lgslcblas -lm -L/usr/local/Cellar/gsl/2.6/lib 
+LFLAGS = -L/usr/lib -lgsl -lgslcblas -lm -L/usr/local/Cellar/gsl/2.6/lib -lpthread
 # -L/usr/local/lib 
 
 # leave blank to compile without HyRec, or put path to HyRec directory
@@ -175,6 +175,7 @@ test_hyperspherical: $(TOOLS) $(TEST_HYPERSPHERICAL)
 
 test_scattering_rate: $(TOOLS) $(TEST_SCATTERING_RATE) $(SOURCE) $(EXTERNAL) $(OUTPUT)
 	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o test_scattering_rate $(addprefix build/,$(notdir $^)) $(LFLAGS)
+
 
 tar: $(C_ALL) $(C_TEST) $(H_ALL) $(PRE_ALL) $(INI_ALL) $(MISC_FILES) $(HYREC) $(PYTHON_FILES)
 	tar czvf class.tar.gz $(C_ALL) $(H_ALL) $(PRE_ALL) $(INI_ALL) $(MISC_FILES) $(HYREC) $(PYTHON_FILES)
