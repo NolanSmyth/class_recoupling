@@ -8,19 +8,19 @@
 //#include "helium.h"
 //#include "hydrogen.h"
 
-struct Model
-{
-  // Mass-splitting between DM and mediator: dm = mMed - m
-  double dm;
-  // Dark matter mass in units of the mass-splitting: r = m / dm
-  double r;
-  // Width of the mediator in units of the mass-splitting: w = width / dm
-  double w;
-  // Coupling constant between DM, DR and mediator
-  double g;
-};
+// struct Model
+// {
+//   // Mass-splitting between DM and mediator: dm = mMed - m
+//   double dm;
+//   // Dark matter mass in units of the mass-splitting: r = m / dm
+//   double r;
+//   // Width of the mediator in units of the mass-splitting: w = width / dm
+//   double w;
+//   // Coupling constant between DM, DR and mediator
+//   double g;
+// };
 
-double thermal_scattering_rate(double T, struct Model *model, double *error);
+// double thermal_scattering_rate(double T, struct Model *model, double *error);
 
 /**
  * List of possible recombination algorithms.
@@ -89,6 +89,11 @@ struct thermo
   // double zd2;
 
   // double z_recouple;
+
+  double dm;
+  double w;
+  double r;
+  double g;
 
   double z1;
 
