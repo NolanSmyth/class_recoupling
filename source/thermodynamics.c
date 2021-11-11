@@ -141,17 +141,17 @@ double bose_einstein_deriv(double p, double T)
 /**
  * Structure to hold the model parameters.
  */
-struct Model
-{
-  // Mass-splitting between DM and mediator: dm = mMed - m
-  double dm;
-  // Dark matter mass in units of the mass-splitting: r = m / dm
-  double r;
-  // Width of the mediator in units of the mass-splitting: w = width / dm
-  double w;
-  // Coupling constant between DM, DR and mediator
-  double g;
-};
+// struct Model
+// {
+//   // Mass-splitting between DM and mediator: dm = mMed - m
+//   double dm;
+//   // Dark matter mass in units of the mass-splitting: r = m / dm
+//   double r;
+//   // Width of the mediator in units of the mass-splitting: w = width / dm
+//   double w;
+//   // Coupling constant between DM, DR and mediator
+//   double g;
+// };
 
 struct Model model = {.dm = 1.0, .w = 1 / (2 * M_PI * 100.0), .r = 100.0, .g = 1.0};
 
