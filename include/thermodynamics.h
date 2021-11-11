@@ -20,7 +20,7 @@ struct Model
   double g;
 };
 
-// double thermal_scattering_rate(double T, struct Model *model, double *error);
+double thermal_scattering_rate(double T, struct Model *model, double *error);
 
 /**
  * List of possible recombination algorithms.
