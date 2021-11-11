@@ -123,6 +123,8 @@ TEST_THERMODYNAMICS = test_thermodynamics.o
 
 TEST_BACKGROUND = test_background.o
 
+TEST_SCATTERING_RATE = test_scattering_rate.o
+
 TEST_HYPERSPHERICAL = test_hyperspherical.o
 
 C_TOOLS =  $(addprefix tools/, $(addsuffix .c,$(basename $(TOOLS))))
@@ -171,6 +173,8 @@ test_background: $(TOOLS) $(SOURCE) $(EXTERNAL) $(TEST_BACKGROUND)
 test_hyperspherical: $(TOOLS) $(TEST_HYPERSPHERICAL)
 	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o test_hyperspherical $(addprefix build/,$(notdir $^)) $(LFLAGS)
 
+test_scattering_rate: $(TOOLS) $(TEST_SCATTERING_RATE) $(SOURCE) $(EXTERNAL) $(OUTPUT)
+	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o test_scattering_rate $(addprefix build/,$(notdir $^)) $(LFLAGS)
 
 tar: $(C_ALL) $(C_TEST) $(H_ALL) $(PRE_ALL) $(INI_ALL) $(MISC_FILES) $(HYREC) $(PYTHON_FILES)
 	tar czvf class.tar.gz $(C_ALL) $(H_ALL) $(PRE_ALL) $(INI_ALL) $(MISC_FILES) $(HYREC) $(PYTHON_FILES)
