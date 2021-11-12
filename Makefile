@@ -81,7 +81,7 @@ endif
 
 TOOLS = growTable.o dei_rkck.o sparse.o evolver_rkck.o  evolver_ndf15.o arrays.o parser.o quadrature.o hyperspherical.o common.o trigonometric_integrals.o
 
-SOURCE = input.o background.o thermodynamics.o perturbations.o primordial.o nonlinear.o transfer.o spectra.o lensing.o
+SOURCE = input.o background.o thermodynamics.o perturbations.o primordial.o nonlinear.o transfer.o spectra.o lensing.o ThermalScatteringCrossSection.o
 
 INPUT = input.o
 
@@ -104,6 +104,8 @@ NONLINEAR = nonlinear.o
 LENSING = lensing.o
 
 OUTPUT = output.o
+
+THERMALSCATTERING = ThermalScatteringCrossSection.o
 
 CLASS = class.o
 

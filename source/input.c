@@ -692,6 +692,11 @@ int input_read_parameters(
   // double zd2;
   // double z_recouple;
 
+  double dm;
+  double r;
+  double g;
+  double lam;
+
   double z1;
   double z2;
   double z3;
@@ -939,15 +944,13 @@ int input_read_parameters(
 
   class_read_double("dm", pth->dm)
       class_read_double("r", pth->r)
-          class_read_double("w", pth->w)
-              class_read_double("g", pth->g)
-
+          class_read_double("g", pth->g)
+              class_read_double("lam", pth->lam)
                   class_read_double("z1", pth->z1)
                       class_read_double("z2", pth->z2)
                           class_read_double("z3", pth->z3)
                               class_read_double("z4", pth->z4)
                                   class_read_double("z5", pth->z5)
-
                                       class_read_double("g1", pth->g1)
                                           class_read_double("g2", pth->g2)
                                               class_read_double("g3", pth->g3)

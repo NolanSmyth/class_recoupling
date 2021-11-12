@@ -246,7 +246,7 @@ void thermal_scattering_rate_components(double T, struct Model *model,
   // Extract model parameters
   const double r = model->r;
   const double g = model->g;
-  const double dm = model->dm; //only unitful quantity
+  const double dm = model->dm;
   const double lam = model->lam;
   const double d = dm / T;
   const double x = r * d;

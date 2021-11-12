@@ -1,0 +1,21 @@
+TARGET = test1
+CC = gcc
+CFLAGS = -std=c99 -Wall -O2
+LINKER = gcc
+LFLAGS = -L/usr/lib -lgsl -lgslcblas -lm -lpthread
+
+SRCDIR = .
+OBJDIR = .
+BINDIR = .
+
+SOURCES = ThermalScatteringCrossSection.c ThermalScatteringCrossSectionTest.c 
+OBJECTS = ThermalScatteringCrossSection.o ThermalScatteringCrossSectionTest.o
+
+test1: $(OBJECTS)
+	@$(LINKER) $(OBJECTS) $(LFLAGS) -o $@
+	@echo "Linking complete"
+
+$(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.c
+	@$(CC) $(CFLAGS) -c $< -o $@
+	@echo "Compiled "$<"."
+
