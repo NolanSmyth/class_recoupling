@@ -107,9 +107,10 @@
 
 double myfunc(struct thermo *pth, struct background *pba, double z)
 {
-  struct Model model = {.dm = pth->dm, .r = pth->r, .g = pth->g, .lam = pth->lam};
-  //dm has to be in same units as T_idr (kelvin)
-  double val = thermal_scattering_rate(pba->T_idr * (1. + z), &model, NULL) * 1 / (1. + z);
+  //dm has to be in same units as T_idr GeV->Kelvin
+  struct Model model = {.dm = pth->dm * 1.16e13, .r = pth->r, .g = pth->g, .lam = pth->lam};
+  //Comoving scatterin rate
+  double val = thermal_scattering_rate(pba->T_idr * (1. + z), &model, NULL) * (1. + z);
   // printf("T = %f, tsr = %.16f,\n",pba->T_idr*(1.+z), val);
   if (val < 0)
   {
