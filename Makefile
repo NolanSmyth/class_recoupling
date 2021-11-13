@@ -47,7 +47,7 @@ OMPFLAG   = -fopenmp
 CCFLAG = -g -fPIC 
 LDFLAG = -g -fPIC 
 
-LFLAGS = -L/usr/lib -lgsl -lgslcblas -lm -L/usr/local/Cellar/gsl/2.6/lib -lpthread
+LFLAGS = -L/usr/lib -lgsl -lgslcblas -lm -L/usr/local/Cellar/gsl/2.6/lib -lpthread -L$(MDIR)/scattering/code/build -ltsr 
 # -L/usr/local/lib 
 
 # leave blank to compile without HyRec, or put path to HyRec directory
@@ -62,7 +62,7 @@ HYREC = hyrec
 CCFLAG += -D__CLASSDIR__='"$(MDIR)"'
 
 # where to find include files *.h
-INCLUDES = -I../include -I/usr/local/Cellar/gsl/2.6/include
+INCLUDES = -I../include -I/usr/local/Cellar/gsl/2.6/include -I$(MDIR)/scattering/code/include 
 
 # automatically add external programs if needed. First, initialize to blank.
 EXTERNAL =
@@ -81,7 +81,7 @@ endif
 
 TOOLS = growTable.o dei_rkck.o sparse.o evolver_rkck.o  evolver_ndf15.o arrays.o parser.o quadrature.o hyperspherical.o common.o trigonometric_integrals.o
 
-SOURCE = input.o background.o thermodynamics.o perturbations.o primordial.o nonlinear.o transfer.o spectra.o lensing.o ThermalScatteringCrossSection.o
+SOURCE = input.o background.o thermodynamics.o perturbations.o primordial.o nonlinear.o transfer.o spectra.o lensing.o 
 
 INPUT = input.o
 
@@ -104,8 +104,6 @@ NONLINEAR = nonlinear.o
 LENSING = lensing.o
 
 OUTPUT = output.o
-
-THERMALSCATTERING = ThermalScatteringCrossSection.o
 
 CLASS = class.o
 
@@ -145,8 +143,9 @@ all: class libclass.a classy
 libclass.a: $(TOOLS) $(SOURCE) $(EXTERNAL)
 	$(AR)  $@ $(addprefix build/, $(TOOLS) $(SOURCE) $(EXTERNAL))
 
-class: $(TOOLS) $(SOURCE) $(EXTERNAL) $(OUTPUT) $(CLASS)
-	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o class $(addprefix build/,$(notdir $^)) $(LFLAGS)
+class: $(TOOLS) $(SOURCE) $(EXTERNAL) $(OUTPUT) $(CLASS) 
+	echo "$(MDIR)/scattering/code/build"
+	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o class $(addprefix build/,$(notdir $^)) $(LFLAGS) 
 
 test_loops: $(TOOLS) $(SOURCE) $(EXTERNAL) $(OUTPUT) $(TEST_LOOPS)
 	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o $@ $(addprefix build/,$(notdir $^)) $(LFLAGS)

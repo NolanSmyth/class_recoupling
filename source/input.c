@@ -942,24 +942,24 @@ int input_read_parameters(
   // class_read_double("zd2", pth->zd2)
   // class_read_double("z_recouple", pth->z_recouple)
 
-  class_read_double("dm", pth->dm)
-      class_read_double("r", pth->r)
-          class_read_double("g", pth->g)
-              class_read_double("lam", pth->lam)
-                  class_read_double("z1", pth->z1)
-                      class_read_double("z2", pth->z2)
-                          class_read_double("z3", pth->z3)
-                              class_read_double("z4", pth->z4)
-                                  class_read_double("z5", pth->z5)
-                                      class_read_double("g1", pth->g1)
-                                          class_read_double("g2", pth->g2)
-                                              class_read_double("g3", pth->g3)
-                                                  class_read_double("g4", pth->g4)
-                                                      class_read_double("g5", pth->g5)
+  class_read_double("dm", pth->dm);
+  class_read_double("r", pth->r);
+  class_read_double("g", pth->g);
+  class_read_double("lam", pth->lam);
+  class_read_double("z1", pth->z1);
+  class_read_double("z2", pth->z2);
+  class_read_double("z3", pth->z3);
+  class_read_double("z4", pth->z4);
+  class_read_double("z5", pth->z5);
+  class_read_double("g1", pth->g1);
+  class_read_double("g2", pth->g2);
+  class_read_double("g3", pth->g3);
+  class_read_double("g4", pth->g4);
+  class_read_double("g5", pth->g5);
 
-                                                          class_read_double("myrho", pth->myrho)
+  class_read_double("myrho", pth->myrho);
 
-                                                              class_read_double("stat_f_idr", stat_f_idr);
+  class_read_double("stat_f_idr", stat_f_idr);
 
   class_call(parser_read_double(pfc, "N_idr", &param1, &flag1, errmsg),
              errmsg,
