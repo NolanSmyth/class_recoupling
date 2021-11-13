@@ -17,7 +17,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
 set(TSR_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/ThermalScatteringRate.cpp)
 set(TSRLIB tsr)
 
-add_library(${TSRLIB} ${TSR_SOURCES})
+add_library(${TSRLIB} SHARED ${TSR_SOURCES})
 target_link_libraries(${TSRLIB} PRIVATE GSL::gsl GSL::gslcblas)
 target_include_directories(${TSRLIB}
                            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
