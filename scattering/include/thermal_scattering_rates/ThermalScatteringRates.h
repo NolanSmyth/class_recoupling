@@ -1,11 +1,11 @@
-#ifndef THERMAL_SCATTERING_RATE_H
-#define THERMAL_SCATTERING_RATE_H
+#ifndef THERMAL_SCATTERING_RATES_H
+#define THERMAL_SCATTERING_RATES_H
 
 #include <cmath>
 
-static constexpr auto sqr(double x) -> double { return x * x; }
+namespace thermal_scattering_rates {
 
-class Model {
+class ModelMMS {
 
 private:
   static double scalar_width(double g, double r) {
@@ -14,7 +14,7 @@ private:
   static auto thermal_scattering_rate_prefactor(double delta, double r,
                                                 double g, double lam)
       -> double {
-    return sqr(g) * lam / (96 * pow(M_PI * delta * r, 3));
+    return g * g * lam / (96 * pow(M_PI * delta * r, 3));
   }
 
   [[nodiscard]] auto msqrd_ss_tavg(double) const -> double;
@@ -39,7 +39,7 @@ private:
   double p_switch_factor = 5.0;
 
 public:
-  Model(double delta, double r, double g, double lam)
+  ModelMMS(double delta, double r, double g, double lam)
       : p_delta(delta), p_r(r), p_g(g), p_lam(lam), p_w(scalar_width(g, r)),
         p_pre(thermal_scattering_rate_prefactor(delta, r, g, lam)) {}
 
@@ -107,4 +107,6 @@ public:
   [[nodiscard]] auto thermal_scattering_rate(double) const -> double;
 };
 
-#endif // THERMAL_SCATTERING_RATE_H
+} // namespace thermal_scattering_rates
+
+#endif // THERMAL_SCATTERING_RATES_H

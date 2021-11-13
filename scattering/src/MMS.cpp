@@ -2,37 +2,21 @@
 // for a model with a Majorana DM fermion, a Majorana DR fermion and a scalar
 // mediator. The interaction term looks like: L > g_{ij} * \xi_i \xi_j S + h.c.
 
-#include "thermal_scattering_rates/ThermalScatteringRate.h"
+#include "Tools.h"
+
 #include "thermal_scattering_rates/Interface.h"
+#include "thermal_scattering_rates/ThermalScatteringRates.h"
+
 #include <boost/math/quadrature/gauss_kronrod.hpp>
 #include <gsl/gsl_sf_dilog.h>
 
-// ===========================================================================
-// ---- Tools ----------------------------------------------------------------
-// ===========================================================================
-
-/**
- * Compute the derivative of the Fermi-Dirac distribution w.r.t. momentum.
- *
- * @param p The momentum of the dark-radiation
- * @param T The temperature of the equilibrium bath
- */
-double fermi_dirac_der(double p, double T) {
-  const double e = exp(-p / T);
-  return (-1.0 / T) * e / pow(1.0 + e, 2);
+auto thermal_scattering_rate_mms(double T, double delta, double r, double g,
+                                 double lam) -> double {
+  const thermal_scattering_rates::ModelMMS model{delta, r, g, lam};
+  return model.thermal_scattering_rate(T);
 }
 
-/**
- * Compute the derivative of the Bose-Einstein distribution w.r.t. momentum with
- * factor of 1/2T removed.
- *
- * @param p The momentum of the dark-radiation
- * @param T The temperature of the equilibrium bath
- */
-double bose_einstein_deriv(double p, double T) {
-  const double e = exp(-p / T);
-  return (-1.0 / T) * e / pow(1.0 - e, 2);
-}
+namespace thermal_scattering_rates {
 
 // ===========================================================================
 // ---- t-Averaged Squared Matrix Elements -----------------------------------
@@ -47,7 +31,7 @@ double bose_einstein_deriv(double p, double T) {
 //  kcm2 = (s-(mA+mB)^2) * (s-(mA-mB)^2) / (2s)
 
 // S-channel only contribution to <|M|^2>
-auto Model::msqrd_ss_tavg(double q) const -> double {
+auto ModelMMS::msqrd_ss_tavg(double q) const -> double {
   const double r = p_r;
   const double w = p_w;
   const double d = p_delta;
@@ -64,7 +48,7 @@ auto Model::msqrd_ss_tavg(double q) const -> double {
 }
 
 // U-channel only contribution to <|M|^2>
-auto Model::msqrd_uu_tavg(double q) const -> double {
+auto ModelMMS::msqrd_uu_tavg(double q) const -> double {
   const double r = p_r;
   const double d = p_delta;
 
@@ -83,7 +67,7 @@ auto Model::msqrd_uu_tavg(double q) const -> double {
 }
 
 // s-u interference contribution to <|M|^2>
-auto Model::msqrd_su_tavg(double q) const -> double {
+auto ModelMMS::msqrd_su_tavg(double q) const -> double {
   const double r = p_r;
   const double w = p_w;
   const double d = p_delta;
@@ -103,7 +87,7 @@ auto Model::msqrd_su_tavg(double q) const -> double {
   return num / den;
 }
 
-auto Model::msqrd_tavg(double q) const -> double {
+auto ModelMMS::msqrd_tavg(double q) const -> double {
   return msqrd_ss_tavg(q) + msqrd_uu_tavg(q) + msqrd_su_tavg(q);
 }
 
@@ -111,7 +95,7 @@ auto Model::msqrd_tavg(double q) const -> double {
 // ---- Thermal Scattering Rate ----------------------------------------------
 // ===========================================================================
 
-auto Model::thermal_scattering_rate_integrand(double q, double T) const
+auto ModelMMS::thermal_scattering_rate_integrand(double q, double T) const
     -> double {
   const double msqrd = msqrd_tavg(q);
   const double ker = fermi_dirac_der(q * p_delta, T);
@@ -119,7 +103,7 @@ auto Model::thermal_scattering_rate_integrand(double q, double T) const
 }
 
 // Perform integration from 0 to peak
-auto Model::thermal_scattering_rate_small_q(double T) const -> double {
+auto ModelMMS::thermal_scattering_rate_small_q(double T) const -> double {
   using boost::math::quadrature::gauss_kronrod;
 
   const double breakpt_peak = p_delta * (1.0 + pow(p_w / 2.0, 2));
@@ -133,7 +117,7 @@ auto Model::thermal_scattering_rate_small_q(double T) const -> double {
 }
 
 // Perform integral from peak to a cut-off for large r
-auto Model::thermal_scattering_rate_mid_q(double T) const -> double {
+auto ModelMMS::thermal_scattering_rate_mid_q(double T) const -> double {
   using boost::math::quadrature::gauss_kronrod;
 
   const double breakpt_peak = p_delta * (1.0 + pow(p_w / 2.0, 2));
@@ -147,7 +131,7 @@ auto Model::thermal_scattering_rate_mid_q(double T) const -> double {
 }
 
 // Contribution to thermal-scattering-rate valid for q >> r
-auto Model::thermal_scattering_rate_large_q(double T) const -> double {
+auto ModelMMS::thermal_scattering_rate_large_q(double T) const -> double {
   const double r = p_r;
   const double g = p_g;
   const double delta = p_delta;
@@ -162,20 +146,15 @@ auto Model::thermal_scattering_rate_large_q(double T) const -> double {
 }
 
 // Contribution to thermal-scattering-rate from the resonance.
-auto Model::thermal_scattering_rate_resonant(double T) const -> double {
+auto ModelMMS::thermal_scattering_rate_resonant(double T) const -> double {
   const double dt = p_delta / T;
   return 1 / (48.0 * M_PI) * (p_lam * p_delta / sqr(p_r)) * dt /
          (cosh(dt) + 1.0);
 }
 
-auto Model::thermal_scattering_rate(double T) const -> double {
+auto ModelMMS::thermal_scattering_rate(double T) const -> double {
   return thermal_scattering_rate_small_q(T) + thermal_scattering_rate_mid_q(T) +
          thermal_scattering_rate_large_q(T) +
          thermal_scattering_rate_resonant(T);
 }
-
-auto thermal_scattering_rate(double T, double delta, double r, double g,
-                             double lam) -> double {
-  const Model model{delta, r, g, lam};
-  return model.thermal_scattering_rate(T);
-}
+} // namespace thermal_scattering_rates

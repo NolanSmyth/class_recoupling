@@ -2,15 +2,16 @@
 // for a model with a Majorana DM fermion, a Majorana DR fermion and a scalar
 // mediator. The interaction term looks like: L > g_{ij} * \xi_i \xi_j S + h.c.
 
-#include "thermal_scattering_rates/ThermalScatteringRate.h"
+#include "thermal_scattering_rates/ThermalScatteringRates.h"
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
 namespace py = pybind11;
+namespace tsr = thermal_scattering_rates;
 
-auto add_ctor(py::class_<Model> *model) -> void {
+auto add_ctor(py::class_<tsr::ModelMMS> *model) -> void {
   static std::string doc = R"Doc(
-Create a new `Model` object representing a model with Majorana DM, Majorana DR
+Create a new `tsr::ModelMMS` object representing a model with Majorana DM, Majorana DR
 and N scalars mediating their interaction.
 
 Parameters
@@ -29,28 +30,29 @@ lam: float
              py::arg("delta"), py::arg("r"), py::arg("g"), py::arg("lam"));
 }
 
-auto add_properties(py::class_<Model> *model) -> void {
+auto add_properties(py::class_<tsr::ModelMMS> *model) -> void {
   model->def_property(
-      "delta", [](const Model &mod) { return mod.delta(); },
-      [](Model &mod, double val) { mod.delta(val); },
+      "delta", [](const tsr::ModelMMS &mod) { return mod.delta(); },
+      [](tsr::ModelMMS &mod, double val) { mod.delta(val); },
       "Mass splitting between DM and scalar mediator.");
   model->def_property(
-      "r", [](const Model &mod) { return mod.r(); },
-      [](Model &mod, double val) { mod.r(val); },
+      "r", [](const tsr::ModelMMS &mod) { return mod.r(); },
+      [](tsr::ModelMMS &mod, double val) { mod.r(val); },
       "Ratio of DM mass to mass splitting: r = (DM-mass) / (mass-splitting).");
   model->def_property_readonly(
-      "w", [](const Model &mod) { return mod.w(); },
+      "w", [](const tsr::ModelMMS &mod) { return mod.w(); },
       "Scalar width scaled by mass-splitting: w = Gamma / (mass-splitting).");
   model->def_property(
-      "g", [](const Model &mod) { return mod.g(); },
-      [](Model &mod, double val) { mod.g(val); }, "Scalar-DR-DM coupling.");
+      "g", [](const tsr::ModelMMS &mod) { return mod.g(); },
+      [](tsr::ModelMMS &mod, double val) { mod.g(val); },
+      "Scalar-DR-DM coupling.");
   model->def_property(
-      "lam", [](const Model &mod) { return mod.lam(); },
-      [](Model &mod, double val) { mod.lam(val); },
+      "lam", [](const tsr::ModelMMS &mod) { return mod.lam(); },
+      [](tsr::ModelMMS &mod, double val) { mod.lam(val); },
       "Number of scalars times the coupling squared: lam = g^2 * N. ");
 }
 
-auto add_tsr(py::class_<Model> *model) -> void {
+auto add_tsr(py::class_<tsr::ModelMMS> *model) -> void {
   static std::string doc = R"Doc(
 Compute the thermal dark-matter/dark-radiation scattering rate.
 
@@ -78,11 +80,11 @@ tsr: array-like
   Thermal DM/DR scattering rate.
 )Doc";
 
-  model->def("thermal_scattering_rate", &Model::thermal_scattering_rate,
+  model->def("thermal_scattering_rate", &tsr::ModelMMS::thermal_scattering_rate,
              doc.c_str(), py::arg("T"));
   model->def(
       "thermal_scattering_rate",
-      [](const Model &model, py::array_t<double> Ts) {
+      [](const tsr::ModelMMS &model, py::array_t<double> Ts) {
         py::buffer_info buf = Ts.request();
         auto result = py::array_t<double>(buf.size);
         py::buffer_info buf_res = result.request();
@@ -98,7 +100,7 @@ tsr: array-like
       doc_vec.c_str(), py::arg("Ts"));
 }
 
-auto add_tsr_integrand(py::class_<Model> *model) -> void {
+auto add_tsr_integrand(py::class_<tsr::ModelMMS> *model) -> void {
   static std::string doc = R"Doc(
 Compute the integrand of the thermal dark-matter/dark-radiation scattering
 rate.
@@ -118,11 +120,11 @@ tsr_integrand: float
 )Doc";
 
   model->def("thermal_scattering_rate_integrand",
-             &Model::thermal_scattering_rate_integrand, doc.c_str(),
+             &tsr::ModelMMS::thermal_scattering_rate_integrand, doc.c_str(),
              py::arg("q"), py::arg("T"));
 }
 
-auto add_msqrd(py::class_<Model> *model) -> void {
+auto add_msqrd(py::class_<tsr::ModelMMS> *model) -> void {
   static std::string doc = R"Doc(
 Compute the t-averaged squared matrix element for DM + DR -> DM + DR.
 rate.
@@ -139,12 +141,13 @@ msqrd: float
   t-averaged squared matrix element.
 )Doc";
 
-  model->def("msqrd_tavg", &Model::msqrd_tavg, doc.c_str(), py::arg("q"));
+  model->def("msqrd_tavg", &tsr::ModelMMS::msqrd_tavg, doc.c_str(),
+             py::arg("q"));
 }
 
 PYBIND11_MODULE(ts_rates, m) { // NOLINT
 
-  auto mod = py::class_<Model>(m, "Model");
+  auto mod = py::class_<tsr::ModelMMS>(m, "ModelMMS");
   add_ctor(&mod);
   add_properties(&mod);
   add_msqrd(&mod);
