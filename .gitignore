@@ -623,3 +623,4 @@ doc/manual/latex
 include/data.h
 cmake_build/
 _skbuild/
+class_main
