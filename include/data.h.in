@@ -1,0 +1,13 @@
+#ifndef CLASS_DATA_H
+#define CLASS_DATA_H
+
+// clang-format off
+#cmakedefine BBN_DATA_DIR "${BBN_DATA_DIR}"
+#cmakedefine HYREC_DATA_DIR "${HYREC_DATA_DIR}"
+
+#cmakedefine HYREC_ALPHA_INF_DAT "${HYREC_ALPHA_INF_DAT}"
+#cmakedefine HYREC_R_INF_DAT "${HYREC_R_INF_DAT}"
+#cmakedefine HYREC_TWO_PHOTON_TABLES_DAT "${HYREC_TWO_PHOTON_TABLES_DAT}"
+#cmakedefine BBN_SBBN_2017_DAT "${BBN_SBBN_2017_DAT}"
+
+#endif // CLASS_DATA_H

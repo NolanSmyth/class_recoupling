@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.4...3.18)
+cmake_minimum_required(VERSION 3.14...3.18)
 
 project(Class LANGUAGES C CXX)
 
@@ -16,11 +16,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
+
 find_package(Boost REQUIRED)
 find_package(Threads REQUIRED)
 find_package(GSL REQUIRED)
 
 find_package(Python COMPONENTS Interpreter Development)
+find_package(PythonExtensions REQUIRED)
+find_package(Cython REQUIRED)
 find_package(pybind11)
 
 set(TSR_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/scattering/src")
@@ -28,7 +31,7 @@ set(TSR_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/scattering/include")
 set(TSR_SOURCES "${TSR_SOURCE_DIR}/MMS.cpp" "${TSR_SOURCE_DIR}/Tools.cpp")
 set(TSRLIB tsr)
 
-add_library(${TSRLIB} SHARED ${TSR_SOURCES})
+add_library(${TSRLIB} STATIC ${TSR_SOURCES})
 target_link_libraries(
   ${TSRLIB} PRIVATE
   GSL::gsl
@@ -45,6 +48,12 @@ pybind11_add_module(
   ${TSR_SOURCE_DIR}/ThermalScatteringRatePy.cpp
 )
 target_link_libraries(ts_rates PRIVATE ${TSRLIB})
+set_target_properties(
+  ts_rates
+  PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/classy"
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/classy"
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/classy"
+)
 
 # ===================================================================
 # ---- Class --------------------------------------------------------
@@ -101,6 +110,16 @@ set(
 set(LIBCLASS class)
 set(LIBCLASS_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
+set(BBN_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/bbn")
+set(HYREC_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/hyrec")
+
+set(HYREC_ALPHA_INF_DAT "${HYREC_DATA_DIR}/Alpha_inf.dat")
+set(HYREC_R_INF_DAT "${HYREC_DATA_DIR}/R_inf.dat")
+set(HYREC_TWO_PHOTON_TABLES_DAT "${HYREC_DATA_DIR}/two_photon_tables.dat")
+set(BBN_SBBN_2017_DAT "${BBN_DATA_DIR}/sBBN_2017.dat")
+
+configure_file(${LIBCLASS_INCLUDE_DIR}/data.h.in ${LIBCLASS_INCLUDE_DIR}/data.h)
+
 add_library(
   ${LIBCLASS} STATIC
   ${TOOLS_SOURCES}
@@ -136,14 +155,41 @@ set_target_properties(
 # ===================================================================
 
 # set(CLASSY classy)
-# add_library(${CLASSY})
+# add_library(${CLASSY} ${})
 # add_custom_command(
 #   TARGET ${CLASSY} POST_BUILD
 #   COMMAND cp python/setup.py python/autosetup.py
-#   cd python; export CC=${CC}; $(PYTHON) autosetup.py install || $(PYTHON) autosetup.py install --user
-#   rm python/autosetup.py
+#   COMMAND cd python
+#   COMMAND export CC=${CC}
+#   COMMAND ${Python_Interpreter} autosetup.py install || ${Python_Interpreter} autosetup.py install --user
+#   COMMAND rm python/autosetup.py
+#   DEPENDS ${LIBCLASS}
 #   VERBATIM
 # )
+
+# add_custom_target(
+#   ReplicatePythonSourceTree ALL ${CMAKE_COMMAND} -P
+#   ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ReplicatePythonSourceTree.cmake
+#   ${CMAKE_CURRENT_BINARY_DIR}
+#   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+# )
+# include_directories(${CMAKE_CURRENT_SOURCE_DIR}/python)
+
+# cython_add_module(classy ${CMAKE_CURRENT_SOURCE_DIR}/python/cclassy.pyx)
+
+
+# set(CLASSY classy)
+# set(CLASSY_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/python/src")
+# set(CLASSY_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/python/include")
+
+
+# set(CLASSY_SOURCES "${CLASSY_SOURCE_DIR}/Init.cpp" "${CLASSY_SOURCE_DIR}/Tools.cpp")
+
+# pybind11_add_module(${CLASSY} ${CLASSY_SOURCES})
+# target_link_libraries(${CLASSY} PUBLIC ${LIBCLASS} GSL)
+# target_include_directories(${CLASSY} PRIVATE ${CLASSY_INCLUDE_DIR})
+
+add_subdirectory(classy)
 
 # ===================================================================
 # ---- Class Tests --------------------------------------------------
