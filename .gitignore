@@ -620,3 +620,6 @@ RealSpaceInterface/cache/
 .DS_Store
 doc/manual/html
 doc/manual/latex
+include/data.h
+cmake_build/
+_skbuild/
