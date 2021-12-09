@@ -1,0 +1,16 @@
+#!/bin/bash
+#SBATCH --job-name=class_recoupling
+#SBATCH --mail-user=nwsmyth@ucsc.edu
+#SBATCH --mail-type=ALL
+#SBATCH --output=test.out
+#SBATCH --partition=128x24 # Partition name
+#SBATCH --mem 5GB                 # limit to 5GB per sub-task
+#SBATCH -t 02:01:00  # Run Time (hh:mm:ss) - 2 hrs
+#SBATCH -N 1                    # limit number of nodes to 3 since array doesn't respect partition boundaries
+#SBATCH --ntasks=1                # we are only running this script once, the array takes care of how many tasks
+#SBATCH --array=0-899              # 0-N_runs**2 - 1
+
+source activate kinetic_recoupling
+echo "${SLURM_ARRAY_TASK_ID}"         # this will echo the task ID for each sub-task as it starts
+
+srun python class_runs.py $SLURM_ARRAY_TASK_ID

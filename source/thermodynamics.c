@@ -73,9 +73,6 @@
  */
 
 #include <float.h>
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_integration.h>
-#include <gsl/gsl_sf_dilog.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
