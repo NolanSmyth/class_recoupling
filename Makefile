@@ -17,7 +17,8 @@ vpath .base build
 ########################################################
 
 # your C compiler:
-CC       = gcc-10
+# CC       = gcc-10
+CC = gcc-11
 #CC       = icc
 #CC       = pgcc
 
@@ -35,11 +36,12 @@ PYTHON ?= python
 # your optimization flag
 # OPTFLAG = -O0 -g #-march=native
 OPTFLAG = -O4 -ffast-math #-march=native
+# OPTFLAG = -O4 -ffast-math -arch x86_64 #-march=native
 #OPTFLAG = -Ofast -ffast-math #-march=native
 #OPTFLAG = -fast
 
 # your openmp flag (comment for compiling without openmp)
-OMPFLAG   = -fopenmp 
+# OMPFLAG   = -fopenmp 
 #OMPFLAG   = -mp -mp=nonuma -mp=allcores -g
 # OMPFLAG   = -openmp
 
