@@ -685,26 +685,6 @@ int input_read_parameters(
   double PSR0, PSR1, PSR2, PSR3, PSR4;
   double HSR0, HSR1, HSR2, HSR3, HSR4;
 
-  // double z_scale;
-  // double z_cutoff;
-
-  // double zd1;
-  // double zd2;
-  // double z_recouple;
-
-  double z1;
-  double z2;
-  double z3;
-  double z4;
-  double z5;
-
-  double g1;
-  double g2;
-  double g3;
-  double g4;
-  double g5;
-
-  double myrho;
 
   double rec_case;
   double T_rec;

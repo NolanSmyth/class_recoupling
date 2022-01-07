@@ -243,7 +243,6 @@ int thermodynamics_at_z(
 
       pvecthermo[pth->index_th_dmu_idm_dr] = myfunc(pth, pba, z);
 
-      // Are these derivatives still correct?
       pvecthermo[pth->index_th_ddmu_idm_dr] = -pvecback[pba->index_bg_H] * pth->nindex_idm_dr / (1 + z) * pvecthermo[pth->index_th_dmu_idm_dr];
       pvecthermo[pth->index_th_dddmu_idm_dr] = (pvecback[pba->index_bg_H] * pvecback[pba->index_bg_H] / (1. + z) - pvecback[pba->index_bg_H_prime]) * pth->nindex_idm_dr / (1. + z) * pvecthermo[pth->index_th_dmu_idm_dr];
 
@@ -254,10 +253,6 @@ int thermodynamics_at_z(
       pvecthermo[pth->index_th_tau_idm_dr] = pth->thermodynamics_table[(pth->tt_size - 1) * pth->th_size + pth->index_th_tau_idm_dr] +
                                              (pth->thermodynamics_table[(pth->tt_size - 1) * pth->th_size + pth->index_th_tau_idm_dr] - pth->thermodynamics_table[(pth->tt_size - 2) * pth->th_size + pth->index_th_tau_idm_dr]) * (z - pth->z_table[pth->tt_size - 1]) / (pth->z_table[pth->tt_size - 1] - pth->z_table[pth->tt_size - 2]);
 
-      if (pvecthermo[pth->index_th_tau_idm_dr] < 0.)
-      {
-        printf("HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-      }
 
       pvecthermo[pth->index_th_tau_idr] = pth->thermodynamics_table[(pth->tt_size - 1) * pth->th_size + pth->index_th_tau_idr] +
                                           (pth->thermodynamics_table[(pth->tt_size - 1) * pth->th_size + pth->index_th_tau_idr] - pth->thermodynamics_table[(pth->tt_size - 2) * pth->th_size + pth->index_th_tau_idr]) * (z - pth->z_table[pth->tt_size - 1]) / (pth->z_table[pth->tt_size - 1] - pth->z_table[pth->tt_size - 2]);
@@ -937,14 +932,10 @@ int thermodynamics_init(
                pba->error_message,
                pth->error_message);
 
-    // NS: just edit Gamma_heat to breit wigner?
     // https://arxiv.org/pdf/1907.01496.pdf (3.7)
 
     Gamma_heat_idm_dr = myfunc(pth, pba, z) * 4 / 3 * pba->Omega0_idr / pba->Omega0_idm_dr * (1. + z);
 
-    // printf("%f, %f, %f, %f\n",z,Gamma_heat_idm_dr, Gamma_heat_idm_dr/(pvecback[pba->index_bg_H]), myfunc(pth, pba, z));
-
-    // printf("%f",pba->Omega0_idr);
 
     /* (A1) --> if Gamma is not much smaller than H, set T_idm_dr to T_idm_dr = T_idr = xi*T_gamma (tight coupling solution) */
     // if(Gamma_heat_idm_dr > 1.e-3 * pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H]){
@@ -960,8 +951,6 @@ int thermodynamics_init(
     else
     {
       T_idr = pba->T_idr * (1. + z);
-      // T_idm_dr = Gamma_heat_idm_dr/(pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H])
-      //   /(1. + Gamma_heat_idm_dr/(pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H]))*T_idr;
       T_idm_dr = Gamma_heat_idm_dr / (pvecback[pba->index_bg_H]) / (1. + Gamma_heat_idm_dr / (pvecback[pba->index_bg_H])) * T_idr;
       dTdz_idm_dr = 2. * T_idm_dr - Gamma_heat_idm_dr / pvecback[pba->index_bg_H] * (T_idr - T_idm_dr);
     }
@@ -996,9 +985,6 @@ int thermodynamics_init(
         T_idr = pba->T_idr * (1. + z);
         T_idm_dr = T_idr;
 
-        // Gamma_heat_idm_dr = 2.*pba->Omega0_idr*pow(pba->h,2)*myfunc(pth, pba, z)*pow((1.+z),(pth->nindex_idm_dr+1.))/pow(1.e7,pth->nindex_idm_dr);
-        //printf("%f, %f, %f, %f\n",z,Gamma_heat_idm_dr, Gamma_heat_idm_dr/(pvecback[pba->index_bg_H]), myfunc(pth, pba, z));
-        // printf("%f\n",pba->Omega0_idr);
         Gamma_heat_idm_dr = myfunc(pth, pba, z) * 4 / 3 * pba->Omega0_idr / pba->Omega0_idm_dr * (1. + z);
 
         class_call(background_tau_of_z(pba, z, &(tau)),
@@ -1305,23 +1291,12 @@ int thermodynamics_init(
     {
       index_tau = 0;
 
-      // printf("index_tau: %i\n",index_tau);
-      // printf("pth->thermodynamics_table[(index_tau)*pth->th_size+pth->index_th_tau_idm_dr]: %f\n",pth->thermodynamics_table[(index_tau)*pth->th_size+pth->index_th_tau_idm_dr] );
-      // printf("tt_size-1 %i\n",pth->tt_size-1 );
-
-      //pth->thermodynamics_table[(index_tau)*pth->th_size+pth->index_th_tau_idm_dr] is nan for index_tau>0
+    
       while ((pth->thermodynamics_table[(index_tau)*pth->th_size + pth->index_th_tau_idm_dr] < 1.) && (index_tau < pth->tt_size - 1))
         index_tau++;
 
-      // printf("index_tau: %i\n",index_tau);
-      // printf("pth->thermodynamics_table[(index_tau)*pth->th_size+pth->index_th_tau_idm_dr]: %f\n",pth->thermodynamics_table[(index_tau)*pth->th_size+pth->index_th_tau_idm_dr] );
-      // printf("pth->thermodynamics_table[(index_tau-1)*pth->th_size+pth->index_th_tau_idm_dr]: %f\n",pth->thermodynamics_table[(index_tau-1)*pth->th_size+pth->index_th_tau_idm_dr] );
-      // printf("pth->z_table[index_tau-1]: %f\n",pth->z_table[index_tau-1] );
-      // printf("z_idm_dr before: %f\n",z_idm_dr);
-
       z_idm_dr = pth->z_table[index_tau - 1] + (1. - pth->thermodynamics_table[(index_tau - 1) * pth->th_size + pth->index_th_tau_idm_dr]) / (pth->thermodynamics_table[(index_tau)*pth->th_size + pth->index_th_tau_idm_dr] - pth->thermodynamics_table[(index_tau - 1) * pth->th_size + pth->index_th_tau_idm_dr]) * (pth->z_table[index_tau] - pth->z_table[index_tau - 1]);
 
-      // printf("z_idm_dr after: %f\n",z_idm_dr);
 
       class_call(background_tau_of_z(pba, z_idm_dr, &(tau_idm_dr)),
                  pba->error_message,
