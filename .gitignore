@@ -14,6 +14,10 @@ RealSpaceInterface/cache/
 doc/manual/html
 doc/manual/latex
 
+h5py_dat/
+
 # *.npz
 
 *.png
+*.pdf
+*.hdf5

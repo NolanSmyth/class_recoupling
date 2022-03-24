@@ -131,7 +131,9 @@ double myfunc(struct thermo *pth, struct background *pba, double z)
 
     else if (pth->rec_case == 3)
   {
-    if (pth->T_rec >= pba->T_idr * (1. + z) && pba->T_idr * (1. + z) > pth->T_rec*0.99)
+    // if (pth->T_rec >= pba->T_idr * (1. + z) && pba->T_idr * (1. + z) > pth->T_rec*0.99)
+    // if (pth->T_rec >= pba->T_idr * (1. + z) && pba->T_idr * (1. + z) > pth->T_rec*0.9925)
+    if (pth->T_rec >= pba->T_idr * (1. + z) && pba->T_idr * (1. + z) > pth->T_rec*0.98)
     {
       my_dmu_idm_dr = base_rate*pth->A_rec;
     }
