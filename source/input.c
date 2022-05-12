@@ -691,6 +691,7 @@ int input_read_parameters(
   double C_rec;
   double nu_rec;
   double A_rec;
+  double sigma;
 
   double z_max = 0.;
   int bin;
@@ -942,6 +943,8 @@ class_read_double("T_rec", pth->T_rec);
 class_read_double("nu_rec", pth->nu_rec);
 class_read_double("A_rec", pth->A_rec);
 class_read_double("C_rec", pth->C_rec);
+class_read_double("sigma", pth->sigma);
+
 
 class_read_double("stat_f_idr", stat_f_idr);
 

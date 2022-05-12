@@ -106,7 +106,7 @@
 
 double myfunc(struct thermo *pth, struct background *pba, double z)
 {
-  //dmu_idm_dr in CLASS ETHOS implementation
+  // dmu_idm_dr in CLASS ETHOS implementation
   const double base_rate = pth->a_idm_dr * pow((1. + z) / 1.e7, pth->nindex_idm_dr) * pba->Omega0_idm_dr * pow(pba->h, 2);
   double my_dmu_idm_dr = 0;
 
@@ -129,18 +129,23 @@ double myfunc(struct thermo *pth, struct background *pba, double z)
     }
   }
 
-    else if (pth->rec_case == 3)
+  else if (pth->rec_case == 3)
   {
-    // if (pth->T_rec >= pba->T_idr * (1. + z) && pba->T_idr * (1. + z) > pth->T_rec*0.99)
+    // if (pth->T_rec >= pba->T_idr * (1. + z) && pba->T_idr * (1. + z) > pth->T_rec * 0.99)
+    // {
+    //   printf("HERE");
+    // }
     // if (pth->T_rec >= pba->T_idr * (1. + z) && pba->T_idr * (1. + z) > pth->T_rec*0.9925)
-    if (pth->T_rec >= pba->T_idr * (1. + z) && pba->T_idr * (1. + z) > pth->T_rec*0.98)
-    {
-      my_dmu_idm_dr = base_rate*pth->A_rec;
-    }
-    else
-    {
-      my_dmu_idm_dr = base_rate;
-    }
+
+    // my_dmu_idm_dr = base_rate*(pth->A_rec);
+
+    // double sigma2 = pow(.01 * pth->T_rec, 2);
+    // double sigma = .01 * pth->T_rec;
+    double sigma = pth->sigma;
+    double delta = pba->T_idr * (1. + z) - pth->T_rec;
+    delta = delta / sigma;
+    double gauss = exp(-pow(delta, 2) / 2) / sqrt(2 * M_PI);
+    my_dmu_idm_dr = base_rate * (1 + pth->A_rec / sigma * gauss);
   }
 
   // No recoupling
@@ -266,7 +271,6 @@ int thermodynamics_at_z(
       /* extrapolate optical depth of idm_dr and idr */
       pvecthermo[pth->index_th_tau_idm_dr] = pth->thermodynamics_table[(pth->tt_size - 1) * pth->th_size + pth->index_th_tau_idm_dr] +
                                              (pth->thermodynamics_table[(pth->tt_size - 1) * pth->th_size + pth->index_th_tau_idm_dr] - pth->thermodynamics_table[(pth->tt_size - 2) * pth->th_size + pth->index_th_tau_idm_dr]) * (z - pth->z_table[pth->tt_size - 1]) / (pth->z_table[pth->tt_size - 1] - pth->z_table[pth->tt_size - 2]);
-
 
       pvecthermo[pth->index_th_tau_idr] = pth->thermodynamics_table[(pth->tt_size - 1) * pth->th_size + pth->index_th_tau_idr] +
                                           (pth->thermodynamics_table[(pth->tt_size - 1) * pth->th_size + pth->index_th_tau_idr] - pth->thermodynamics_table[(pth->tt_size - 2) * pth->th_size + pth->index_th_tau_idr]) * (z - pth->z_table[pth->tt_size - 1]) / (pth->z_table[pth->tt_size - 1] - pth->z_table[pth->tt_size - 2]);
@@ -950,7 +954,6 @@ int thermodynamics_init(
 
     Gamma_heat_idm_dr = myfunc(pth, pba, z) * 4 / 3 * pba->Omega0_idr / pba->Omega0_idm_dr * (1. + z);
 
-
     /* (A1) --> if Gamma is not much smaller than H, set T_idm_dr to T_idm_dr = T_idr = xi*T_gamma (tight coupling solution) */
     // if(Gamma_heat_idm_dr > 1.e-3 * pvecback[pba->index_bg_a]*pvecback[pba->index_bg_H]){
     if (Gamma_heat_idm_dr > 1.e-3 * pvecback[pba->index_bg_H])
@@ -969,9 +972,9 @@ int thermodynamics_init(
       dTdz_idm_dr = 2. * T_idm_dr - Gamma_heat_idm_dr / pvecback[pba->index_bg_H] * (T_idr - T_idm_dr);
     }
 
-    //This is (11) of https://arxiv.org/pdf/1512.05344.pdf
+    // This is (11) of https://arxiv.org/pdf/1512.05344.pdf
     pth->thermodynamics_table[(pth->tt_size - 1) * pth->th_size + pth->index_th_Tidm_dr] = T_idm_dr;
-    //This is the sound speed
+    // This is the sound speed
     pth->thermodynamics_table[(pth->tt_size - 1) * pth->th_size + pth->index_th_cidm_dr2] = _k_B_ * T_idm_dr / _eV_ / pth->m_idm * (1. + dTdz_idm_dr / 3. / T_idm_dr);
 
     /* T_adia and z_adia will be used later. They are defined as "the
@@ -1305,12 +1308,10 @@ int thermodynamics_init(
     {
       index_tau = 0;
 
-    
       while ((pth->thermodynamics_table[(index_tau)*pth->th_size + pth->index_th_tau_idm_dr] < 1.) && (index_tau < pth->tt_size - 1))
         index_tau++;
 
       z_idm_dr = pth->z_table[index_tau - 1] + (1. - pth->thermodynamics_table[(index_tau - 1) * pth->th_size + pth->index_th_tau_idm_dr]) / (pth->thermodynamics_table[(index_tau)*pth->th_size + pth->index_th_tau_idm_dr] - pth->thermodynamics_table[(index_tau - 1) * pth->th_size + pth->index_th_tau_idm_dr]) * (pth->z_table[index_tau] - pth->z_table[index_tau - 1]);
-
 
       class_call(background_tau_of_z(pba, z_idm_dr, &(tau_idm_dr)),
                  pba->error_message,
@@ -2690,7 +2691,7 @@ int thermodynamics_reionization(
       {
         xe_actual = 1. + 2. * pth->YHe / (_not4_ * (1. - pth->YHe));
       }
-      //other negative number is nonsense
+      // other negative number is nonsense
       else
       {
         class_stop(pth->error_message,
@@ -2741,13 +2742,13 @@ int thermodynamics_reionization(
     preio->reionization_parameters[preio->index_reio_first_xe] = preio->reionization_parameters[preio->index_reio_first_xe + 1];
 
     /* if we want to model only hydrogen reionization and neglect both helium reionization */
-    //preio->reionization_parameters[preio->index_reio_first_xe] = 1.;
+    // preio->reionization_parameters[preio->index_reio_first_xe] = 1.;
 
     /* if we want to model only hydrogen + first helium reionization and neglect second helium reionization */
-    //preio->reionization_parameters[preio->index_reio_first_xe] = 1. + pth->YHe/(_not4_*(1.-pth->YHe));
+    // preio->reionization_parameters[preio->index_reio_first_xe] = 1. + pth->YHe/(_not4_*(1.-pth->YHe));
 
     /* if we want to model hydrogen + two helium reionization */
-    //preio->reionization_parameters[preio->index_reio_first_xe] = 1. + 2.*pth->YHe/(_not4_*(1.-pth->YHe));
+    // preio->reionization_parameters[preio->index_reio_first_xe] = 1. + 2.*pth->YHe/(_not4_*(1.-pth->YHe));
 
     /* pass step sharpness parameter */
     class_test(pth->many_tanh_width <= 0,
@@ -2824,7 +2825,7 @@ int thermodynamics_reionization(
       {
         xe_actual = 1. + 2. * pth->YHe / (_not4_ * (1. - pth->YHe));
       }
-      //other negative number is nonsense
+      // other negative number is nonsense
       else
       {
         class_stop(pth->error_message,
@@ -2986,7 +2987,7 @@ int thermodynamics_reionization_sample(
   reio_vector[preio->index_re_Tb] = Tb;
 
   /** - --> after recombination, Tb scales like (1+z)**2. Compute constant factor Tb/(1+z)**2. */
-  //Tba2 = Tb/(1+z)/(1+z);
+  // Tba2 = Tb/(1+z)/(1+z);
 
   /** - --> get baryon equation of state */
   reio_vector[preio->index_re_wb] = _k_B_ / (_c_ * _c_ * _m_H_) * (1. + (1. / _not4_ - 1.) * Yp + xe * (1. - Yp)) * Tb;
@@ -3661,7 +3662,7 @@ int thermodynamics_recombination_with_recfast(
   /* related quantities */
   z = zinitial;
   mu_H = 1. / (1. - preco->YHe);
-  //mu_T = _not4_ /(_not4_ - (_not4_-1.)*preco->YHe); /* recfast 1.4*/
+  // mu_T = _not4_ /(_not4_ - (_not4_-1.)*preco->YHe); /* recfast 1.4*/
   preco->fHe = preco->YHe / (_not4_ * (1. - preco->YHe)); /* recfast 1.4 */
   preco->Nnow = 3. * preco->H0 * preco->H0 * OmegaB / (8. * _PI_ * _G_ * mu_H * _m_H_);
   pth->n_e = preco->Nnow;
@@ -3678,7 +3679,7 @@ int thermodynamics_recombination_with_recfast(
   preco->annihilation_z_halo = pth->annihilation_z_halo;
 
   /* quantities related to constants defined in thermodynamics.h */
-  //n = preco->Nnow * pow((1.+z),3);
+  // n = preco->Nnow * pow((1.+z),3);
   Lalpha = 1. / _L_H_alpha_;
   Lalpha_He = 1. / _L_He_2p_;
   DeltaB = _h_P_ * _c_ * (_L_H_ion_ - _L_H_alpha_);
@@ -4021,7 +4022,7 @@ int thermodynamics_derivs_with_recfast(
 
   /* used for energy injection from dark matter */
   double C;
-  //double C_He;
+  // double C_He;
   double energy_rate;
 
   double tau;
@@ -4167,7 +4168,7 @@ int thermodynamics_derivs_with_recfast(
 
     /* - old approximation from Chen and Kamionkowski: */
 
-    //chi_ion_H = (1.-x)/3.;
+    // chi_ion_H = (1.-x)/3.;
 
     /* coefficient as revised by Slatyer et al. 2013 (in fact it is a fit by Vivian Poulin of columns 1 and 2 in Table V of Slatyer et al. 2013): */
 
@@ -4179,7 +4180,7 @@ int thermodynamics_derivs_with_recfast(
     /* evolution of hydrogen ionisation fraction: */
 
     // JL: test for debugginf reio_inter
-    //fprintf(stdout,"%e  %e  %e  %e\n",z,Tmat,K*_Lambda_*n,K*Rup*n);
+    // fprintf(stdout,"%e  %e  %e  %e\n",z,Tmat,K*_Lambda_*n,K*Rup*n);
 
     dy[0] = (x * x_H * n * Rdown - Rup * (1. - x_H) * exp(-preco->CL / Tmat)) * C / (Hz * (1. + z))                    /* Peeble's equation with fudged factors */
             - energy_rate * chi_ion_H / n * (1. / _L_H_ion_ + (1. - C) / _L_H_alpha_) / (_h_P_ * _c_ * Hz * (1. + z)); /* energy injection (neglect fraction going to helium) */
@@ -4200,7 +4201,7 @@ int thermodynamics_derivs_with_recfast(
       He_Boltz = exp(680.);
 
     /* equations modified to take into account energy injection from dark matter */
-    //C_He=(1. + K_He*_Lambda_He_*n_He*(1.-x_He)*He_Boltz)/(1. + K_He*(_Lambda_He_+Rup_He)*n_He*(1.-x_He)*He_Boltz);
+    // C_He=(1. + K_He*_Lambda_He_*n_He*(1.-x_He)*He_Boltz)/(1. + K_He*(_Lambda_He_+Rup_He)*n_He*(1.-x_He)*He_Boltz);
 
     dy[1] = ((x * x_He * n * Rdown_He - Rup_He * (1. - x_He) * exp(-preco->CL_He / Tmat)) * (1. + K_He * _Lambda_He_ * n_He * (1. - x_He) * He_Boltz)) / (Hz * (1 + z) * (1. + K_He * (_Lambda_He_ + Rup_He) * n_He * (1. - x_He) * He_Boltz)); /* in case of energy injection due to DM, we neglect the contribution to helium ionization */
 
@@ -4226,7 +4227,7 @@ int thermodynamics_derivs_with_recfast(
   {
     /* equations modified to take into account energy injection from dark matter */
 
-    //chi_heat = (1.+2.*preio->reionization_table[i*preio->re_size+preio->index_re_xe])/3.; // old approximation from Chen and Kamionkowski
+    // chi_heat = (1.+2.*preio->reionization_table[i*preio->re_size+preio->index_re_xe])/3.; // old approximation from Chen and Kamionkowski
 
     // coefficient as revised by Slatyer et al. 2013 (in fact it is a fit by Vivian Poulin of columns 1 and 2 in Table V of Slatyer et al. 2013)
     if (x < 1.)
@@ -4383,24 +4384,24 @@ int thermodynamics_output_titles(struct background *pba,
   class_store_columntitle(titles, "conf. time [Mpc]", _TRUE_);
   class_store_columntitle(titles, "x_e", _TRUE_);
   class_store_columntitle(titles, "kappa' [Mpc^-1]", _TRUE_);
-  //class_store_columntitle(titles,"kappa''",_TRUE_);
-  //class_store_columntitle(titles,"kappa'''",_TRUE_);
+  // class_store_columntitle(titles,"kappa''",_TRUE_);
+  // class_store_columntitle(titles,"kappa'''",_TRUE_);
   class_store_columntitle(titles, "exp(-kappa)", _TRUE_);
   class_store_columntitle(titles, "g [Mpc^-1]", _TRUE_);
-  //class_store_columntitle(titles,"g'",_TRUE_);
-  //class_store_columntitle(titles,"g''",_TRUE_);
+  // class_store_columntitle(titles,"g'",_TRUE_);
+  // class_store_columntitle(titles,"g''",_TRUE_);
   class_store_columntitle(titles, "Tb [K]", _TRUE_);
   class_store_columntitle(titles, "w_b", _TRUE_);
   class_store_columntitle(titles, "c_b^2", _TRUE_);
   class_store_columntitle(titles, "tau_d", _TRUE_);
-  //class_store_columntitle(titles,"max. rate",_TRUE_);
+  // class_store_columntitle(titles,"max. rate",_TRUE_);
   class_store_columntitle(titles, "r_d", pth->compute_damping_scale);
 
   if (pba->has_idm_dr == _TRUE_)
   {
     class_store_columntitle(titles, "dmu_idm_dr", _TRUE_);
-    //class_store_columntitle(titles,"ddmu_idm_dr",_TRUE_);
-    //class_store_columntitle(titles,"dddmu_idm_dr",_TRUE_);
+    // class_store_columntitle(titles,"ddmu_idm_dr",_TRUE_);
+    // class_store_columntitle(titles,"dddmu_idm_dr",_TRUE_);
     class_store_columntitle(titles, "tau_idm_dr", _TRUE_);
     class_store_columntitle(titles, "tau_idr", _TRUE_);
     class_store_columntitle(titles, "g_idm_dr [Mpc^-1]", _TRUE_);
@@ -4423,7 +4424,7 @@ int thermodynamics_output_data(struct background *pba,
   double z, tau;
 
   //  pth->number_of_thermodynamics_titles = get_number_of_titles(pth->thermodynamics_titles);
-  //pth->size_thermodynamics_data = pth->number_of_thermodynamics_titles*pth->tt_size;
+  // pth->size_thermodynamics_data = pth->number_of_thermodynamics_titles*pth->tt_size;
 
   /* Store quantities: */
   for (index_z = 0; index_z < pth->tt_size; index_z++)
@@ -4444,24 +4445,24 @@ int thermodynamics_output_data(struct background *pba,
     class_store_double(dataptr, tau, _TRUE_, storeidx);
     class_store_double(dataptr, pvecthermo[pth->index_th_xe], _TRUE_, storeidx);
     class_store_double(dataptr, pvecthermo[pth->index_th_dkappa], _TRUE_, storeidx);
-    //class_store_double(dataptr,pvecthermo[pth->index_th_ddkappa],_TRUE_,storeidx);
-    //class_store_double(dataptr,pvecthermo[pth->index_th_dddkappa],_TRUE_,storeidx);
+    // class_store_double(dataptr,pvecthermo[pth->index_th_ddkappa],_TRUE_,storeidx);
+    // class_store_double(dataptr,pvecthermo[pth->index_th_dddkappa],_TRUE_,storeidx);
     class_store_double(dataptr, pvecthermo[pth->index_th_exp_m_kappa], _TRUE_, storeidx);
     class_store_double(dataptr, pvecthermo[pth->index_th_g], _TRUE_, storeidx);
-    //class_store_double(dataptr,pvecthermo[pth->index_th_dg],_TRUE_,storeidx);
-    //class_store_double(dataptr,pvecthermo[pth->index_th_ddg],_TRUE_,storeidx);
+    // class_store_double(dataptr,pvecthermo[pth->index_th_dg],_TRUE_,storeidx);
+    // class_store_double(dataptr,pvecthermo[pth->index_th_ddg],_TRUE_,storeidx);
     class_store_double(dataptr, pvecthermo[pth->index_th_Tb], _TRUE_, storeidx);
     class_store_double(dataptr, pvecthermo[pth->index_th_wb], _TRUE_, storeidx);
     class_store_double(dataptr, pvecthermo[pth->index_th_cb2], _TRUE_, storeidx);
     class_store_double(dataptr, pvecthermo[pth->index_th_tau_d], _TRUE_, storeidx);
-    //class_store_double(dataptr,pvecthermo[pth->index_th_rate],_TRUE_,storeidx);
+    // class_store_double(dataptr,pvecthermo[pth->index_th_rate],_TRUE_,storeidx);
     class_store_double(dataptr, pvecthermo[pth->index_th_r_d], pth->compute_damping_scale, storeidx);
 
     if (pba->has_idm_dr == _TRUE_)
     {
       class_store_double(dataptr, pvecthermo[pth->index_th_dmu_idm_dr], _TRUE_, storeidx);
-      //class_store_double(dataptr,pvecthermo[pth->index_th_ddmu_idm_dr],_TRUE_,storeidx);
-      //class_store_double(dataptr,pvecthermo[pth->index_th_dddmu_idm_dr],_TRUE_,storeidx);
+      // class_store_double(dataptr,pvecthermo[pth->index_th_ddmu_idm_dr],_TRUE_,storeidx);
+      // class_store_double(dataptr,pvecthermo[pth->index_th_dddmu_idm_dr],_TRUE_,storeidx);
       class_store_double(dataptr, pvecthermo[pth->index_th_tau_idm_dr], _TRUE_, storeidx);
       class_store_double(dataptr, pvecthermo[pth->index_th_tau_idr], _TRUE_, storeidx);
       class_store_double(dataptr, pvecthermo[pth->index_th_g_idm_dr], _TRUE_, storeidx);

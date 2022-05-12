@@ -37,8 +37,8 @@ PYTHON ?= python
 # OPTFLAG = -O0 -g #-march=native
 # OPTFLAG = -O4 -ffast-math #-march=native
 OPTFLAG = -O4 -ffast-math -arch x86_64 #-march=native
-#OPTFLAG = -Ofast -ffast-math #-march=native
-#OPTFLAG = -fast
+# OPTFLAG = -O0 -g -ffast-math -arch x86_64 #-march=native
+
 
 # your openmp flag (comment for compiling without openmp)
 # OMPFLAG   = -fopenmp 

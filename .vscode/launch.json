@@ -10,7 +10,7 @@
             "name": "Debug",
             "program": "${workspaceRoot}/class",
             "args": [
-                "recTest.ini"
+                "delta.ini"
             ],
             "cwd": "${workspaceRoot}"
         }

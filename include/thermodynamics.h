@@ -73,6 +73,7 @@ struct thermo
   double nu_rec;
   double A_rec;
   double C_rec;
+  double sigma;
 
   double YHe; /**< \f$ Y_{He} \f$: primordial helium fraction */
 
