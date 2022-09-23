@@ -1,0 +1,52 @@
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.interpolate import UnivariateSpline
+import h5py
+from scipy.integrate import quadrature
+import pickle
+import plots as p
+
+plt.style.use("/Users/nolansmyth/Dropbox/kinetic_recoupling/figures/style.mplstyle")
+
+N_points = 100
+# Values over which dd interpolation is defined (This is hardcoded)
+T_rec_arr = np.logspace(5, 7, N_points)
+A_rec_arr = np.logspace(-1, 3, N_points)
+
+# plot interpolation between two scenarios varying recoupling strength
+idx = 65
+idx_add = idx + 8
+
+print(
+    "Showing interpolation between points with A_rec = %.2e, T_rec = %.2e and A_rec = %.2e, T_rec = %.2e"
+    % (A_rec_arr[idx], T_rec_arr[idx], A_rec_arr[idx_add], T_rec_arr[idx])
+)
+
+# Varied Recoupling Strength Plot
+p.plot_varied_recoupling(
+    T_rec_arr[0],
+    A_rec_arr[0],
+    T_rec_arr[idx],
+    T_rec_arr[idx],
+    A_rec_arr[idx],
+    A_rec_arr[idx_add],
+)
+
+idx = 65
+idx_add = idx + 4
+
+print(
+    "Showing interpolation between points with A_rec = %.2e, T_rec = %.2e and A_rec = %.2e, T_rec = %.2e"
+    % (A_rec_arr[idx], T_rec_arr[idx], A_rec_arr[idx], T_rec_arr[idx_add])
+)
+
+# Varied Recoupling Temperature Plot
+p.plot_varied_recoupling(
+    T_rec_arr[0],
+    A_rec_arr[0],
+    T_rec_arr[idx],
+    T_rec_arr[idx_add],
+    A_rec_arr[idx],
+    A_rec_arr[idx],
+)
+

@@ -160,10 +160,10 @@ double myfunc(struct thermo *pth, struct background *pba, double z)
   }
 
   // Cap the upper value to avoid divergences
-  if (my_dmu_idm_dr >= 1.0e5)
-  {
-    return 1.0e5;
-  }
+  // if (my_dmu_idm_dr >= 1.0e5)
+  // {
+  //   return 1.0e5;
+  // }
   return my_dmu_idm_dr;
 }
 
