@@ -71,4 +71,22 @@ p.plot_varied_recoupling(
 )
 
 # Current and future observations
-p.plot_observations()
+best_fits_saved = np.load("./interps/best_fit_sds.npz")
+best_a_dimless_arr = best_fits_saved["best_a_dimless_arr"]
+plot_idx = 77
+
+p.plot_observations(
+    T_rec_arr[plot_idx],
+    A_rec_arr[plot_idx],
+    best_a_dimless_arr[plot_idx - 50, plot_idx - 50],
+    mwarm="80kev",
+)
+
+plot_idx = 98
+
+p.plot_observations(
+    T_rec_arr[plot_idx],
+    A_rec_arr[plot_idx],
+    best_a_dimless_arr[plot_idx - 50, plot_idx - 50],
+    mwarm="30kev",
+)

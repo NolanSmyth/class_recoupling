@@ -132,8 +132,19 @@ def plot_varied_recoupling(Tr0, Ar0, Tr1, Tr2, Ar1, Ar2, num_interps=7):
     plt.clf()
 
 
-def plot_observations():
+def plot_observations(Tr, Ar, best_fit_a, mwarm):
     path = "observation_data/"
+
+    mwarm_path = "output/warm" + mwarm + ".dat"
+
+    try:
+        dfWarm = pd.read_csv(
+            mwarm_path, header=None, names=["k", "P(k)"], skiprows=4, delimiter="\s+",
+        )
+    except FileNotFoundError:
+        print("ERROR: No file found for that warm dm mass")
+        return
+
     dfDES = pd.read_csv(path + "DESY1.csv")
     dfDES = dfDES.assign(
         ylow=dfDES["Y"] - dfDES["-DeltaY"], yhigh=dfDES["+DeltaY"] - dfDES["Y"]
@@ -197,6 +208,7 @@ def plot_observations():
         skiprows=4,
         delimiter="\s+",
     )
+
     dfEDGES["Y"] = [
         1.05 * dflcdm["P(k)"][121] * (dflcdm["k"][121] ** 3) / (2 * np.pi ** 2),
         dflcdm["P(k)"][129] * (dflcdm["k"][129] ** 3) / (2 * np.pi ** 2),
@@ -206,8 +218,6 @@ def plot_observations():
         dflcdm["P(k)"][128] * (dflcdm["k"][128] ** 3) / (2 * np.pi ** 2),
         dflcdm["P(k)"][130] * (dflcdm["k"][130] ** 3) / (2 * np.pi ** 2),
     ]
-
-    plot_idx = 78
 
     plt.plot(
         dflcdm["k"],
@@ -263,6 +273,27 @@ def plot_observations():
         label=r"HERA 21-cm proj.",
     )
 
+    plt.plot(
+        kk,
+        pk_dd_interp((Tr, Ar, kk)) * (kk ** 3) / (2 * np.pi ** 2),
+        "b",
+        label="Double Decoupling",
+    )
+    plt.plot(
+        kk[-200:],
+        pk_sd_interp((best_fit_a, kk[-200:])) * (kk[-200:] ** 3) / (2 * np.pi ** 2),
+        "g-.",
+        label="Single Decoupling",
+    )
+
+    # plt.plot(dfWarmDig['k'], dfWarmDig['delta^2(k)'], 'r--', label='Warm DM')
+    plt.plot(
+        dfWarm["k"],
+        dfWarm["P(k)"] * (dfWarm["k"] ** 3) / (2 * np.pi ** 2),
+        "r--",
+        label="Warm DM, m=80 keV",
+    )
+
     plt.xscale("log")
     plt.yscale("log")
     plt.xlim(1, 100)
@@ -270,7 +301,14 @@ def plot_observations():
     plt.xlabel("k [h/Mpc]")
     plt.ylabel("$\Delta^2_m(k)$")
     plt.title("Dimensionless Power Spectrum")
-    plt.legend(loc="lower right")
-    plt.savefig("Figures/observations.pdf")
+
+    if mwarm == "30kev":
+        plt.legend(loc="upper left")
+    else:
+        plt.legend(loc="lower right")
+
+    plot_dir = "Figures/"
+    filename = "Power_spectrum{:.1e}{:.1e}.pdf".format(Tr, Ar)
+    plt.savefig(plot_dir + filename)
     plt.clf()
 
