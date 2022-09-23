@@ -4,12 +4,17 @@ from scipy.interpolate import UnivariateSpline
 import h5py
 from scipy.integrate import quadrature
 import pickle
+import pandas as pd
 
 # Load interpolations
 pk_sd_interp = pickle.load(open("interps/pks_sd_interp.p", "rb"))
 pk_dd_interp = pickle.load(open("interps/pks_dd_interp.p", "rb"))
 
 plt.style.use("/Users/nolansmyth/Dropbox/kinetic_recoupling/figures/style.mplstyle")
+
+# Constants for plotting
+pk_max = 1e2
+kk = np.logspace(-4, np.log10(pk_max), 500)
 
 
 def dmu_idm_dr(
@@ -59,9 +64,6 @@ def plot_varied_recoupling(Tr0, Ar0, Tr1, Tr2, Ar1, Ar2, num_interps=7):
     dmus1 = [dmu_idm_dr(Tr1, Ar1, z) for z in zs]
     dmus2 = [dmu_idm_dr(Tr2, Ar2, z) for z in zs]
 
-    pk_max = 1e2
-    kk = np.logspace(-4, np.log10(pk_max), 500)
-
     fig = plt.figure(1, figsize=(8, 8))
     plt.subplot(211)
     plt.plot(
@@ -93,7 +95,7 @@ def plot_varied_recoupling(Tr0, Ar0, Tr1, Tr2, Ar1, Ar2, num_interps=7):
     plt.xlabel("k [h/Mpc]")
     plt.ylabel("$P(k)/P(k)_0$")
     plt.legend()
-    plt.title("Double Decoupling, Varying $A_\mathrm{rec}$")
+    plt.title("Double Decoupling")
     plt.subplot(212)
     plt.xscale("log")
     plt.yscale("log")
@@ -128,3 +130,147 @@ def plot_varied_recoupling(Tr0, Ar0, Tr1, Tr2, Ar1, Ar2, num_interps=7):
 
     plt.savefig(plot_dir + filename)
     plt.clf()
+
+
+def plot_observations():
+    path = "observation_data/"
+    dfDES = pd.read_csv(path + "DESY1.csv")
+    dfDES = dfDES.assign(
+        ylow=dfDES["Y"] - dfDES["-DeltaY"], yhigh=dfDES["+DeltaY"] - dfDES["Y"]
+    )
+    dfDES = dfDES.assign(
+        xlow=dfDES["X"] - dfDES["-DeltaX"], xhigh=dfDES["+DeltaX"] - dfDES["X"]
+    )
+    yerrDES = np.array([dfDES["ylow"], dfDES["yhigh"]])
+    xerrDES = np.array([dfDES["xlow"], dfDES["xhigh"]])
+
+    yerrDESdimless = np.array(
+        [
+            dfDES["ylow"] * (dfDES["X"] ** 3) / (2 * (np.pi ** 2)),
+            dfDES["yhigh"] * (dfDES["X"] ** 3) / (2 * (np.pi ** 2)),
+        ]
+    )
+
+    columns = ["k", "P(k)", "delta P(k)+", "delta P(k)-"]
+    dfBOSS = pd.read_csv(path + "BOSS.csv", header=None)
+    dfBOSS.columns = columns
+
+    dfBOSS = dfBOSS.assign(
+        ylow=dfBOSS["P(k)"] - dfBOSS["delta P(k)-"],
+        yhigh=dfBOSS["delta P(k)+"] - dfBOSS["P(k)"],
+    )
+    yerrBOSS = np.array([dfBOSS["ylow"], dfBOSS["yhigh"]])
+
+    yerrBOSSdimless = np.array(
+        [
+            dfBOSS["ylow"] * (dfBOSS["k"] ** 3) / (2 * (np.pi ** 2)),
+            dfBOSS["yhigh"] * (dfBOSS["k"] ** 3) / (2 * (np.pi ** 2)),
+        ]
+    )
+
+    dfHERA = pd.read_csv(path + "HeraProjected.csv")
+    dfEDGES = pd.read_csv(path + "EDGESProjected.csv")
+
+    dfHERA = dfHERA.assign(
+        ylow=dfHERA["Y"] - dfHERA["-DeltaY"], yhigh=dfHERA["+DeltaY"] - dfHERA["Y"]
+    )
+    dfHERA = dfHERA.assign(
+        xlow=dfHERA["X"] - dfHERA["-DeltaX"], xhigh=dfHERA["+DeltaX"] - dfHERA["X"]
+    )
+    yerrHERA = np.array([dfHERA["ylow"], dfHERA["yhigh"]])
+    xerrHERA = np.array([dfHERA["xlow"], dfHERA["xhigh"]])
+
+    dfEDGES = dfEDGES.assign(
+        ylow=dfEDGES["Y"] - dfEDGES["-DeltaY"], yhigh=dfEDGES["+DeltaY"] - dfEDGES["Y"]
+    )
+    dfEDGES = dfEDGES.assign(
+        xlow=dfEDGES["X"] - dfEDGES["-DeltaX"], xhigh=dfEDGES["+DeltaX"] - dfEDGES["X"]
+    )
+    yerrEDGES = np.array([dfEDGES["ylow"], dfEDGES["yhigh"]])
+    xerrEDGES = np.array([dfEDGES["xlow"], dfEDGES["xhigh"]])
+
+    # Adjust projections to agree with lcdm line
+    dflcdm = pd.read_csv(
+        "output/lambdacdm00_pk.dat",
+        header=None,
+        names=["k", "P(k)"],
+        skiprows=4,
+        delimiter="\s+",
+    )
+    dfEDGES["Y"] = [
+        1.05 * dflcdm["P(k)"][121] * (dflcdm["k"][121] ** 3) / (2 * np.pi ** 2),
+        dflcdm["P(k)"][129] * (dflcdm["k"][129] ** 3) / (2 * np.pi ** 2),
+    ]
+    dfHERA["Y"] = [
+        1.05 * dflcdm["P(k)"][121] * (dflcdm["k"][121] ** 3) / (2 * np.pi ** 2),
+        dflcdm["P(k)"][128] * (dflcdm["k"][128] ** 3) / (2 * np.pi ** 2),
+        dflcdm["P(k)"][130] * (dflcdm["k"][130] ** 3) / (2 * np.pi ** 2),
+    ]
+
+    plot_idx = 78
+
+    plt.plot(
+        dflcdm["k"],
+        dflcdm["P(k)"] * (dflcdm["k"] ** 3) / (2 * np.pi ** 2),
+        "k",
+        label=r"$\Lambda_{CDM}$",
+    )
+
+    plt.errorbar(
+        dfBOSS["k"],
+        dfBOSS["P(k)"] * (dfBOSS["k"]) ** 3 / (2 * np.pi ** 2),
+        yerr=yerrBOSSdimless,
+        marker="o",
+        ms=5,
+        color="mediumpurple",
+        ls="none",
+        label=r"BOSS DR9 Ly-$\alpha$ forest",
+    )
+    plt.errorbar(
+        dfDES["X"],
+        dfDES["Y"] * (dfDES["X"] ** 3) / (2 * np.pi ** 2),
+        yerr=yerrDESdimless,
+        xerr=xerrDES,
+        marker="o",
+        ms=5,
+        color="goldenrod",
+        ls="none",
+        capsize=6,
+        label="DES Y1 cosmic Shear",
+    )
+
+    # No conversion because these are already dimensionless
+    plt.errorbar(
+        dfEDGES["X"],
+        dfEDGES["Y"],
+        xerr=xerrEDGES,
+        yerr=yerrEDGES,
+        marker="^",
+        ms=10,
+        color="r",
+        ls="none",
+        label=r"EDGES 21-cm proj.",
+    )
+    plt.errorbar(
+        dfHERA["X"],
+        dfHERA["Y"],
+        xerr=xerrHERA,
+        yerr=yerrHERA,
+        marker="^",
+        ms=10,
+        color="teal",
+        ls="none",
+        label=r"HERA 21-cm proj.",
+    )
+
+    plt.xscale("log")
+    plt.yscale("log")
+    plt.xlim(1, 100)
+    plt.ylim(2, 6e1)
+    plt.xlabel("k [h/Mpc]")
+    plt.ylabel("$\Delta^2_m(k)$")
+    plt.title("Dimensionless Power Spectrum")
+    plt.legend(loc="lower right")
+    plt.savefig("Figures/observations.pdf")
+    plt.clf()
+

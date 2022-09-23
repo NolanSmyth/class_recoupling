@@ -50,3 +50,25 @@ p.plot_varied_recoupling(
     A_rec_arr[idx],
 )
 
+idx = 68
+idx_add = idx + 4
+idx_sub = idx - 8
+
+print(
+    "Showing interpolation between points with A_rec = %.2e, T_rec = %.2e and A_rec = %.2e, T_rec = %.2e"
+    % (A_rec_arr[idx], T_rec_arr[idx], A_rec_arr[idx_sub], T_rec_arr[idx_add])
+)
+
+# Same Peak $\Gamma_{\mathrm{DR-DM, peak}}$
+## Todo Need to add k cutoff scale to this plot
+p.plot_varied_recoupling(
+    T_rec_arr[0],
+    A_rec_arr[0],
+    T_rec_arr[idx],
+    T_rec_arr[idx_add],
+    A_rec_arr[idx],
+    A_rec_arr[idx_sub],
+)
+
+# Current and future observations
+p.plot_observations()
