@@ -212,7 +212,7 @@ def plot_observations(Tr, Ar, best_fit_a, mwarm):
 
     # Adjust projections to agree with lcdm line
     dflcdm = pd.read_csv(
-        "output/lambdacdm00_pk.dat",
+        "output/lambdacdm.dat",
         header=None,
         names=["k", "P(k)"],
         skiprows=4,
