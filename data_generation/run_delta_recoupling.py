@@ -2,27 +2,15 @@ from classy import Class
 import numpy as np
 import h5py
 import os
+from variables import *
 
 dirname = os.path.dirname(__file__)
 h5pydir = os.path.join(dirname, "../h5py_dat/")
 
-A_recs = [1e8]
-
-pk_max = 1.0e2
-# maximum k for Pk
-kk = np.logspace(-4, np.log10(pk_max), 500)
-# redshift at which Pk is determined
-z_pk = 0.0
-BM_KS = ["10"]
-omega0_cdm = 0.12038
-f_idm_dr = 1.0
-xi = 0.3
-T_rec = 6.0e5
-k = 10  # use one k mode for now
+A_recs = [1e8, 1e12, 1e16]
 
 
 def getPk(classObj):
-    kk = np.logspace(-4, np.log10(pk_max), 500)  # k in h/Mpc
     Pk = []  # P(k) in (Mpc/h)**3
     h = classObj.h()  # get reduced Hubble for conversions to 1/Mpc
     for k in kk:
@@ -32,7 +20,7 @@ def getPk(classObj):
 
 def save_class_obj(class_obj, A_rec=""):
     model = class_obj
-    data_file = h5pydir + "class_model_data_saturation" + "%.2e" % A_rec + ".hdf5"
+    data_file = h5pydir + "class_model_data_" + "%.2e" % A_rec + ".hdf5"
     with h5py.File(data_file, "w") as f:
         # Scalar group
         data = model.get_perturbations()["scalar"]
@@ -63,32 +51,30 @@ def save_class_obj(class_obj, A_rec=""):
 
 
 commonset = {
-    "omega_b": 0.022032,
+    "omega_b": omega_b,
     "omega_cdm": omega0_cdm,
-    "h": 0.67556,
-    "A_s": 2.215e-9,
-    "n_s": 0.9619,
-    "tau_reio": 0.0925,
+    "h": h,
+    "A_s": A_s,
+    "n_s": n_s,
+    "tau_reio": tau_reio,
     "output": "tCl,pCl,lCl,mPk",
     "lensing": "yes",
     "P_k_max_1/Mpc": pk_max,
-    "z_pk": 0.0,
-    "k_output_values": str(k),
+    "z_pk": z_pk,
+    "k_output_values": k_output_values,
 }
 
 idrset = {
     # Dark matter/radiation parameters
     "f_idm_dr": f_idm_dr,  # Amount of dm that is interacting
-    "xi_idr": xi,
-    "stat_f_idr": 0.875,  # fermionic
-    "nindex_idm_dr": 4.0,
-    "m_idm": 1.0e3,
+    "xi_idr": xi_idr,
+    "stat_f_idr": stat_f_idr,  # fermionic
+    "nindex_idm_dr": nindex_idm_dr,
+    "m_idm": m_idm,
     # Scattering rate parameters
-    "a_idm_dr": 1.0e0,
+    "a_idm_dr": a_idm_dr,
     "rec_case": 4,  # 1 = power, 2 = Theta, 3 = delta function, 4 = no recoupling
 }
-
-sigma_fac = 0.01
 
 for A_rec in A_recs:
     cos = Class()

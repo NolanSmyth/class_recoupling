@@ -341,8 +341,8 @@ def plot_delta_recoupling_rate():
     plt.plot([1e-3, 1e10], [1e-3, 1e-3], "k:")
     plt.plot([1e-3, 1e10], [1e3, 1e3], "k:")
 
-    plt.xlim(1e6, 6e7)
-    plt.ylim(1e-4, 1e5)
+    plt.xlim(1e5, 6e6)
+    plt.ylim(1e-8, 1e6)
 
     plt.xscale("log")
     plt.yscale("log")

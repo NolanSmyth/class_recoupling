@@ -7,10 +7,10 @@ import pickle
 import pandas as pd
 import warnings
 from matplotlib.ticker import MultipleLocator, NullFormatter
-import os
+from data_generation.variables import *
 
-dirname = os.path.dirname(__file__)
-h5pydir = os.path.join(dirname, "../h5py_dat/")
+h5pydir = "h5py_dat/"
+h5pydir_old = "/Users/nolansmyth/Dropbox/kinetic_recoupling/h5py_dat/"
 
 
 warnings.filterwarnings("ignore")
@@ -22,13 +22,8 @@ pk_dd_interp = pickle.load(open("interps/pks_dd_interp.p", "rb"))
 # paths to styles and data
 plt.style.use("/Users/nolansmyth/Dropbox/kinetic_recoupling/figures/style.mplstyle")
 
-# Constants for plotting
-pk_max = 1e2
-kk = np.logspace(-4, np.log10(pk_max), 500)
-
 # Which A_recs to use for delta recoupling rate
-A_recs = [1e3]
-k = 10  # use one k mode for now. This is the only one I generated data for
+A_recs = [1e8]
 
 
 def dmu_idm_dr(
@@ -37,11 +32,11 @@ def dmu_idm_dr(
     z,
     case="recoupling",
     a_idm_dr=1,
-    nindex_idm_dr=4,
-    omega0_cdm=0.12038,
-    f_idm_dr=1.0,
-    h=0.67556,
-    xi=0.3,
+    nindex_idm_dr=nindex_idm_dr,
+    omega0_cdm=omega0_cdm,
+    f_idm_dr=f_idm_dr,
+    h=h,
+    xi=xi_idr,
 ):
     """
     Calculate the comoving scattering rate for a given T_rec, A_rec, z.
@@ -83,8 +78,8 @@ def plot_delta_recoupling_rate():
     plt.plot([1e-3, 1e10], [1e-3, 1e-3], "k:")
     plt.plot([1e-3, 1e10], [1e3, 1e3], "k:")
 
-    plt.xlim(1e6, 6e7)
-    plt.ylim(1e-4, 1e5)
+    plt.xlim(1e5, 6e6)
+    plt.ylim(1e-8, 1e6)
 
     plt.xscale("log")
     plt.yscale("log")
@@ -100,7 +95,6 @@ def plot_delta_recoupling_rate():
 
 
 # Get data for no recoupling
-spline_pars = {"k": 3, "s": 0.0}
 data_file = h5pydir + "class_model_data_no_rec.hdf5"
 with h5py.File(data_file, "r") as f:
     tau_data = np.array(f["scalar"]["k=" + str(k)]["tau [Mpc]"])
@@ -147,7 +141,8 @@ a_arr = []
 psi_arr = []
 
 for A_rec in A_recs:
-    data_file = h5pydir + "class_model_data_" + "%.2e" % A_rec + ".hdf5"
+    # data_file = h5pydir + "class_model_data_" + "%.2e" % A_rec + ".hdf5"
+    data_file = h5pydir_old + "class_model_data_saturation" + "%.2e" % A_rec + ".hdf5"
 
     with h5py.File(data_file, "r") as f:
         tau_data = np.array(f["scalar"]["k=" + str(k)]["tau [Mpc]"])
