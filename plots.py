@@ -2,11 +2,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.interpolate import UnivariateSpline
 import h5py
-from scipy.integrate import quadrature
+from scipy.integrate import quad
 import pickle
 import pandas as pd
 import warnings
 from matplotlib.ticker import MultipleLocator, NullFormatter
+from data_generation.variables import *
 
 warnings.filterwarnings("ignore")
 
@@ -15,16 +16,11 @@ pk_sd_interp = pickle.load(open("interps/pks_sd_interp.p", "rb"))
 pk_dd_interp = pickle.load(open("interps/pks_dd_interp.p", "rb"))
 
 # paths to styles and data
-plt.style.use("/Users/nolansmyth/Dropbox/kinetic_recoupling/figures/style.mplstyle")
-h5pydir = "/Users/nolansmyth/Dropbox/kinetic_recoupling/h5py_dat/"
-
-# Constants for plotting
-pk_max = 1e2
-kk = np.logspace(-4, np.log10(pk_max), 500)
+plt.style.use("Figures/style.mplstyle")
+h5pydir = "h5py_dat/"
 
 # Which A_recs to use for delta recoupling rate
-A_recs = [1e8, 10 ** (8.5), 1e9]
-k = 10  # use one k mode for now. This is the only one I generated data for
+A_recs = [1e8, 1e12, 1e16]
 
 
 def dmu_idm_dr(
@@ -32,12 +28,12 @@ def dmu_idm_dr(
     A_rec,
     z,
     case="recoupling",
-    a_idm_dr=1,
-    nindex_idm_dr=4,
-    omega0_cdm=0.12038,
-    f_idm_dr=1.0,
-    h=0.67556,
-    xi=0.3,
+    a_idm_dr=a_idm_dr,
+    nindex_idm_dr=nindex_idm_dr,
+    omega0_cdm=omega0_cdm,
+    f_idm_dr=f_idm_dr,
+    h=h,
+    xi=xi_idr,
 ):
     """
     Calculate the comoving scattering rate for a given T_rec, A_rec, z.
@@ -296,7 +292,6 @@ def plot_observations(Tr, Ar, best_fit_a, mwarm):
         label="Single Decoupling",
     )
 
-    # plt.plot(dfWarmDig['k'], dfWarmDig['delta^2(k)'], 'r--', label='Warm DM')
     plt.plot(
         dfWarm["k"],
         dfWarm["P(k)"] * (dfWarm["k"] ** 3) / (2 * np.pi ** 2),
@@ -324,37 +319,61 @@ def plot_observations(Tr, Ar, best_fit_a, mwarm):
 
 
 def plot_delta_recoupling_rate():
-
-    # zs used for plotting
-    z_plot = np.geomspace(1e4, 2e7, int(1e5))
-
     for i, A_rec in reversed(list(enumerate(A_recs))):
         plt.plot(
-            z_plot,
-            kappa_dot_zs_arr[i](z_plot),
+            tau_arr[i],
+            kappa_dot_taus_arr[i](tau_arr[i]),
             label="A_rec = " + scientific_format(A_rec),
         )
-
-    plt.plot(z_data_no_rec, kappa_dot_data_no_rec, label="no rec ")
 
     plt.plot([1e-3, 1e10], [1, 1], "k--")
     plt.plot([1e-3, 1e10], [1e-3, 1e-3], "k:")
     plt.plot([1e-3, 1e10], [1e3, 1e3], "k:")
 
-    plt.xlim(1e5, 6e6)
-    plt.ylim(1e-8, 1e6)
-
+    plt.xlim(2e-1, 2e-0)
+    plt.ylim(1e-8, 1e8)
     plt.xscale("log")
     plt.yscale("log")
-    plt.xlabel("z", fontsize=16)
+    plt.xlabel("$\\tau$ [Mpc]", fontsize=16)
+
     plt.ylabel("$\Gamma_{\mathrm{DR-DM}}$", fontsize=16)
     plt.title("Comoving Scattering Rate")
     plt.legend()
-
     plot_dir = "Figures/"
     filename = "Scattering_rate_delta.pdf"
     plt.savefig(plot_dir + filename)
     plt.clf()
+
+    # zs used for plotting
+    # z_plot = np.geomspace(1e4, 2e7, int(1e5))
+
+    # for i, A_rec in reversed(list(enumerate(A_recs))):
+    #     plt.plot(
+    #         z_plot,
+    #         kappa_dot_zs_arr[i](z_plot),
+    #         label="A_rec = " + scientific_format(A_rec),
+    #     )
+
+    # plt.plot(z_data_no_rec, kappa_dot_data_no_rec, label="no rec ")
+
+    # plt.plot([1e-3, 1e10], [1, 1], "k--")
+    # plt.plot([1e-3, 1e10], [1e-3, 1e-3], "k:")
+    # plt.plot([1e-3, 1e10], [1e3, 1e3], "k:")
+
+    # plt.xlim(1e5, 6e6)
+    # plt.ylim(1e-8, 1e7)
+
+    # plt.xscale("log")
+    # plt.yscale("log")
+    # plt.xlabel("z", fontsize=16)
+    # plt.ylabel("$\Gamma_{\mathrm{DR-DM}}$", fontsize=16)
+    # plt.title("Comoving Scattering Rate")
+    # plt.legend()
+
+    # plot_dir = "Figures/"
+    # filename = "Scattering_rate_delta.pdf"
+    # plt.savefig(plot_dir + filename)
+    # plt.clf()
 
 
 # Get data for no recoupling
@@ -475,10 +494,8 @@ for A_rec in A_recs:
     a_arr.append(a)
     psi_arr.append(psi)
 
-idx = -1
 
-
-def lhs221NonInt(tau):
+def lhs221NonInt(tau, idx):
     return (
         3 * phi_ddot_arr[idx](tau)
         - delta_chi_ddot_arr[idx](tau)
@@ -490,7 +507,7 @@ def lhs221NonInt(tau):
     )
 
 
-def rhs221NonInt(tau):
+def rhs221NonInt(tau, idx):
     return (
         4
         / 3
@@ -501,35 +518,62 @@ def rhs221NonInt(tau):
     )
 
 
-def lhs221(tau):
-    return quadrature(lhs221NonInt, 6e-2, tau, maxiter=1000)[0]
+def lhs221(tau, idx):
+    return quad(lhs221NonInt, 6e-1, tau, args=(idx), epsrel=1e-8, limit=20)[0]
 
 
-def rhs221(tau):
-    return quadrature(rhs221NonInt, 6e-2, tau, maxiter=200)[0]
+def rhs221(tau, idx):
+    return quad(rhs221NonInt, 6e-1, tau, args=(idx), epsrel=1e-8, limit=20)[0]
 
 
 def plot_delta_recoupling():
+    taus = np.linspace(5.6e-1, 7e-1, 50)
 
-    taus = np.linspace(6e-2, 7e-2, 100)
+    lhsarr1 = np.array([lhs221(t, 1) for t in taus])
+    rhsarr1 = np.array([rhs221(t, 1) for t in taus])
 
-    lhsarr = np.array([lhs221(t) for t in taus])
-    rhsarr = np.array([rhs221(t) for t in taus])
+    lhsarr2 = np.array([lhs221(t, 2) for t in taus])
+    rhsarr2 = np.array([rhs221(t, 2) for t in taus])
+    plt.loglog(taus, -1 * lhsarr1, label="LHS, A_rec = " + scientific_format(A_recs[1]))
+    plt.loglog(
+        taus, -1 * rhsarr1, "--", label="RHS, A_rec = " + scientific_format(A_recs[1])
+    )
 
-    # 2.21 from paper
-    plt.loglog(taus, -1 * lhsarr, label="LHS 2.21")
-    plt.loglog(taus, -1 * rhsarr, "--", label="RHS 2.21")
+    plt.loglog(taus, -1 * lhsarr2, label="LHS, A_rec = " + scientific_format(A_recs[2]))
+    plt.loglog(
+        taus, -1 * rhsarr2, "--", label="RHS, A_rec = " + scientific_format(A_recs[2])
+    )
 
-    plt.title("Effect of Delta-Like Impulse in Scattering Rate")
+    plt.title("Eq 2.21 from draft")
     plt.xlabel("$\\tau$ [Mpc]")
+    plt.xlim(5.95e-1, 7e-1)
+    plt.ylim(1e-2, 1e6)
 
-    plt.xlim(6e-2, 7e-2)
-    ax = plt.gca()
-    ax.xaxis.set_minor_locator(MultipleLocator(1e-3))
-    ax.xaxis.set_minor_formatter(NullFormatter())
-    ax.xaxis.set_major_locator(MultipleLocator(1e-2))
     plt.legend()
     plot_dir = "Figures/"
     filename = "Delta_effect.pdf"
     plt.savefig(plot_dir + filename)
     plt.clf()
+
+    # taus = np.linspace(6e-1, 7e-1, 100)
+
+    # lhsarr = np.array([lhs221(t) for t in taus])
+    # rhsarr = np.array([rhs221(t) for t in taus])
+
+    # # 2.21 from paper
+    # plt.loglog(taus, -1 * lhsarr, label="LHS 2.21")
+    # plt.loglog(taus, -1 * rhsarr, "--", label="RHS 2.21")
+
+    # plt.title("Effect of Delta-Like Impulse in Scattering Rate")
+    # plt.xlabel("$\\tau$ [Mpc]")
+
+    # plt.xlim(6e-2, 7e-2)
+    # ax = plt.gca()
+    # ax.xaxis.set_minor_locator(MultipleLocator(1e-3))
+    # ax.xaxis.set_minor_formatter(NullFormatter())
+    # ax.xaxis.set_major_locator(MultipleLocator(1e-2))
+    # plt.legend()
+    # plot_dir = "Figures/"
+    # filename = "Delta_effect.pdf"
+    # plt.savefig(plot_dir + filename)
+    # plt.clf()
