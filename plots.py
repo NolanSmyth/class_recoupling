@@ -57,7 +57,7 @@ def scientific_format(x):
     return r"${} \times 10^{{{}}}$".format(mantissa, int(exponent))
 
 
-def plot_varied_recoupling(Tr0, Ar0, Tr1, Tr2, Ar1, Ar2, num_interps=7):
+def plot_varied_recoupling(Tr0, Ar0, Tr1, Tr2, Ar1, Ar2, num_interps=7, save=True):
     """
     Plot the interpolation between two scenarios with varied 
     recoupling temperature and/or strength (1,2).
@@ -129,13 +129,16 @@ def plot_varied_recoupling(Tr0, Ar0, Tr1, Tr2, Ar1, Ar2, num_interps=7):
     plt.legend()
     fig.tight_layout(h_pad=2)
 
-    plot_dir = "Figures/"
-    filename = "varying_recoupling_{:.1e}{:.1e}{:.1e}{:.1e}.pdf".format(
-        Tr1, Ar1, Tr2, Ar2
-    )
+    if save:
+        plot_dir = "Figures/"
+        filename = "varying_recoupling_{:.1e}{:.1e}{:.1e}{:.1e}.pdf".format(
+            Tr1, Ar1, Tr2, Ar2
+        )
 
-    plt.savefig(plot_dir + filename)
-    plt.clf()
+        plt.savefig(plot_dir + filename)
+        plt.clf()
+    else:
+        plt.show()
 
 
 def plot_observations(Tr, Ar, best_fit_a, mwarm):
@@ -377,7 +380,6 @@ def plot_delta_recoupling_rate():
 
 
 # Get data for no recoupling
-spline_pars = {"k": 3, "s": 0.0}
 data_file = h5pydir + "class_model_data_no_rec.hdf5"
 with h5py.File(data_file, "r") as f:
     tau_data = np.array(f["scalar"]["k=" + str(k)]["tau [Mpc]"])
@@ -554,26 +556,3 @@ def plot_delta_recoupling():
     filename = "Delta_effect.pdf"
     plt.savefig(plot_dir + filename)
     plt.clf()
-
-    # taus = np.linspace(6e-1, 7e-1, 100)
-
-    # lhsarr = np.array([lhs221(t) for t in taus])
-    # rhsarr = np.array([rhs221(t) for t in taus])
-
-    # # 2.21 from paper
-    # plt.loglog(taus, -1 * lhsarr, label="LHS 2.21")
-    # plt.loglog(taus, -1 * rhsarr, "--", label="RHS 2.21")
-
-    # plt.title("Effect of Delta-Like Impulse in Scattering Rate")
-    # plt.xlabel("$\\tau$ [Mpc]")
-
-    # plt.xlim(6e-2, 7e-2)
-    # ax = plt.gca()
-    # ax.xaxis.set_minor_locator(MultipleLocator(1e-3))
-    # ax.xaxis.set_minor_formatter(NullFormatter())
-    # ax.xaxis.set_major_locator(MultipleLocator(1e-2))
-    # plt.legend()
-    # plot_dir = "Figures/"
-    # filename = "Delta_effect.pdf"
-    # plt.savefig(plot_dir + filename)
-    # plt.clf()
