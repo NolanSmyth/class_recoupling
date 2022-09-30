@@ -551,7 +551,7 @@ def plot_delta_effect():
         -1 * rhsarr0,
         "--",
         label="RHS, A_rec = " + scientific_format(A_recs[0]),
-        color=colors[0],
+        color=colors[2],
     )
 
     plt.loglog(
@@ -579,7 +579,7 @@ def plot_delta_effect():
         -1 * rhsarr2,
         "--",
         label="RHS, A_rec = " + scientific_format(A_recs[2]),
-        color=colors[2],
+        color=colors[0],
     )
 
     plt.title("Eq 2.21 from draft")
