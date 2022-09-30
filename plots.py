@@ -21,7 +21,7 @@ h5pydir = "h5py_dat/"
 
 # Which A_recs to use for delta recoupling rate
 # A_recs = [1e8, 1e12, 1e16]
-A_recs = [1e10]
+A_recs = [1e10, 1e12, 1e14]
 
 
 def dmu_idm_dr(
@@ -526,30 +526,72 @@ def rhs221(tau, idx):
     return quad(rhs221NonInt, 6e-1, tau, args=(idx), epsrel=1e-8, limit=20)[0]
 
 
-def plot_delta_recoupling():
+def plot_delta_effect():
     taus = np.linspace(5.6e-1, 7e-1, 50)
+
+    lhsarr0 = np.array([lhs221(t, 0) for t in taus])
+    rhsarr0 = np.array([rhs221(t, 0) for t in taus])
 
     lhsarr1 = np.array([lhs221(t, 1) for t in taus])
     rhsarr1 = np.array([rhs221(t, 1) for t in taus])
 
     lhsarr2 = np.array([lhs221(t, 2) for t in taus])
     rhsarr2 = np.array([rhs221(t, 2) for t in taus])
-    plt.loglog(taus, -1 * lhsarr1, label="LHS, A_rec = " + scientific_format(A_recs[1]))
+
+    colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+
     plt.loglog(
-        taus, -1 * rhsarr1, "--", label="RHS, A_rec = " + scientific_format(A_recs[1])
+        taus,
+        -1 * lhsarr0,
+        # label="LHS, A_rec = " + scientific_format(A_recs[0]),
+        color="k",
+    )
+    plt.loglog(
+        taus,
+        -1 * rhsarr0,
+        "--",
+        label="RHS, A_rec = " + scientific_format(A_recs[0]),
+        color=colors[0],
     )
 
-    plt.loglog(taus, -1 * lhsarr2, label="LHS, A_rec = " + scientific_format(A_recs[2]))
     plt.loglog(
-        taus, -1 * rhsarr2, "--", label="RHS, A_rec = " + scientific_format(A_recs[2])
+        taus,
+        -1 * lhsarr1,
+        # label="LHS, A_rec = " + scientific_format(A_recs[1]),
+        color="k",
+    )
+    plt.loglog(
+        taus,
+        -1 * rhsarr1,
+        "--",
+        label="RHS, A_rec = " + scientific_format(A_recs[1]),
+        color=colors[1],
+    )
+
+    plt.loglog(
+        taus,
+        -1 * lhsarr2,
+        # label="LHS, A_rec = " + scientific_format(A_recs[2]),
+        color="k",
+    )
+    plt.loglog(
+        taus,
+        -1 * rhsarr2,
+        "--",
+        label="RHS, A_rec = " + scientific_format(A_recs[2]),
+        color=colors[2],
     )
 
     plt.title("Eq 2.21 from draft")
     plt.xlabel("$\\tau$ [Mpc]")
     plt.xlim(5.95e-1, 7e-1)
-    plt.ylim(1e-2, 1e6)
+    plt.ylim(1e-2, 1e4)
 
-    plt.legend()
+    plt.legend(loc="upper left")
+    plot_dir = "Figures/"
+    filename = "Delta_effect.pdf"
+    plt.savefig(plot_dir + filename)
+    plt.clf()
 
 
 def plot_delta_power_spectrum():
@@ -568,8 +610,8 @@ def plot_delta_power_spectrum():
     plt.xlabel("k")
     plt.ylabel("$P(k)/P(k)_0$")
     plt.title("Matter Power Spectrum Ratio")
-    # plt.xlim(1, 1e2)
-    # plt.ylim(1e-4, 1.1)
+    plt.xlim(1, 1e2)
+    plt.ylim(1e-3, 2)
     plt.legend()
     plot_dir = "Figures/"
     filename = "delta_power_spectrum.pdf"
