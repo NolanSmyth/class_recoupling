@@ -20,7 +20,8 @@ plt.style.use("Figures/style.mplstyle")
 h5pydir = "h5py_dat/"
 
 # Which A_recs to use for delta recoupling rate
-A_recs = [1e8, 1e12, 1e16]
+# A_recs = [1e8, 1e12, 1e16]
+A_recs = [1e10]
 
 
 def dmu_idm_dr(
@@ -299,7 +300,7 @@ def plot_observations(Tr, Ar, best_fit_a, mwarm):
         dfWarm["k"],
         dfWarm["P(k)"] * (dfWarm["k"] ** 3) / (2 * np.pi ** 2),
         "r--",
-        label="Warm DM, m=80 keV",
+        label="Warm DM, m={} keV".format(mwarm.split("k")[0]),
     )
 
     plt.xscale("log")
@@ -310,10 +311,7 @@ def plot_observations(Tr, Ar, best_fit_a, mwarm):
     plt.ylabel("$\Delta^2_m(k)$")
     plt.title("Dimensionless Power Spectrum")
 
-    if mwarm == "30kev":
-        plt.legend(loc="upper left")
-    else:
-        plt.legend(loc="lower right")
+    plt.legend(loc="upper left")
 
     plot_dir = "Figures/"
     filename = "Power_spectrum{:.1e}{:.1e}.pdf".format(Tr, Ar)
@@ -552,7 +550,28 @@ def plot_delta_recoupling():
     plt.ylim(1e-2, 1e6)
 
     plt.legend()
+
+
+def plot_delta_power_spectrum():
+    lines = ["-", "--", "-."]
+    for i, A_rec in reversed(list(enumerate(A_recs))):
+        plt.plot(
+            kk,
+            Pk_arr[i] / Pks_no_rec,
+            ls=lines[i % len(lines)],
+            label="A_rec = " + scientific_format(A_rec),
+        )
+
+    plt.plot(kk, Pks_no_rec / Pks_no_rec, "--", label="No Rec")
+    plt.yscale("log")
+    plt.xscale("log")
+    plt.xlabel("k")
+    plt.ylabel("$P(k)/P(k)_0$")
+    plt.title("Matter Power Spectrum Ratio")
+    # plt.xlim(1, 1e2)
+    # plt.ylim(1e-4, 1.1)
+    plt.legend()
     plot_dir = "Figures/"
-    filename = "Delta_effect.pdf"
+    filename = "delta_power_spectrum.pdf"
     plt.savefig(plot_dir + filename)
     plt.clf()
