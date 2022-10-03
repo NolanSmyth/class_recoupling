@@ -20,7 +20,6 @@ plt.style.use("Figures/style.mplstyle")
 h5pydir = "h5py_dat/"
 
 # Which A_recs to use for delta recoupling rate
-# A_recs = [1e8, 1e12, 1e16]
 A_recs = [1e10, 1e12, 1e14]
 
 
@@ -344,37 +343,6 @@ def plot_delta_recoupling_rate():
     filename = "Scattering_rate_delta.pdf"
     plt.savefig(plot_dir + filename)
     plt.clf()
-
-    # zs used for plotting
-    # z_plot = np.geomspace(1e4, 2e7, int(1e5))
-
-    # for i, A_rec in reversed(list(enumerate(A_recs))):
-    #     plt.plot(
-    #         z_plot,
-    #         kappa_dot_zs_arr[i](z_plot),
-    #         label="A_rec = " + scientific_format(A_rec),
-    #     )
-
-    # plt.plot(z_data_no_rec, kappa_dot_data_no_rec, label="no rec ")
-
-    # plt.plot([1e-3, 1e10], [1, 1], "k--")
-    # plt.plot([1e-3, 1e10], [1e-3, 1e-3], "k:")
-    # plt.plot([1e-3, 1e10], [1e3, 1e3], "k:")
-
-    # plt.xlim(1e5, 6e6)
-    # plt.ylim(1e-8, 1e7)
-
-    # plt.xscale("log")
-    # plt.yscale("log")
-    # plt.xlabel("z", fontsize=16)
-    # plt.ylabel("$\Gamma_{\mathrm{DR-DM}}$", fontsize=16)
-    # plt.title("Comoving Scattering Rate")
-    # plt.legend()
-
-    # plot_dir = "Figures/"
-    # filename = "Scattering_rate_delta.pdf"
-    # plt.savefig(plot_dir + filename)
-    # plt.clf()
 
 
 # Get data for no recoupling

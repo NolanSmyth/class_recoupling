@@ -6,8 +6,6 @@ from scipy.integrate import quadrature
 import pickle
 import plots as p
 
-plt.style.use("/Users/nolansmyth/Dropbox/kinetic_recoupling/figures/style.mplstyle")
-
 N_points = 100
 # Values over which dd interpolation is defined (This is hardcoded)
 T_rec_arr = np.logspace(5, 7, N_points)
