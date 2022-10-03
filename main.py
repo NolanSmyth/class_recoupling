@@ -97,6 +97,9 @@ A_rec_arr = np.logspace(-1, 3, N_points)
 # p.plot_delta_recoupling_rate()
 
 # Plot equation 2.21 in paper
-p.plot_delta_effect()
+# p.plot_delta_effect()
 
 # p.plot_delta_power_spectrum()
+
+p.plot_delta_power_spectrum_dimless()
+

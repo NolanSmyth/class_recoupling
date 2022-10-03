@@ -617,3 +617,29 @@ def plot_delta_power_spectrum():
     filename = "delta_power_spectrum.pdf"
     plt.savefig(plot_dir + filename)
     plt.clf()
+
+
+def plot_delta_power_spectrum_dimless():
+
+    lines = ["-", "--", "-."]
+    for i, A_rec in reversed(list(enumerate(A_recs))):
+        plt.plot(
+            kk,
+            Pk_arr[i] * kk ** 3 / (2 * np.pi ** 2),
+            ls=lines[i % len(lines)],
+            label="A_rec = " + scientific_format(A_rec),
+        )
+
+    plt.plot(kk, Pks_no_rec * kk ** 3 / (2 * np.pi ** 2), "--", label="No Rec")
+    plt.yscale("log")
+    plt.xscale("log")
+    plt.xlabel("k")
+    plt.ylabel("$\Delta^2_m(k)$")
+    plt.title("Dimensionless Matter Power Spectrum - $\delta$ recoupling")
+    plt.xlim(1, 1e2)
+    plt.ylim(1e-3, 3e1)
+    plt.legend()
+    plot_dir = "Figures/"
+    filename = "delta_power_spectrum_dimless.pdf"
+    plt.savefig(plot_dir + filename)
+    plt.clf()
