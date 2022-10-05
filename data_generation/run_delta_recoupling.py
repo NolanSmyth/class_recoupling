@@ -7,7 +7,7 @@ from variables import *
 dirname = os.path.dirname(__file__)
 h5pydir = os.path.join(dirname, "../h5py_dat/")
 
-A_recs = [1e10]
+A_recs = [1e11]
 
 
 def getPk(classObj):

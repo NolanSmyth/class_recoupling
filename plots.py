@@ -6,7 +6,6 @@ from scipy.integrate import quad
 import pickle
 import pandas as pd
 import warnings
-from matplotlib.ticker import MultipleLocator, NullFormatter
 from data_generation.variables import *
 
 warnings.filterwarnings("ignore")
@@ -20,7 +19,7 @@ plt.style.use("Figures/style.mplstyle")
 h5pydir = "h5py_dat/"
 
 # Which A_recs to use for delta recoupling rate
-A_recs = [1e10, 1e12, 1e14]
+A_recs = [1e11, 1e12, 1e14]
 
 
 def dmu_idm_dr(
