@@ -7,6 +7,7 @@ import pickle
 import pandas as pd
 import warnings
 from data_generation.variables import *
+import matplotlib.ticker as plticker
 
 warnings.filterwarnings("ignore")
 
@@ -608,5 +609,152 @@ def plot_delta_power_spectrum_dimless():
     plt.legend()
     plot_dir = "Figures/"
     filename = "delta_power_spectrum_dimless.pdf"
+    plt.savefig(plot_dir + filename)
+    plt.clf()
+
+
+def plot_delta_power_spectra_both():
+    lines = ["-", "--", "-."]
+
+    plt.figure(1, figsize=(8, 8))
+    plt.subplot(211)
+
+    for i, A_rec in reversed(list(enumerate(A_recs))):
+        plt.plot(
+            kk,
+            Pk_arr[i] * kk ** 3 / (2 * np.pi ** 2),
+            ls=lines[i % len(lines)],
+            label="A_rec = " + scientific_format(A_rec),
+        )
+
+    plt.plot(kk, Pks_no_rec * kk ** 3 / (2 * np.pi ** 2), "--", label="No Rec")
+    plt.yscale("log")
+    plt.xscale("log")
+    plt.ylabel("$\Delta^2_m(k)$")
+    plt.title("Dimensionless Matter Power Spectrum - $\delta$ recoupling")
+    plt.xlim(1, 1e2)
+    plt.ylim(1e-3, 3e1)
+    plt.legend()
+
+    plt.subplot(212)
+
+    for i, A_rec in reversed(list(enumerate(A_recs))):
+        plt.plot(
+            kk,
+            Pk_arr[i] / Pks_no_rec,
+            ls=lines[i % len(lines)],
+            label="A_rec = " + scientific_format(A_rec),
+        )
+
+    plt.plot(kk, Pks_no_rec / Pks_no_rec, "--", label="No Rec")
+    plt.yscale("log")
+    plt.xscale("log")
+    plt.xlabel("k [h/Mpc]")
+    plt.ylabel("$P(k)/P(k)_0$")
+    plt.title("Ratio Compared to No Recoupling")
+    plt.xlim(1, 1e2)
+    plt.ylim(1e-3, 2)
+
+    # plt.legend()
+    plot_dir = "Figures/"
+    filename = "delta_power_spectra.pdf"
+    plt.savefig(plot_dir + filename)
+    plt.clf()
+
+
+def plot_delta_effect_both():
+
+    taus = np.linspace(5.6e-1, 7.05e-1, 50)
+
+    lhsarr0 = np.array([lhs221(t, 0) for t in taus])
+    rhsarr0 = np.array([rhs221(t, 0) for t in taus])
+
+    lhsarr1 = np.array([lhs221(t, 1) for t in taus])
+    rhsarr1 = np.array([rhs221(t, 1) for t in taus])
+
+    lhsarr2 = np.array([lhs221(t, 2) for t in taus])
+    rhsarr2 = np.array([rhs221(t, 2) for t in taus])
+
+    colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+
+    fig = plt.figure(1, figsize=(8, 8))
+
+    for i, A_rec in reversed(list(enumerate(A_recs))):
+        plt.plot(
+            tau_arr[i],
+            kappa_dot_taus_arr[i](tau_arr[i]),
+            label="A_rec = " + scientific_format(A_rec),
+        )
+
+    plt.plot([1e-3, 1e10], [1, 1], "k--")
+    plt.plot([1e-3, 1e10], [1e-3, 1e-3], "k:")
+    plt.plot([1e-3, 1e10], [1e3, 1e3], "k:")
+
+    plt.xlim(1e-1, 1e-0)
+    plt.ylim(1e-8, 1e8)
+    plt.xscale("log")
+    plt.yscale("log")
+    plt.xlabel("$\\tau$ [Mpc]", fontsize=16)
+    plt.legend(loc="lower left")
+
+    plt.ylabel("$\Gamma_{\mathrm{DR-DM}}$", fontsize=16)
+    plt.title("Comoving Scattering Rate")
+
+    left, bottom, width, height = [0.25, 0.58, 0.25, 0.25]
+    ax2 = fig.add_axes([left, bottom, width, height])
+
+    plt.loglog(
+        taus,
+        -1 * lhsarr0,
+        # label="LHS, A_rec = " + scientific_format(A_recs[0]),
+        color="k",
+    )
+    plt.loglog(
+        taus,
+        -1 * rhsarr0,
+        "--",
+        label="RHS, A_rec = " + scientific_format(A_recs[0]),
+        color=colors[2],
+    )
+
+    plt.loglog(
+        taus,
+        -1 * lhsarr1,
+        # label="LHS, A_rec = " + scientific_format(A_recs[1]),
+        color="k",
+    )
+    plt.loglog(
+        taus,
+        -1 * rhsarr1,
+        "--",
+        label="RHS, A_rec = " + scientific_format(A_recs[1]),
+        color=colors[1],
+    )
+
+    plt.loglog(
+        taus,
+        -1 * lhsarr2,
+        # label="LHS, A_rec = " + scientific_format(A_recs[2]),
+        color="k",
+    )
+    plt.loglog(
+        taus,
+        -1 * rhsarr2,
+        "--",
+        label="RHS, A_rec = " + scientific_format(A_recs[2]),
+        color=colors[0],
+    )
+
+    # plt.title("Eq 2.21 from draft")
+    plt.xlabel("$\\tau$", fontsize=16)
+    plt.xlim(5.95e-1, 7.05e-1)
+    ax2.set_xticks([6e-1, 7e-1])
+    ax2.get_xaxis().set_major_formatter(plticker.ScalarFormatter())
+    ax2.get_xaxis().set_minor_formatter(plticker.NullFormatter())
+
+    plt.ylim(1e-2, 1e4)
+
+    plot_dir = "Figures/"
+    filename = "Delta_effect_both.pdf"
     plt.savefig(plot_dir + filename)
     plt.clf()
