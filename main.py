@@ -105,4 +105,3 @@ A_rec_arr = np.logspace(-1, 3, N_points)
 
 p.plot_delta_effect_both()
 
-

@@ -322,7 +322,12 @@ def plot_delta_recoupling_rate():
     for i, A_rec in reversed(list(enumerate(A_recs))):
         plt.plot(
             tau_arr[i],
-            kappa_dot_taus_arr[i](tau_arr[i]),
+            4
+            / 3
+            * rho_idr_arr[i](tau_arr[i])
+            / rho_idm_arr[i](tau_arr[i])
+            * kappa_dot_taus_arr[i](tau_arr[i])
+            / (a_prime_arr[i](tau_arr[i]) / a_arr[i](tau_arr[i])),
             label="A_rec = " + scientific_format(A_rec),
         )
 
@@ -336,7 +341,7 @@ def plot_delta_recoupling_rate():
     plt.yscale("log")
     plt.xlabel("$\\tau$ [Mpc]", fontsize=16)
 
-    plt.ylabel("$\Gamma_{\mathrm{DR-DM}}$", fontsize=16)
+    plt.ylabel("$\Gamma_{\mathrm{DM-DR}} / \mathcal{H}$", fontsize=16)
     plt.title("Comoving Scattering Rate")
     plt.legend()
     plot_dir = "Figures/"
@@ -682,7 +687,12 @@ def plot_delta_effect_both():
     for i, A_rec in reversed(list(enumerate(A_recs))):
         plt.plot(
             tau_arr[i],
-            kappa_dot_taus_arr[i](tau_arr[i]),
+            4
+            / 3
+            * rho_idr_arr[i](tau_arr[i])
+            / rho_idm_arr[i](tau_arr[i])
+            * kappa_dot_taus_arr[i](tau_arr[i])
+            / (a_prime_arr[i](tau_arr[i]) / a_arr[i](tau_arr[i])),
             label="A_rec = " + scientific_format(A_rec),
         )
 
@@ -697,7 +707,7 @@ def plot_delta_effect_both():
     plt.xlabel("$\\tau$ [Mpc]", fontsize=16)
     plt.legend(loc="lower left")
 
-    plt.ylabel("$\Gamma_{\mathrm{DR-DM}}$", fontsize=16)
+    plt.ylabel("$\Gamma_{\mathrm{DM-DR}} / \mathcal{H}$", fontsize=16)
     plt.title("Comoving Scattering Rate")
 
     left, bottom, width, height = [0.25, 0.58, 0.25, 0.25]
