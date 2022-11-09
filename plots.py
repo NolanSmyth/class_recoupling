@@ -18,6 +18,7 @@ pk_dd_interp = pickle.load(open("interps/pks_dd_interp.p", "rb"))
 # paths to styles and data
 plt.style.use("Figures/style.mplstyle")
 h5pydir = "h5py_dat/"
+ktoev = 8.6173e-5
 
 # Which A_recs to use for delta recoupling rate
 A_recs = [1e11, 1e12, 1e14]
@@ -56,6 +57,11 @@ def scientific_format(x):
     mantissa, exponent = s.split("e")
     return r"${} \times 10^{{{}}}$".format(mantissa, int(exponent))
 
+def scientific_format_less(x):
+    s = "%.1e" % x
+    mantissa, exponent = s.split("e")
+    return r"$10^{{{}}}$".format(int(exponent))
+
 
 def plot_varied_recoupling(Tr0, Ar0, Tr1, Tr2, Ar1, Ar2, num_interps=7, save=True):
     """
@@ -76,15 +82,15 @@ def plot_varied_recoupling(Tr0, Ar0, Tr1, Tr2, Ar1, Ar2, num_interps=7, save=Tru
         kk,
         pk_dd_interp((Tr1, Ar1, kk)) / pk_dd_interp((Tr0, Ar0, kk)),
         "b",
-        label="$T_\mathrm{rec}$=%s, $A_\mathrm{rec}$=%s"
-        % (scientific_format(Tr1), scientific_format(Ar1)),
+        label="$T_\mathrm{rec}$=%s eV, $A_\mathrm{rec}$=%s"
+        % (scientific_format(Tr1*ktoev), scientific_format(Ar1)),
     )
     plt.plot(
         kk,
         pk_dd_interp((Tr2, Ar2, kk)) / pk_dd_interp((Tr0, Ar0, kk)),
         "r",
-        label="$T_\mathrm{rec}$=%s, $A_\mathrm{rec}$=%s"
-        % (scientific_format(Tr2), scientific_format(Ar2)),
+        label="$T_\mathrm{rec}$=%s eV, $A_\mathrm{rec}$=%s"
+        % (scientific_format(Tr2*ktoev), scientific_format(Ar2)),
     )
     for num_interp in range(num_interps):
         plt.plot(
@@ -111,15 +117,15 @@ def plot_varied_recoupling(Tr0, Ar0, Tr1, Tr2, Ar1, Ar2, num_interps=7, save=Tru
         zs,
         dmus1,
         "b",
-        label="$T_\mathrm{rec}$=%s, $A_\mathrm{rec}$=%s"
-        % (scientific_format(Tr1), scientific_format(Ar1)),
+        label="$T_\mathrm{rec}$=%s eV, $A_\mathrm{rec}$=%s"
+        % (scientific_format(Tr1*ktoev), scientific_format(Ar1)),
     )
     plt.plot(
         zs,
         dmus2,
         "r--",
-        label="$T_\mathrm{rec}$=%s, $A_\mathrm{rec}$=%s"
-        % (scientific_format(Tr2), scientific_format(Ar2)),
+        label="$T_\mathrm{rec}$=%s eV, $A_\mathrm{rec}$=%s"
+        % (scientific_format(Tr2*ktoev), scientific_format(Ar2)),
     )
     plt.plot(np.logspace(5, 8, 100), 1e-3 * np.ones(100), "--k")
     plt.plot(np.logspace(5, 8, 100), np.ones(100), "--k")
@@ -286,7 +292,7 @@ def plot_observations(Tr, Ar, best_fit_a, mwarm):
         kk,
         pk_dd_interp((Tr, Ar, kk)) * (kk ** 3) / (2 * np.pi ** 2),
         "b",
-        label="Double Decoupling",
+        label="Kinetic Recoupling",
     )
     plt.plot(
         kk[-200:],
@@ -609,7 +615,7 @@ def plot_delta_power_spectrum_dimless():
     plt.xlabel("k")
     plt.ylabel("$\Delta^2_m(k)$")
     plt.title("Dimensionless Matter Power Spectrum - $\delta$ recoupling")
-    plt.xlim(1, 1e2)
+    plt.xlim(0.89, 1e2)
     plt.ylim(1e-3, 3e1)
     plt.legend()
     plot_dir = "Figures/"
@@ -618,7 +624,7 @@ def plot_delta_power_spectrum_dimless():
     plt.clf()
 
 
-def plot_delta_power_spectra_both():
+def plot_delta_power_spectra_both(inline=False):
     lines = ["-", "--", "-."]
 
     plt.figure(1, figsize=(8, 8))
@@ -629,17 +635,20 @@ def plot_delta_power_spectra_both():
             kk,
             Pk_arr[i] * kk ** 3 / (2 * np.pi ** 2),
             ls=lines[i % len(lines)],
-            label="A_rec = " + scientific_format(A_rec),
+            label="A_rec = " + scientific_format_less(A_rec),
         )
 
     plt.plot(kk, Pks_no_rec * kk ** 3 / (2 * np.pi ** 2), "--", label="No Rec")
+    k_damp = 1.4467
+    h = 0.67556
+    plt.axvline(x=k_damp/h, color='k', linestyle='--', label='$k_\mathrm{damp}$')
     plt.yscale("log")
     plt.xscale("log")
     plt.ylabel("$\Delta^2_m(k)$")
     plt.title("Dimensionless Matter Power Spectrum - $\delta$ recoupling")
-    plt.xlim(1, 1e2)
+    plt.xlim(0.9, 1e2)
     plt.ylim(1e-3, 3e1)
-    plt.legend()
+    # plt.legend()
 
     plt.subplot(212)
 
@@ -648,23 +657,28 @@ def plot_delta_power_spectra_both():
             kk,
             Pk_arr[i] / Pks_no_rec,
             ls=lines[i % len(lines)],
-            label="A_rec = " + scientific_format(A_rec),
+            label="A_rec = " + scientific_format_less(A_rec),
         )
 
     plt.plot(kk, Pks_no_rec / Pks_no_rec, "--", label="No Rec")
+    plt.axvline(x=k_damp/h, color='k', linestyle='--', label='$k_\mathrm{damp}$')
     plt.yscale("log")
     plt.xscale("log")
     plt.xlabel("k [h/Mpc]")
     plt.ylabel("$P(k)/P(k)_0$")
     plt.title("Ratio Compared to No Recoupling")
-    plt.xlim(1, 1e2)
+    plt.xlim(0.9, 1e2)
     plt.ylim(1e-3, 2)
 
-    # plt.legend()
-    plot_dir = "Figures/"
-    filename = "delta_power_spectra.pdf"
-    plt.savefig(plot_dir + filename)
-    plt.clf()
+    plt.legend()
+    if inline:
+        # plt.show()
+        pass
+    else:
+        plot_dir = "Figures/"
+        filename = "delta_power_spectra.pdf"
+        plt.savefig(plot_dir + filename)
+        plt.clf()
 
 
 def plot_delta_effect_both():
