@@ -8,7 +8,6 @@ cmake-build-release/
 .cache/
 class
 *.prof
-*.ini
 libclass.a
 *out
 python/classy.c
@@ -19,4 +18,10 @@ RealSpaceInterface/cache/
 .DS_Store
 doc/manual/html
 doc/manual/latex
-class_main
+
+h5py_dat/
+*.npz
+*.png
+*.pdf
+*.hdf5
+

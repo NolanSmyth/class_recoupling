@@ -3025,6 +3025,9 @@ int perturb_solve(
     else{
       generic_evolver = evolver_ndf15;
     }
+  
+    // printf("interval lim: %f \n",interval_limit[index_interval]);
+    // singular matrix here at tau = 364.436828 
 
     class_call(generic_evolver(perturb_derivs,
                                interval_limit[index_interval],
@@ -3495,12 +3498,12 @@ int perturb_find_approximation_switches(
         if (interval_approx[index_switch][index_ap] != interval_approx[index_switch-1][index_ap])
           num_switching_at_given_time++;
       }
-      class_test(num_switching_at_given_time != 1,
-                 ppt->error_message,
-                 "for k=%e, at tau=%g, you switch %d approximations at the same time, this cannot be handled. Usually happens in two cases: triggers for different approximations coincide, or one approx is reversible\n",
-                 k,
-                 interval_limit[index_switch],
-                 num_switching_at_given_time);
+      // class_test(num_switching_at_given_time != 1,
+      //            ppt->error_message,
+      //            "for k=%e, at tau=%g, you switch %d approximations at the same time, this cannot be handled. Usually happens in two cases: triggers for different approximations coincide, or one approx is reversible\n",
+      //            k,
+      //            interval_limit[index_switch],
+      //            num_switching_at_given_time);
 
       if (ppt->perturbations_verbose>2) {
 
@@ -5882,28 +5885,30 @@ int perturb_approximations(
 
     }
 
+    double dmu_idm_dr = myfunc(pth,pba,1./ppw->pvecback[pba->index_bg_a]-1);
+
     if(pba->has_idm_dr == _TRUE_){
 
-      if(ppw->pvecthermo[pth->index_th_dmu_idm_dr] == 0.){
+   
+      if(dmu_idm_dr == 0.){
         ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_off;
       }
       else{
-
-        class_test(1./ppw->pvecthermo[pth->index_th_dmu_idm_dr] < 0.,
+        class_test(1./dmu_idm_dr < 0.,
                    ppt->error_message,
                    "negative tau_idm_dr=1/dmu_idm_dr=%e at z=%e, conformal time=%e.\n",
-                   1./ppw->pvecthermo[pth->index_th_dmu_idm_dr],
+                   1./dmu_idm_dr,
                    1./ppw->pvecback[pba->index_bg_a]-1.,
                    tau);
 
-        if ((1./tau_h/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_h) &&
-            (1./tau_k/ppw->pvecthermo[pth->index_th_dmu_idm_dr] < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_k) &&
+
+        if ((1./tau_h/dmu_idm_dr < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_h) &&
+            (1./tau_k/dmu_idm_dr < ppr->idm_dr_tight_coupling_trigger_tau_c_over_tau_k) &&
             (pth->nindex_idm_dr>=2) && (ppt->idr_nature == idr_free_streaming)) {
           ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_on;
         }
         else{
           ppw->approx[ppw->index_ap_tca_idm_dr] = (int)tca_idm_dr_off;
-          //printf("tca_idm_dr_off = %d\n",tau);
         }
       }
     }
@@ -8433,7 +8438,8 @@ int perturb_derivs(double tau,
 
   if((pba->has_idm_dr==_TRUE_)){
     Sinv = 4./3. * pvecback[pba->index_bg_rho_idr]/ pvecback[pba->index_bg_rho_idm_dr];
-    dmu_idm_dr = pvecthermo[pth->index_th_dmu_idm_dr];
+
+    dmu_idm_dr = myfunc(pth,pba,1./ppw->pvecback[pba->index_bg_a]-1);
     dmu_idr = pth->b_idr/pth->a_idm_dr*pba->Omega0_idr/pba->Omega0_idm_dr*dmu_idm_dr;
   }
 

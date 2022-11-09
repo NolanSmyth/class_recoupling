@@ -17,7 +17,8 @@ vpath .base build
 ########################################################
 
 # your C compiler:
-CC       = gcc
+# CC       = gcc-10
+CC = gcc
 #CC       = icc
 #CC       = pgcc
 
@@ -33,18 +34,23 @@ AR        = ar rv
 PYTHON ?= python
 
 # your optimization flag
-OPTFLAG = -O4 -ffast-math #-march=native
-#OPTFLAG = -Ofast -ffast-math #-march=native
-#OPTFLAG = -fast
+# OPTFLAG = -O0 -g #-march=native
+# OPTFLAG = -O4 -ffast-math #-march=native
+OPTFLAG = -O4 -ffast-math -arch x86_64 #-march=native
+# OPTFLAG = -O0 -g -ffast-math -arch x86_64 #-march=native
+
 
 # your openmp flag (comment for compiling without openmp)
-OMPFLAG   = -fopenmp
+# OMPFLAG   = -fopenmp 
 #OMPFLAG   = -mp -mp=nonuma -mp=allcores -g
-#OMPFLAG   = -openmp
+# OMPFLAG   = -openmp
 
 # all other compilation flags
-CCFLAG = -g -fPIC
-LDFLAG = -g -fPIC
+CCFLAG = -g -fPIC 
+LDFLAG = -g -fPIC 
+
+LFLAGS = -L/usr/lib -lm 
+# -L/usr/local/lib 
 
 # leave blank to compile without HyRec, or put path to HyRec directory
 # (with no slash at the end: e.g. hyrec or ../hyrec)
@@ -58,7 +64,7 @@ HYREC = hyrec
 CCFLAG += -D__CLASSDIR__='"$(MDIR)"'
 
 # where to find include files *.h
-INCLUDES = -I../include
+INCLUDES = -I../include 
 
 # automatically add external programs if needed. First, initialize to blank.
 EXTERNAL =
@@ -119,6 +125,8 @@ TEST_THERMODYNAMICS = test_thermodynamics.o
 
 TEST_BACKGROUND = test_background.o
 
+TEST_SCATTERING_RATE = test_scattering_rate.o
+
 TEST_HYPERSPHERICAL = test_hyperspherical.o
 
 C_TOOLS =  $(addprefix tools/, $(addsuffix .c,$(basename $(TOOLS))))
@@ -138,34 +146,37 @@ libclass.a: $(TOOLS) $(SOURCE) $(EXTERNAL)
 	$(AR)  $@ $(addprefix build/, $(TOOLS) $(SOURCE) $(EXTERNAL))
 
 class: $(TOOLS) $(SOURCE) $(EXTERNAL) $(OUTPUT) $(CLASS)
-	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o class $(addprefix build/,$(notdir $^)) -lm
+	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o class $(addprefix build/,$(notdir $^)) $(LFLAGS)
 
 test_loops: $(TOOLS) $(SOURCE) $(EXTERNAL) $(OUTPUT) $(TEST_LOOPS)
-	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o $@ $(addprefix build/,$(notdir $^)) -lm
+	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o $@ $(addprefix build/,$(notdir $^)) $(LFLAGS)
 
 test_loops_omp: $(TOOLS) $(SOURCE) $(EXTERNAL) $(OUTPUT) $(TEST_LOOPS_OMP)
-	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o $@ $(addprefix build/,$(notdir $^)) -lm
+	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o $@ $(addprefix build/,$(notdir $^)) $(LFLAGS)
 
 test_spectra: $(TOOLS) $(SOURCE) $(EXTERNAL) $(TEST_SPECTRA)
-	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o  $@ $(addprefix build/,$(notdir $^)) -lm
+	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o  $@ $(addprefix build/,$(notdir $^)) $(LFLAGS)
 
 test_transfer: $(TOOLS) $(SOURCE) $(EXTERNAL) $(TEST_TRANSFER)
-	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o  $@ $(addprefix build/,$(notdir $^)) -lm
+	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o  $@ $(addprefix build/,$(notdir $^)) $(LFLAGS)
 
 test_nonlinear: $(TOOLS) $(SOURCE) $(EXTERNAL) $(TEST_NONLINEAR)
-	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o  $@ $(addprefix build/,$(notdir $^)) -lm
+	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o  $@ $(addprefix build/,$(notdir $^)) $(LFLAGS)
 
 test_perturbations: $(TOOLS) $(SOURCE) $(EXTERNAL) $(TEST_PERTURBATIONS)
-	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o  $@ $(addprefix build/,$(notdir $^)) -lm
+	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o  $@ $(addprefix build/,$(notdir $^)) $(LFLAGS)
 
 test_thermodynamics: $(TOOLS) $(SOURCE) $(EXTERNAL) $(TEST_THERMODYNAMICS)
-	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o  $@ $(addprefix build/,$(notdir $^)) -lm
+	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o  $@ $(addprefix build/,$(notdir $^)) $(LFLAGS)
 
 test_background: $(TOOLS) $(SOURCE) $(EXTERNAL) $(TEST_BACKGROUND)
-	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o  $@ $(addprefix build/,$(notdir $^)) -lm
+	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o  $@ $(addprefix build/,$(notdir $^)) $(LFLAGS)
 
 test_hyperspherical: $(TOOLS) $(TEST_HYPERSPHERICAL)
-	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o test_hyperspherical $(addprefix build/,$(notdir $^)) -lm
+	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o test_hyperspherical $(addprefix build/,$(notdir $^)) $(LFLAGS)
+
+test_scattering_rate: $(TOOLS) $(TEST_SCATTERING_RATE) $(SOURCE) $(EXTERNAL) $(OUTPUT)
+	$(CC) $(OPTFLAG) $(OMPFLAG) $(LDFLAG) -o test_scattering_rate $(addprefix build/,$(notdir $^)) $(LFLAGS)
 
 
 tar: $(C_ALL) $(C_TEST) $(H_ALL) $(PRE_ALL) $(INI_ALL) $(MISC_FILES) $(HYREC) $(PYTHON_FILES)
