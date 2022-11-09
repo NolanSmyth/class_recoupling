@@ -5,6 +5,7 @@
  * */
 
 /**
+
  * Tolerance parameter setting the accuracy of the shooting method in the input module,
  * when there is only one parameter requiring shooting.
  */
@@ -112,8 +113,6 @@ class_precision_parameter(recfast_Nz0,int,20000)
  * For instance, if the three values are (10^9, 10^4, 10^2), then the intermediate timestep is Delta z simeq 10^3
 */
 class_precision_parameter(thermo_z_initial_idm_dr,double,1.0e8)
-// class_precision_parameter(thermo_Nz1_idm_dr,int,10000)
-// class_precision_parameter(thermo_Nz1_idm_dr,int,10000000)
 class_precision_parameter(thermo_Nz1_idm_dr,int,1000000)
 class_precision_parameter(thermo_Nz2_idm_dr,int,100)
 /**
@@ -498,6 +497,7 @@ class_precision_parameter(accurate_lensing,int,_FALSE_) /**< switch between Gaus
 class_precision_parameter(num_mu_minus_lmax,int,70) /**< difference between num_mu and l_max, increase for more precision */
 class_precision_parameter(delta_l_max,int,500)/**< difference between l_max in unlensed and lensed spectra */
 class_precision_parameter(tol_gauss_legendre,double,ppr->smallest_allowed_variation) /**< tolerance with which quadrature points are found: must be very small for an accurate integration (if not entered manually, set automatically to match machine precision) */
+
 
 #undef class_precision_parameter
 #undef class_string_parameter

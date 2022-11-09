@@ -1,6 +1,11 @@
 output/
 *~
 build/
+cmake-build-debug/
+cmake-build-release/
+.vscode/
+.idea/
+.cache/
 class
 *.prof
 libclass.a
@@ -15,9 +20,8 @@ doc/manual/html
 doc/manual/latex
 
 h5py_dat/
-
-# *.npz
-
+*.npz
 *.png
 *.pdf
 *.hdf5
+
