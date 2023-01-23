@@ -108,7 +108,32 @@ A_rec_arr = np.logspace(-1, 3, N_points)
 
 # p.plot_delta_power_spectrum_dimless()
 
-p.plot_delta_power_spectra_both()
+# p.plot_delta_power_spectra_both()
 
 # p.plot_delta_effect_both()
+
+
+idx = 65
+Trs = [
+    # T_rec_arr[idx - 10],
+    T_rec_arr[idx],
+    T_rec_arr[idx + 15],
+    T_rec_arr[idx + 30],
+    # T_rec_arr[99],
+]
+Ars = [
+    A_rec_arr[idx - 10],
+    A_rec_arr[idx],
+    A_rec_arr[idx + 10],
+    A_rec_arr[idx + 20],
+    A_rec_arr[idx + 30],
+]
+
+# idx = 65
+
+# Trs = [T_rec_arr[idx], T_rec_arr[idx + 15], T_rec_arr[idx + 30]]
+# Ars = [A_rec_arr[idx], A_rec_arr[idx - 4], A_rec_arr[idx - 8]]
+
+# p.plot_varied_recoupling_grid(T_rec_arr[0], A_rec_arr[0], Trs, Ars)
+p.plot_varied_recoupling_grid_collapsed(T_rec_arr[0], A_rec_arr[0], Trs, Ars)
 

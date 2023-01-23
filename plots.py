@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.signal import argrelextrema
 from scipy.interpolate import UnivariateSpline
 import h5py
 from scipy.integrate import quad
@@ -57,10 +58,22 @@ def scientific_format(x):
     mantissa, exponent = s.split("e")
     return r"${} \times 10^{{{}}}$".format(mantissa, int(exponent))
 
+
 def scientific_format_less(x):
     s = "%.1e" % x
     mantissa, exponent = s.split("e")
     return r"$10^{{{}}}$".format(int(exponent))
+
+
+def recoupling_time(T_rec, A_rec):
+    """Recoupling time in Mpc"""
+    zs = np.logspace(5, 8, 1000)
+    dmus = np.array([dmu_idm_dr(T_rec, A_rec, z) for z in zs])
+    rec_idx = argrelextrema(dmus, np.less)[0][0]
+    dmu_rec_val = dmus[rec_idx]
+    dec_idx = np.where(abs(1 - dmus / dmu_rec_val) < 1e-2)[0][0]
+    rec_duration_tau = thermo_taus(zs[dec_idx]).item() - thermo_taus(zs[rec_idx]).item()
+    return rec_duration_tau
 
 
 def plot_varied_recoupling(Tr0, Ar0, Tr1, Tr2, Ar1, Ar2, num_interps=7, save=True):
@@ -83,14 +96,14 @@ def plot_varied_recoupling(Tr0, Ar0, Tr1, Tr2, Ar1, Ar2, num_interps=7, save=Tru
         pk_dd_interp((Tr1, Ar1, kk)) / pk_dd_interp((Tr0, Ar0, kk)),
         "b",
         label="$T_\mathrm{rec}$=%s eV, $A_\mathrm{rec}$=%s"
-        % (scientific_format(Tr1*ktoev), scientific_format(Ar1)),
+        % (scientific_format(Tr1 * ktoev), scientific_format(Ar1)),
     )
     plt.plot(
         kk,
         pk_dd_interp((Tr2, Ar2, kk)) / pk_dd_interp((Tr0, Ar0, kk)),
         "r",
         label="$T_\mathrm{rec}$=%s eV, $A_\mathrm{rec}$=%s"
-        % (scientific_format(Tr2*ktoev), scientific_format(Ar2)),
+        % (scientific_format(Tr2 * ktoev), scientific_format(Ar2)),
     )
     for num_interp in range(num_interps):
         plt.plot(
@@ -118,14 +131,14 @@ def plot_varied_recoupling(Tr0, Ar0, Tr1, Tr2, Ar1, Ar2, num_interps=7, save=Tru
         dmus1,
         "b",
         label="$T_\mathrm{rec}$=%s eV, $A_\mathrm{rec}$=%s"
-        % (scientific_format(Tr1*ktoev), scientific_format(Ar1)),
+        % (scientific_format(Tr1 * ktoev), scientific_format(Ar1)),
     )
     plt.plot(
         zs,
         dmus2,
         "r--",
         label="$T_\mathrm{rec}$=%s eV, $A_\mathrm{rec}$=%s"
-        % (scientific_format(Tr2*ktoev), scientific_format(Ar2)),
+        % (scientific_format(Tr2 * ktoev), scientific_format(Ar2)),
     )
     plt.plot(np.logspace(5, 8, 100), 1e-3 * np.ones(100), "--k")
     plt.plot(np.logspace(5, 8, 100), np.ones(100), "--k")
@@ -641,7 +654,7 @@ def plot_delta_power_spectra_both(inline=False):
     plt.plot(kk, Pks_no_rec * kk ** 3 / (2 * np.pi ** 2), "--", label="No Rec")
     k_damp = 1.4467
     h = 0.67556
-    plt.axvline(x=k_damp/h, color='k', linestyle='--', label='$k_\mathrm{damp}$')
+    plt.axvline(x=k_damp / h, color="k", linestyle="--", label="$k_\mathrm{damp}$")
     plt.yscale("log")
     plt.xscale("log")
     plt.ylabel("$\Delta^2_m(k)$")
@@ -661,7 +674,7 @@ def plot_delta_power_spectra_both(inline=False):
         )
 
     plt.plot(kk, Pks_no_rec / Pks_no_rec, "--", label="No Rec")
-    plt.axvline(x=k_damp/h, color='k', linestyle='--', label='$k_\mathrm{damp}$')
+    plt.axvline(x=k_damp / h, color="k", linestyle="--", label="$k_\mathrm{damp}$")
     plt.yscale("log")
     plt.xscale("log")
     plt.xlabel("k [h/Mpc]")
@@ -782,3 +795,191 @@ def plot_delta_effect_both():
     filename = "Delta_effect_both.pdf"
     plt.savefig(plot_dir + filename)
     plt.clf()
+
+
+def plot_varied_recoupling_grid(Tr0, Ar0, Trs, Ars, save=True):
+    """
+    Plot a grid of recoupling scenarios with varied location and recoupling strength.
+    Normalized to the first scenario (0), presumably no recoupling.
+    """
+
+    grid_size = max(len(Trs), len(Ars))
+
+    fig, axes = plt.subplots(
+        nrows=len(Trs),
+        ncols=len(Ars),
+        sharex=True,
+        sharey=True,
+        figsize=(grid_size * 3, grid_size * 3),
+    )
+    for i, Tr in enumerate(Trs):
+        for j, Ar in enumerate(Ars):
+            axes[i, j].plot(
+                kk, 1 - (pk_dd_interp((Tr, Ar, kk)) / pk_dd_interp((Tr0, Ar0, kk))), "b"
+            )
+            axes[i, j].set_xscale("log")
+            axes[i, j].set_yscale("log")
+            axes[i, j].set_xlim(5e0, 1e2)
+            axes[i, j].set_ylim(1e-3, 1e0)
+            axes[i, j].set_xticks([1e1, 1e2])
+            rec_tau = recoupling_time(Tr, Ar)
+            axes[i, j].set_title(
+                "$T_\mathrm{rec}$=%s eV, $\\tau_\mathrm{rec}$=%s"
+                % (scientific_format(Tr * ktoev), scientific_format(rec_tau)),
+                fontsize=8,
+            )
+
+    fig.supxlabel("$k [Mpc^{-1}$]")
+    fig.supylabel("$1 - P(k)/P(k)_0$")
+
+    plt.tight_layout()
+
+    if save:
+        plot_dir = "Figures/"
+        filename = "varying_recoupling_grid.pdf"
+        plt.savefig(plot_dir + filename)
+        plt.clf()
+    else:
+        plt.show()
+
+    fig, axes = plt.subplots(
+        nrows=len(Trs),
+        ncols=len(Ars),
+        sharex=True,
+        sharey=True,
+        figsize=(grid_size * 3, grid_size * 3),
+    )
+
+    zs = np.logspace(5, 8, 1000)
+    for i, Tr in enumerate(Trs):
+        for j, Ar in enumerate(Ars):
+            dmus = [dmu_idm_dr(Tr, Ar, z) for z in zs]
+            rec_tau = recoupling_time(Tr, Ar)
+            axes[i, j].plot(zs, dmus, "b")
+            axes[i, j].plot(np.logspace(5, 8, 100), np.ones(100), "--k")
+            axes[i, j].plot(np.logspace(5, 8, 100), 1e-3 * np.ones(100), "--k")
+
+            axes[i, j].set_xscale("log")
+            axes[i, j].set_yscale("log")
+
+            axes[i, j].set_xlim(1e5, 1e8)
+            axes[i, j].set_xticks([1e6, 1e7, 1e8])
+            axes[i, j].set_ylim(1e-6, 1e3)
+
+            axes[i, j].set_title(
+                "$T_\mathrm{rec}$=%s eV, $\\tau_\mathrm{rec}$=%s"
+                % (scientific_format(Tr * ktoev), scientific_format(rec_tau)),
+                fontsize=8,
+            )
+    fig.supxlabel("$z$")
+    fig.supylabel("$\Gamma_{\mathrm{DM-DR}} / \mathcal{H}$")
+
+    plt.tight_layout()
+
+    if save:
+        plot_dir = "Figures/"
+        filename = "varying_recoupling_rate_grid.pdf"
+        plt.savefig(plot_dir + filename)
+        plt.clf()
+    else:
+        plt.show()
+
+
+def plot_varied_recoupling_grid_collapsed(Tr0, Ar0, Trs, Ars, save=True):
+    """
+    Plot a grid of recoupling scenarios with varied location and recoupling strength.
+    Normalized to the first scenario (0), presumably no recoupling.
+    """
+
+    grid_size = max(len(Trs), len(Ars))
+
+    fig, axes = plt.subplots(
+        nrows=len(Trs),
+        ncols=1,
+        sharex=True,
+        sharey=True,
+        figsize=(grid_size * 2, grid_size * 3),
+    )
+    for i, Tr in enumerate(Trs):
+        for j, Ar in enumerate(Ars):
+            rec_tau = recoupling_time(Tr, Ar)
+
+            axes[i].plot(
+                kk,
+                (1 - (pk_dd_interp((Tr, Ar, kk)) / pk_dd_interp((Tr0, Ar0, kk))))
+                / (1 - (pk_dd_interp((Tr, Ars[0], kk)) / pk_dd_interp((Tr0, Ar0, kk)))),
+                label="$\\tau_\mathrm{rec}$=%s" % (scientific_format(rec_tau)),
+            )
+            # axes[i].plot(
+            #     kk,
+            #     pk_dd_interp((Tr, Ar, kk)) / pk_dd_interp((Tr, Ars[0], kk)),
+            #     label="$A_\mathrm{rec}$=%s" % (scientific_format(Ar)),
+            # )
+        axes[i].set_xscale("log")
+        axes[i].set_yscale("log")
+        axes[i].set_xlim(5e0, 1e2)
+        axes[i].set_ylim(7e-1, 5e2)
+        axes[i].set_xticks([1e1, 1e2])
+        axes[i].set_title(
+            "$T_\mathrm{rec}$=%s eV " % (scientific_format(Tr * ktoev)), fontsize=12,
+        )
+        axes[i].legend(loc="upper left")
+    fig.supxlabel("$k [Mpc^{-1}$]")
+    fig.supylabel("$(1 - P(k)/P(k)_0)/(1 - P(k)_\mathrm{low}/P(k)_0)$")
+
+    plt.tight_layout()
+
+    if save:
+        plot_dir = "Figures/"
+        filename = "varying_recoupling_grid_collapsed.pdf"
+        plt.savefig(plot_dir + filename)
+        plt.clf()
+    else:
+        plt.show()
+
+    fig, axes = plt.subplots(
+        nrows=len(Trs),
+        ncols=1,
+        sharex=True,
+        sharey=True,
+        figsize=(grid_size * 2, grid_size * 3),
+    )
+
+    zs = np.logspace(5, 8, 1000)
+    for i, Tr in enumerate(Trs):
+        for j, Ar in enumerate(Ars):
+            rec_tau = recoupling_time(Tr, Ar)
+
+            dmus = [dmu_idm_dr(Tr, Ar, z) for z in zs]
+            axes[i].plot(
+                zs,
+                dmus,
+                label="$\\tau_\mathrm{rec}$=%s" % (scientific_format(rec_tau)),
+            )
+            axes[i].plot(np.logspace(5, 8, 100), np.ones(100), "--k")
+            axes[i].plot(np.logspace(5, 8, 100), 1e-3 * np.ones(100), "--k")
+
+        axes[i].set_xscale("log")
+        axes[i].set_yscale("log")
+
+        axes[i].set_xlim(1e5, 1e8)
+        axes[i].set_xticks([1e6, 1e7, 1e8])
+        axes[i].set_ylim(1e-6, 1e3)
+
+        axes[i].legend(loc="upper left")
+
+        axes[i].set_title(
+            "$T_\mathrm{rec}$=%s eV" % (scientific_format(Tr * ktoev)), fontsize=12,
+        )
+    fig.supxlabel("$z$")
+    fig.supylabel("$\Gamma_{\mathrm{DM-DR}} / \mathcal{H}$")
+
+    plt.tight_layout()
+
+    if save:
+        plot_dir = "Figures/"
+        filename = "varying_recoupling_rate_grid_collapsed.pdf"
+        plt.savefig(plot_dir + filename)
+        plt.clf()
+    else:
+        plt.show()

@@ -25,5 +25,8 @@ tau_reio = 0.0925
 z_pk = 0.0
 k_output_values = str(k)
 
+ktoev = 8.6173e-5
+
+
 # Other variables
 spline_pars = {"k": 3, "s": 0.0}
