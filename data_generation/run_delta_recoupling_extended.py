@@ -11,7 +11,7 @@ A_recs = [1e12, 10 ** (13.5), 1e15, 10 ** (16.5), 1e18]
 T_recs = [6e6, 6e5 * np.sqrt(10), 6e5, 6e4 * np.sqrt(10), 6e4]
 A_recs = A_recs[::-1]
 T_recs = T_recs[::-1]
-BM_KS = [str(round(n, 1)) for n in np.geomspace(0.1, 10, 10)]
+BM_KS = [str(round(n, 3)) for n in np.geomspace(0.1, 10, 100)]
 
 
 def getPk(classObj):

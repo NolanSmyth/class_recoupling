@@ -9,17 +9,15 @@ import os.path as osp
 
 # Recover the gcc compiler
 GCCPATH_STRING = sbp.Popen(
-    ['gcc-11', '-print-libgcc-file-name'],
-    stdout=sbp.PIPE).communicate()[0]
+    ["gcc-12", "-print-libgcc-file-name"], stdout=sbp.PIPE
+).communicate()[0]
 GCCPATH = osp.normpath(osp.dirname(GCCPATH_STRING)).decode()
 
 # liblist = ["class","gsl"]
 liblist = ["class"]
-MVEC_STRING = sbp.Popen(
-    ['gcc-11', '-lmvec'],
-    stderr=sbp.PIPE).communicate()[1]
+MVEC_STRING = sbp.Popen(["gcc-12", "-lmvec"], stderr=sbp.PIPE).communicate()[1]
 if b"mvec" not in MVEC_STRING:
-    liblist += ["mvec","m"]
+    liblist += ["mvec", "m"]
 
 # define absolute paths
 root_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
@@ -27,7 +25,7 @@ include_folder = os.path.join(root_folder, "include")
 classy_folder = os.path.join(root_folder, "python")
 
 # Recover the CLASS version
-with open(os.path.join(include_folder, 'common.h'), 'r') as v_file:
+with open(os.path.join(include_folder, "common.h"), "r") as v_file:
     for line in v_file:
         if line.find("_VERSION_") != -1:
             # get rid of the " and the v
@@ -35,22 +33,29 @@ with open(os.path.join(include_folder, 'common.h'), 'r') as v_file:
             break
 
 # Define cython extension and fix Python version
-classy_ext = Extension("classy", [os.path.join(classy_folder, "classy.pyx")],
-                           include_dirs=[nm.get_include(), include_folder, '/usr/local/Cellar/gsl/2.6/include'],
-                           libraries=liblist,
-                        #    library_dirs=[root_folder, GCCPATH, '/usr/local/Cellar/gsl/2.6/lib/', '-lpthread'],
-                           library_dirs=[root_folder, GCCPATH, '/usr/local/Cellar/gsl/2.6/lib/'],
-                        #    extra_link_args=['-lgomp', '-Wl,-rpath,/usr/local/opt/gcc/lib/gcc/10/']
-                           )
+classy_ext = Extension(
+    "classy",
+    [os.path.join(classy_folder, "classy.pyx")],
+    include_dirs=[
+        nm.get_include(),
+        include_folder,
+        "/usr/local/Cellar/gsl/2.6/include",
+    ],
+    libraries=liblist,
+    #    library_dirs=[root_folder, GCCPATH, '/usr/local/Cellar/gsl/2.6/lib/', '-lpthread'],
+    library_dirs=[root_folder, GCCPATH, "/usr/local/Cellar/gsl/2.6/lib/"],
+    #    extra_link_args=['-lgomp', '-Wl,-rpath,/usr/local/opt/gcc/lib/gcc/10/']
+)
 import six
-classy_ext.cython_directives = {'language_level': "3" if six.PY3 else "2"}
-        
+
+classy_ext.cython_directives = {"language_level": "3" if six.PY3 else "2"}
+
 setup(
-    name='classy',
+    name="classy",
     version=VERSION,
-    description='Python interface to the Cosmological Boltzmann code CLASS',
-    url='http://www.class-code.net',
-    cmdclass={'build_ext': build_ext},
+    description="Python interface to the Cosmological Boltzmann code CLASS",
+    url="http://www.class-code.net",
+    cmdclass={"build_ext": build_ext},
     ext_modules=[classy_ext],
-    #data_files=[('bbn', ['../bbn/sBBN.dat'])]
+    # data_files=[('bbn', ['../bbn/sBBN.dat'])]
 )
