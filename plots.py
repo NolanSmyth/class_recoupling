@@ -160,7 +160,7 @@ def plot_varied_recoupling(Tr0, Ar0, Tr1, Tr2, Ar1, Ar2, num_interps=7, save=Tru
         plt.show()
 
 
-def plot_observations(Tr, Ar, best_fit_a, mwarm):
+def plot_observations(Tr, Ar, best_fit_a, mwarm, save=False):
     path = "observation_data/"
 
     mwarm_path = "output/warm" + mwarm + ".dat"
@@ -331,10 +331,13 @@ def plot_observations(Tr, Ar, best_fit_a, mwarm):
 
     plt.legend(loc="upper left")
 
-    plot_dir = "Figures/"
-    filename = "Power_spectrum{:.1e}{:.1e}.pdf".format(Tr, Ar)
-    plt.savefig(plot_dir + filename)
-    plt.clf()
+    if save:
+        plot_dir = "Figures/"
+        filename = "Power_spectrum{:.1e}{:.1e}.pdf".format(Tr, Ar)
+        plt.savefig(plot_dir + filename)
+        plt.clf() 
+    else:
+        plt.show()
 
 
 def plot_delta_recoupling_rate():
