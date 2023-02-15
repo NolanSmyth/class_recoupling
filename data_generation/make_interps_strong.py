@@ -29,6 +29,10 @@ for npzfile in npz_strong_files:
 T_recs_unique = np.unique(T_recs)
 A_recs_unique = np.unique(A_recs)
 
+print(np.log10(np.min(T_recs_unique)), np.log10(np.max(T_recs_unique)))
+print(np.log10(np.min(A_recs_unique)), np.log10(np.max(A_recs_unique)))
+
+
 # populate pk grid such that pk is a function of T_rec and A_rec
 
 pk_strong_dat = np.zeros((len(T_recs_unique), len(A_recs_unique), len(kk)))
@@ -39,6 +43,9 @@ for i, T in enumerate(T_recs_unique):
         except ValueError:
             continue
 
+        # pk_strong_dat[i, j, :] = pks_dd[T_A_recs.index((T, A))]
+
+
 # Create dd interpolation
 pks_strong_interp = RegularGridInterpolator(
     (T_recs_unique, A_recs_unique, kk), pk_strong_dat
@@ -46,5 +53,4 @@ pks_strong_interp = RegularGridInterpolator(
 
 # Create dd interpolation
 
-pickle.dump(pks_strong_interp, open("interps/pks_strong_interp.p", "wb"))
-
+pickle.dump(pks_strong_interp, open("interps/pks_strong_interp_late.p", "wb"))

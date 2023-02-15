@@ -12,7 +12,7 @@ def getPk(classObj):
     Pk = []  # P(k) in (Mpc/h)**3
     h = classObj.h()  # get reduced Hubble for conversions to 1/Mpc
     for k in kk:
-        Pk.append(classObj.pk(k * h, z_pk) * h ** 3)  # function .pk(k,z)
+        Pk.append(classObj.pk(k * h, z_pk) * h**3)  # function .pk(k,z)
     return Pk
 
 
@@ -34,8 +34,8 @@ omega0_cdm = 0.12038
 
 N_points = 100  # Number of grid points in each dimension
 
-T_rec_arr = np.logspace(5, 7, N_points)
-A_rec_arr = np.logspace(-1, 8, N_points)
+T_rec_arr = np.logspace(4, 7, N_points)
+A_rec_arr = np.logspace(-1, 7, N_points)
 
 T_rec_idx = int(sys.argv[1])
 # A_rec_idx = int(sys.argv[1]) // len(T_rec_arr)
@@ -67,7 +67,8 @@ idrset = {
     "nindex_idm_dr": 4.0,
     "m_idm": 1.0e3,
     # Scattering rate parameters
-    "a_idm_dr": 1.0e0,
+    # "a_idm_dr": 1.0e0,
+    "a_idm_dr": 1.0e1,
     "rec_case": 3,  # 1 = power, 2 = Theta, 3 = no recoupling
 }
 
