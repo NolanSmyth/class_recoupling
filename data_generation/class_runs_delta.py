@@ -31,7 +31,7 @@ pk_max = 1.0e2
 kk = np.logspace(-4, np.log10(pk_max), 500)
 f_idm_dr = 1.0
 omega0_cdm = 0.12038
-sigma_fac = 0.01
+sigma_fac = 0.02
 
 N_points = 100  # Number of grid points in each dimension
 
