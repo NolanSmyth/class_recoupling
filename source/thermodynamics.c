@@ -131,16 +131,16 @@ double myfunc(struct thermo *pth, struct background *pba, double z)
 
   else if (pth->rec_case == 3)
   {
-    // if (pth->T_rec >= pba->T_idr * (1. + z) && pba->T_idr * (1. + z) > pth->T_rec * 0.99)
-    // {
-    //   printf("HERE");
-    // }
-    // if (pth->T_rec >= pba->T_idr * (1. + z) && pba->T_idr * (1. + z) > pth->T_rec*0.9925)
+    double sigma = pth->sigma;
+    double delta = pba->T_idr * (1. + z) - pth->T_rec;
+    delta = delta / sigma;
+    double gauss = exp(-pow(delta, 2) / 2) / sqrt(2 * M_PI);
+    my_dmu_idm_dr = base_rate * (1 + pth->A_rec / sigma * gauss);
+  }
 
-    // my_dmu_idm_dr = base_rate*(pth->A_rec);
-
-    // double sigma2 = pow(.01 * pth->T_rec, 2);
-    // double sigma = .01 * pth->T_rec;
+  // Resonance
+  else if (pth->rec_case == 5)
+  {
     double sigma = pth->sigma;
     double delta = pba->T_idr * (1. + z) - pth->T_rec;
     delta = delta / sigma;
@@ -159,11 +159,6 @@ double myfunc(struct thermo *pth, struct background *pba, double z)
     printf("Negative rate at T = %f, z = %f", pba->T_idr * (1. + z), z);
   }
 
-  // Cap the upper value to avoid divergences
-  // if (my_dmu_idm_dr >= 1.0e5)
-  // {
-  //   return 1.0e5;
-  // }
   return my_dmu_idm_dr;
 }
 
