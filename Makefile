@@ -49,7 +49,8 @@ OPTFLAG = -O4 -ffast-math -arch x86_64 #-march=native
 CCFLAG = -g -fPIC 
 LDFLAG = -g -fPIC 
 
-LFLAGS = -L/usr/lib -lm 
+# LFLAGS = -L/usr/lib -lm 
+LFLAGS = -L/usr/lib -L/opt/homebrew/Cellar/gsl/2.7.1/lib/ -lgsl -lgslcblas -lm 
 # -L/usr/local/lib 
 
 # leave blank to compile without HyRec, or put path to HyRec directory
@@ -65,6 +66,7 @@ CCFLAG += -D__CLASSDIR__='"$(MDIR)"'
 
 # where to find include files *.h
 INCLUDES = -I../include 
+INCLUDES += -I/opt/homebrew/Cellar/gsl/2.7.1/include/ #added by me for gsl
 
 # automatically add external programs if needed. First, initialize to blank.
 EXTERNAL =
