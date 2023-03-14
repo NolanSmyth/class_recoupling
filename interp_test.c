@@ -6,31 +6,49 @@
 
 int main(void)
 {
-    int i;
-    double xi, yi, x[10], y[10];
 
-    printf("#m=0,S=17\n");
+    int data_size = 208; // this must be exactly the number of lines of the csv file
+    FILE *fp;
 
-    for (i = 0; i < 10; i++)
+    double fx[data_size];
+    double fy[data_size];
+    int i = 0;
+
+    fp = fopen("interps/resonant_rate.csv", "r");
+
+    if (fp == NULL)
     {
-        x[i] = i + 0.5 * sin(i);
-        y[i] = i + cos(i * i);
-        printf("%g %g\n", x[i], y[i]);
+        printf("Error opening file");
+        return 1;
     }
 
-    printf("#m=1,S=0\n");
+    while (fscanf(fp, "%lf", &fx[i]) != EOF)
+    {
+        fscanf(fp, ",");
+        fscanf(fp, "%lf", &fy[i]);
+        // printf("%e %e\n", fx[i], fy[i]);
+
+        i++;
+    }
+    fclose(fp);
+
+    double xi;
+    double yi;
 
     {
         gsl_interp_accel *acc = gsl_interp_accel_alloc();
-        gsl_spline *spline = gsl_spline_alloc(gsl_interp_cspline, 10);
+        gsl_spline *spline = gsl_spline_alloc(gsl_interp_cspline, data_size);
 
-        gsl_spline_init(spline, x, y, 10);
+        printf("HERE\n");
 
-        for (xi = x[0]; xi < x[9]; xi += 0.01)
-        {
-            yi = gsl_spline_eval(spline, xi, acc);
-            printf("%g %g\n", xi, yi);
-        }
+        gsl_spline_init(spline, fx, fy, data_size);
+
+        printf("HERE2\n");
+
+        xi = 1000.1;
+        yi = gsl_spline_eval(spline, xi, acc);
+        printf("%g %g\n", xi, yi);
+
         gsl_spline_free(spline);
         gsl_interp_accel_free(acc);
     }
