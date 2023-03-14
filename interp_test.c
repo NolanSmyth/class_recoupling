@@ -39,11 +39,7 @@ int main(void)
         gsl_interp_accel *acc = gsl_interp_accel_alloc();
         gsl_spline *spline = gsl_spline_alloc(gsl_interp_cspline, data_size);
 
-        printf("HERE\n");
-
         gsl_spline_init(spline, fx, fy, data_size);
-
-        printf("HERE2\n");
 
         xi = 1000.1;
         yi = gsl_spline_eval(spline, xi, acc);
