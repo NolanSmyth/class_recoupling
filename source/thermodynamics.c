@@ -101,6 +101,58 @@
  * @return the error status
  */
 
+int interp_flag = 0; // flag to check if interpolation has been loaded
+gsl_interp_accel *acc;
+gsl_spline *spline;
+
+int load_interp(void)
+{
+  FILE *fp;
+
+  double fx[209]; // this must be exactly the number of lines of the csv file
+  double fy[209];
+  int i = 0;
+
+  fp = fopen("interps/resonant_rate.csv", "r");
+
+  if (fp == NULL)
+  {
+    printf("Error opening interpolation rate file");
+    return 1;
+  }
+
+  while (fscanf(fp, "%lf", &fx[i]) != EOF)
+  {
+    fscanf(fp, ",");
+    fscanf(fp, "%lf", &fy[i]);
+    // printf("%e %e\n", fx[i], fy[i]);
+
+    i++;
+  }
+  fclose(fp);
+
+  double xi;
+  double yi;
+
+  // gsl_interp_accel *acc = gsl_interp_accel_alloc();
+  // gsl_spline *spline = gsl_spline_alloc(gsl_interp_cspline, 208);
+  acc = gsl_interp_accel_alloc();
+  spline = gsl_spline_alloc(gsl_interp_cspline, 209);
+
+  gsl_spline_init(spline, fx, fy, 209);
+
+  // xi = 1000.1;
+  // yi = gsl_spline_eval(spline, xi, acc);
+  // printf("%g %g\n", xi, yi);
+
+  // gsl_spline_free(spline); // free the spline ! do I need to do this later?
+  // gsl_interp_accel_free(acc);
+
+  interp_flag = 1;
+
+  return 0;
+}
+
 // in https://arxiv.org/pdf/1907.01496.pdf
 // Gamma_heat_idm_dr is Gamma_{DM-DR} = 4/3(\rho_DR / \rho_DM) Gamma_{DR-DM}
 // dmu_idm_dr is Gamma_{DR-DM}
@@ -143,11 +195,13 @@ double myfunc(struct thermo *pth, struct background *pba, double z)
   // Resonance
   else if (pth->rec_case == 5)
   {
-    double sigma = pth->sigma;
-    double delta = pba->T_idr * (1. + z) - pth->T_rec;
-    delta = delta / sigma;
-    double gauss = exp(-pow(delta, 2) / 2) / sqrt(2 * M_PI);
-    my_dmu_idm_dr = base_rate * (1 + pth->A_rec / sigma * gauss);
+    if (interp_flag == 0)
+    {
+      load_interp();
+      printf("Interpolation of DR-DM Scattering Rate loaded");
+    }
+    // printf("T = %f\n", pba->T_idr * (1. + z));
+    my_dmu_idm_dr = gsl_spline_eval(spline, pba->T_idr * (1. + z), acc);
   }
 
   // No recoupling

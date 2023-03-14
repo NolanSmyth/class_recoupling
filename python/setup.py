@@ -39,11 +39,11 @@ classy_ext = Extension(
     include_dirs=[
         nm.get_include(),
         include_folder,
-        "/usr/local/Cellar/gsl/2.6/include",
+        "/opt/homebrew/Cellar/gsl/2.7.1/include/",
     ],
     libraries=liblist,
     #    library_dirs=[root_folder, GCCPATH, '/usr/local/Cellar/gsl/2.6/lib/', '-lpthread'],
-    library_dirs=[root_folder, GCCPATH, "/usr/local/Cellar/gsl/2.6/lib/"],
+    library_dirs=[root_folder, GCCPATH, "/opt/homebrew/Cellar/gsl/2.7.1/lib/"],
     #    extra_link_args=['-lgomp', '-Wl,-rpath,/usr/local/opt/gcc/lib/gcc/10/']
 )
 import six
