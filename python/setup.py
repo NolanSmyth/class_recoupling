@@ -8,19 +8,19 @@ import subprocess as sbp
 import os.path as osp
 
 # Recover the gcc compiler
-# GCCPATH_STRING = sbp.Popen(
-#     ["gcc-12", "-print-libgcc-file-name"], stdout=sbp.PIPE
-# ).communicate()[0]
-GCCPATH_STRING = "/opt/homebrew/bin/gcc-12"
-# GCCPATH = osp.normpath(osp.dirname(GCCPATH_STRING)).decode()
+GCCPATH_STRING = sbp.Popen(
+    ["gcc-12", "-print-libgcc-file-name"], stdout=sbp.PIPE
+).communicate()[0]
+# GCCPATH_STRING = "/opt/homebrew/bin/gcc-12"
+GCCPATH = osp.normpath(osp.dirname(GCCPATH_STRING)).decode()
 
-# liblist = ["class","gsl"]
-liblist = ["class"]
-# MVEC_STRING = sbp.Popen(["gcc-12", "-lmvec"], stderr=sbp.PIPE).communicate()[1]
-MVEC_STRING = "/opt/homebrew/bin/gcc-12"
+liblist = ["class", "gsl"]
+# liblist = ["class"]
+MVEC_STRING = sbp.Popen(["gcc-12", "-lmvec"], stderr=sbp.PIPE).communicate()[1]
+# MVEC_STRING = "/opt/homebrew/bin/gcc-12"
 
-# if b"mvec" not in MVEC_STRING:
-#     liblist += ["mvec", "m"]
+if b"mvec" not in MVEC_STRING:
+    liblist += ["mvec", "m"]
 
 # define absolute paths
 root_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
@@ -42,19 +42,21 @@ classy_ext = Extension(
     include_dirs=[
         nm.get_include(),
         include_folder,
-        "/opt/homebrew/Cellar/gsl/2.7.1/include/",
+        "/usr/local/homebrew/Cellar/gsl/2.7.1/include/",
     ],
     libraries=liblist,
     library_dirs=[
         root_folder,
-        GCCPATH_STRING,
-        "/opt/homebrew/Cellar/gsl/2.7.1/lib/",
-        "-lpthread",
+        GCCPATH,
+        "/usr/local/homebrew/Cellar/gsl/2.7.1/lib/",
+        # "-lpthread",
     ],
     # library_dirs=[root_folder, GCCPATH, "/opt/homebrew/Cellar/gsl/2.7.1/lib/"],
     #    extra_link_args=['-lgomp', '-Wl,-rpath,/usr/local/opt/gcc/lib/gcc/10/']
 )
 import six
+
+print(GCCPATH)
 
 classy_ext.cython_directives = {"language_level": "3" if six.PY3 else "2"}
 

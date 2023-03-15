@@ -18,7 +18,7 @@ vpath .base build
 
 # your C compiler:
 # CC       = gcc-10
-CC = gcc-12
+CC = gcc
 #CC       = icc
 #CC       = pgcc
 
@@ -53,7 +53,8 @@ CCFLAG = -g -fPIC
 LDFLAG = -g -fPIC 
 
 # LFLAGS = -L/usr/lib -lm 
-LFLAGS = -L/opt/homebrew/Cellar/gsl/2.7.1/lib/ -lgsl -lgslcblas -lm 
+# LFLAGS = -L/opt/homebrew/Cellar/gsl/2.7.1/lib/ -lgsl -lgslcblas -lm 
+LFLAGS = -L/usr/local/homebrew/Cellar/gsl/2.7.1/lib/ -lgsl -lgslcblas -lm #for -arch x86_64 gsl
 # -L/usr/local/lib 
 
 # leave blank to compile without HyRec, or put path to HyRec directory
@@ -69,7 +70,9 @@ CCFLAG += -D__CLASSDIR__='"$(MDIR)"'
 
 # where to find include files *.h
 INCLUDES = -I../include 
-INCLUDES += -I/opt/homebrew/Cellar/gsl/2.7.1/include/ #added by me for gsl
+# INCLUDES += -I/opt/homebrew/Cellar/gsl/2.7.1/include/ #added by me for gsl (this one is arm64)
+INCLUDES += -I/usr/local/homebrew/Cellar/gsl/2.7.1/include/ #added by me for gsl (for -arch x86_64)
+
 
 # automatically add external programs if needed. First, initialize to blank.
 EXTERNAL =
