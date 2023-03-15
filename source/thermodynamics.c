@@ -109,8 +109,8 @@ int load_interp(void)
 {
   FILE *fp;
 
-  double fx[209]; // this must be exactly the number of lines of the csv file
-  double fy[209];
+  double fx[210]; // this must be exactly the number of lines of the csv file
+  double fy[210];
   int i = 0;
 
   fp = fopen("interps/resonant_rate.csv", "r");
@@ -137,9 +137,9 @@ int load_interp(void)
   // gsl_interp_accel *acc = gsl_interp_accel_alloc();
   // gsl_spline *spline = gsl_spline_alloc(gsl_interp_cspline, 208);
   acc = gsl_interp_accel_alloc();
-  spline = gsl_spline_alloc(gsl_interp_cspline, 209);
+  spline = gsl_spline_alloc(gsl_interp_cspline, 210);
 
-  gsl_spline_init(spline, fx, fy, 209);
+  gsl_spline_init(spline, fx, fy, 210);
 
   // xi = 1000.1;
   // yi = gsl_spline_eval(spline, xi, acc);
@@ -195,20 +195,21 @@ double myfunc(struct thermo *pth, struct background *pba, double z)
   // Resonance
   else if (pth->rec_case == 5)
   {
+    double ktoev = 8.6173303e-5;
     if (interp_flag == 0)
     {
       load_interp();
       printf("Interpolation of DR-DM Scattering Rate loaded");
     }
     // printf("T = %f\n", pba->T_idr * (1. + z));
-    my_dmu_idm_dr = gsl_spline_eval(spline, pba->T_idr * (1. + z), acc);
+    my_dmu_idm_dr = gsl_spline_eval(spline, pba->T_idr * (1. + z) * ktoev, acc) / (pba->T_idr * (1. + z));
     if (my_dmu_idm_dr < 1e-10)
     {
       my_dmu_idm_dr = 1e-10;
     }
-    else if (my_dmu_idm_dr > 1e10)
+    else if (my_dmu_idm_dr > 1e20)
     {
-      my_dmu_idm_dr = 1e10;
+      my_dmu_idm_dr = 1e20;
     }
   }
 
