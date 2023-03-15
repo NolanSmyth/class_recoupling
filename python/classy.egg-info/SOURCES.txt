@@ -1,5 +1,4 @@
 README
-autosetup.py
 setup.py
 /Users/nolansmyth/Code/class_recoupling/python/../python/classy.pyx
 classy.egg-info/PKG-INFO

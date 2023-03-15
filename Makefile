@@ -32,11 +32,14 @@ AR        = ar rv
 # "PYTHON=python3 make all" (THanks to Marius Millea for pyhton3
 # compatibility)
 PYTHON ?= python
+# PYTHON = /Users/nolansmyth/opt/anaconda3/envs/kinetic_recoupling/bin/python
 
 # your optimization flag
 # OPTFLAG = -O0 -g #-march=native
-OPTFLAG = -O4 -ffast-math #-march=native
-# OPTFLAG = -O4 -ffast-math -arch x86_64 #-march=native
+# OPTFLAG = -O4 -ffast-math #-march=native
+OPTFLAG = -O4 -ffast-math -arch x86_64 #-march=native
+# OPTFLAG = -O4 -ffast-math -march=native
+
 # OPTFLAG = -O0 -g -ffast-math -arch x86_64 #-march=native
 
 
@@ -50,7 +53,7 @@ CCFLAG = -g -fPIC
 LDFLAG = -g -fPIC 
 
 # LFLAGS = -L/usr/lib -lm 
-LFLAGS = -L/usr/lib -L/opt/homebrew/Cellar/gsl/2.7.1/lib/ -lgsl -lgslcblas -lm 
+LFLAGS = -L/opt/homebrew/Cellar/gsl/2.7.1/lib/ -lgsl -lgslcblas -lm 
 # -L/usr/local/lib 
 
 # leave blank to compile without HyRec, or put path to HyRec directory

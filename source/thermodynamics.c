@@ -202,6 +202,14 @@ double myfunc(struct thermo *pth, struct background *pba, double z)
     }
     // printf("T = %f\n", pba->T_idr * (1. + z));
     my_dmu_idm_dr = gsl_spline_eval(spline, pba->T_idr * (1. + z), acc);
+    if (my_dmu_idm_dr < 1e-10)
+    {
+      my_dmu_idm_dr = 1e-10;
+    }
+    else if (my_dmu_idm_dr > 1e10)
+    {
+      my_dmu_idm_dr = 1e10;
+    }
   }
 
   // No recoupling
