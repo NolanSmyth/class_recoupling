@@ -196,13 +196,14 @@ double myfunc(struct thermo *pth, struct background *pba, double z)
   else if (pth->rec_case == 5)
   {
     double ktoev = 8.6173303e-5;
+    double scaling = 1e3;
     if (interp_flag == 0)
     {
       load_interp();
       printf("Interpolation of DR-DM Scattering Rate loaded");
     }
     // printf("T = %f\n", pba->T_idr * (1. + z));
-    my_dmu_idm_dr = gsl_spline_eval(spline, pba->T_idr * (1. + z) * ktoev, acc) / (pba->T_idr * (1. + z));
+    my_dmu_idm_dr = scaling * gsl_spline_eval(spline, pba->T_idr * (1. + z) * ktoev, acc) / (pba->T_idr * (1. + z));
     if (my_dmu_idm_dr < 1e-10)
     {
       my_dmu_idm_dr = 1e-10;
