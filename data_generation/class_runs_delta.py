@@ -35,8 +35,9 @@ sigma_fac = 0.02
 
 N_points = 100  # Number of grid points in each dimension
 
-A_rec_arr = np.logspace(12, 21, N_points)
-T_rec_arr = np.logspace(np.log10(6e6), np.log10(6e3), N_points)
+# A_rec_arr = np.logspace(12, 21, N_points)
+A_rec_arr = np.logspace(12, 12, N_points)
+T_rec_arr = np.logspace(np.log10(6e6), np.log10(6e1), N_points)
 
 idx = int(sys.argv[1])
 
@@ -61,7 +62,8 @@ idrset = {
     "f_idm_dr": f_idm_dr,  # Amount of dm that is interacting
     "xi_idr": 0.3,
     "stat_f_idr": 0.875,  # fermionic
-    "nindex_idm_dr": 4.0,
+    # "nindex_idm_dr": 4.0,
+    "nindex_idm_dr": 1.0,
     "m_idm": 1.0e3,
     # Scattering rate parameters
     # "a_idm_dr": 1.0e0,
