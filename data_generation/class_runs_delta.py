@@ -80,7 +80,8 @@ cos.set(
         "rec_case": 3,
         "A_rec": A_rec,
         "T_rec": T_rec,
-        "sigma": sigma_fac * T_rec,  # Gaussian width
+        # "sigma": sigma_fac * T_rec,  # Gaussian width
+        "sigma": sigma_fac * T_rec * 10,  # Gaussian width
     }
 )
 cos.compute()
@@ -91,9 +92,9 @@ dmu_idm_dr = getdmu_idm_dr(cos)
 
 np.savez(
     "./data_delta/run_" + str(sys.argv[1]) + ".npz",
-    # zs=zs,
+    zs=zs,
     Pk=Pk,
-    # dmu_idm_dr=dmu_idm_dr,
+    dmu_idm_dr=dmu_idm_dr,
     T_rec=T_rec,
     A_rec=A_rec,
 )

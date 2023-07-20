@@ -9,6 +9,8 @@ import pandas as pd
 import warnings
 from data_generation.variables import *
 import matplotlib.ticker as plticker
+import seaborn as sns
+from observation_data.observations import *
 
 warnings.filterwarnings("ignore")
 
@@ -18,6 +20,7 @@ pk_dd_interp = pickle.load(open("interps/pks_dd_interp.p", "rb"))
 
 # paths to styles and data
 plt.style.use("Figures/style.mplstyle")
+sns.set_palette("colorblind")
 h5pydir = "h5py_dat/"
 ktoev = 8.6173e-5
 
@@ -41,7 +44,7 @@ def dmu_idm_dr(
     Calculate the comoving scattering rate for a given T_rec, A_rec, z.
     """
     base_rate = (
-        a_idm_dr * ((1 + z) / (1e7)) ** nindex_idm_dr * omega0_cdm * f_idm_dr * h ** 2
+        a_idm_dr * ((1 + z) / (1e7)) ** nindex_idm_dr * omega0_cdm * f_idm_dr * h**2
     )
     T_idr = 2.7255 * xi
 
@@ -78,7 +81,7 @@ def recoupling_time(T_rec, A_rec):
 
 def plot_varied_recoupling(Tr0, Ar0, Tr1, Tr2, Ar1, Ar2, num_interps=7, save=True):
     """
-    Plot the interpolation between two scenarios with varied 
+    Plot the interpolation between two scenarios with varied
     recoupling temperature and/or strength (1,2).
     Normalized to the first scenario (0), presumably no recoupling.
     """
@@ -93,34 +96,40 @@ def plot_varied_recoupling(Tr0, Ar0, Tr1, Tr2, Ar1, Ar2, num_interps=7, save=Tru
     plt.subplot(211)
     plt.plot(
         kk,
-        pk_dd_interp((Tr1, Ar1, kk)) / pk_dd_interp((Tr0, Ar0, kk)),
-        "b",
+        1 - (pk_dd_interp((Tr1, Ar1, kk)) / pk_dd_interp((Tr0, Ar0, kk))),
+        # "b",
         label="$T_\mathrm{rec}$=%s eV, $A_\mathrm{rec}$=%s"
         % (scientific_format(Tr1 * ktoev), scientific_format(Ar1)),
     )
     plt.plot(
         kk,
-        pk_dd_interp((Tr2, Ar2, kk)) / pk_dd_interp((Tr0, Ar0, kk)),
-        "r",
+        1 - (pk_dd_interp((Tr2, Ar2, kk)) / pk_dd_interp((Tr0, Ar0, kk))),
+        # "r",
         label="$T_\mathrm{rec}$=%s eV, $A_\mathrm{rec}$=%s"
         % (scientific_format(Tr2 * ktoev), scientific_format(Ar2)),
     )
     for num_interp in range(num_interps):
         plt.plot(
             kk,
-            pk_dd_interp((T_interps[num_interp], A_interps[num_interp], kk))
-            / pk_dd_interp((Tr0, Ar0, kk)),
+            1
+            - (
+                pk_dd_interp((T_interps[num_interp], A_interps[num_interp], kk))
+                / pk_dd_interp((Tr0, Ar0, kk))
+            ),
             "--k",
             alpha=1 / (num_interp + 1),
         )
     plt.xscale("log")
     plt.yscale("log")
     plt.xlim(1e1, 1e2)
-    plt.ylim(0.97, 1)
-    plt.xlabel("k [h/Mpc]")
-    plt.ylabel("$P(k)/P(k)_0$")
-    plt.legend()
-    plt.title("Double Decoupling")
+    # plt.ylim(0.97, 1)
+    plt.ylim(5e-4, 1e-1)
+    # plt.ylim(5e-4, 5e-2)
+    plt.xlabel("$k$ [$\mathrm{h}$ $\mathrm{Mpc}^{-1}$]")
+    plt.ylabel("$1 - \Delta/\Delta_0$")
+    # plt.ylabel("$\mathrm{Log}_{10}(1 - \Delta/\Delta_0)$")
+    plt.legend(loc="upper left")
+    # plt.title("Double Decoupling")
     plt.subplot(212)
     plt.xscale("log")
     plt.yscale("log")
@@ -129,14 +138,14 @@ def plot_varied_recoupling(Tr0, Ar0, Tr1, Tr2, Ar1, Ar2, num_interps=7, save=Tru
     plt.plot(
         zs,
         dmus1,
-        "b",
+        # "b",
         label="$T_\mathrm{rec}$=%s eV, $A_\mathrm{rec}$=%s"
         % (scientific_format(Tr1 * ktoev), scientific_format(Ar1)),
     )
     plt.plot(
         zs,
         dmus2,
-        "r--",
+        # "r--",
         label="$T_\mathrm{rec}$=%s eV, $A_\mathrm{rec}$=%s"
         % (scientific_format(Tr2 * ktoev), scientific_format(Ar2)),
     )
@@ -144,8 +153,9 @@ def plot_varied_recoupling(Tr0, Ar0, Tr1, Tr2, Ar1, Ar2, num_interps=7, save=Tru
     plt.plot(np.logspace(5, 8, 100), np.ones(100), "--k")
 
     plt.xlim(zs[0], zs[-1])
+    plt.ylim(1e-8, 2e3)
 
-    plt.legend()
+    plt.legend(loc="upper left")
     fig.tight_layout(h_pad=2)
 
     if save:
@@ -160,104 +170,13 @@ def plot_varied_recoupling(Tr0, Ar0, Tr1, Tr2, Ar1, Ar2, num_interps=7, save=Tru
         plt.show()
 
 
-def plot_observations(Tr, Ar, best_fit_a, mwarm, save=False):
-    path = "observation_data/"
-
-    mwarm_path = "output/warm" + mwarm + ".dat"
-
-    try:
-        dfWarm = pd.read_csv(
-            mwarm_path, header=None, names=["k", "P(k)"], skiprows=4, delimiter="\s+",
-        )
-    except FileNotFoundError:
-        print("ERROR: No file found for that warm dm mass")
-        return
-
-    dfDES = pd.read_csv(path + "DESY1.csv")
-    dfDES = dfDES.assign(
-        ylow=dfDES["Y"] - dfDES["-DeltaY"], yhigh=dfDES["+DeltaY"] - dfDES["Y"]
-    )
-    dfDES = dfDES.assign(
-        xlow=dfDES["X"] - dfDES["-DeltaX"], xhigh=dfDES["+DeltaX"] - dfDES["X"]
-    )
-    yerrDES = np.array([dfDES["ylow"], dfDES["yhigh"]])
-    xerrDES = np.array([dfDES["xlow"], dfDES["xhigh"]])
-
-    yerrDESdimless = np.array(
-        [
-            dfDES["ylow"] * (dfDES["X"] ** 3) / (2 * (np.pi ** 2)),
-            dfDES["yhigh"] * (dfDES["X"] ** 3) / (2 * (np.pi ** 2)),
-        ]
-    )
-
-    columns = ["k", "P(k)", "delta P(k)+", "delta P(k)-"]
-    dfBOSS = pd.read_csv(path + "BOSS.csv", header=None)
-    dfBOSS.columns = columns
-
-    dfBOSS = dfBOSS.assign(
-        ylow=dfBOSS["P(k)"] - dfBOSS["delta P(k)-"],
-        yhigh=dfBOSS["delta P(k)+"] - dfBOSS["P(k)"],
-    )
-    yerrBOSS = np.array([dfBOSS["ylow"], dfBOSS["yhigh"]])
-
-    yerrBOSSdimless = np.array(
-        [
-            dfBOSS["ylow"] * (dfBOSS["k"] ** 3) / (2 * (np.pi ** 2)),
-            dfBOSS["yhigh"] * (dfBOSS["k"] ** 3) / (2 * (np.pi ** 2)),
-        ]
-    )
-
-    dfHERA = pd.read_csv(path + "HeraProjected.csv")
-    dfEDGES = pd.read_csv(path + "EDGESProjected.csv")
-
-    dfHERA = dfHERA.assign(
-        ylow=dfHERA["Y"] - dfHERA["-DeltaY"], yhigh=dfHERA["+DeltaY"] - dfHERA["Y"]
-    )
-    dfHERA = dfHERA.assign(
-        xlow=dfHERA["X"] - dfHERA["-DeltaX"], xhigh=dfHERA["+DeltaX"] - dfHERA["X"]
-    )
-    yerrHERA = np.array([dfHERA["ylow"], dfHERA["yhigh"]])
-    xerrHERA = np.array([dfHERA["xlow"], dfHERA["xhigh"]])
-
-    dfEDGES = dfEDGES.assign(
-        ylow=dfEDGES["Y"] - dfEDGES["-DeltaY"], yhigh=dfEDGES["+DeltaY"] - dfEDGES["Y"]
-    )
-    dfEDGES = dfEDGES.assign(
-        xlow=dfEDGES["X"] - dfEDGES["-DeltaX"], xhigh=dfEDGES["+DeltaX"] - dfEDGES["X"]
-    )
-    yerrEDGES = np.array([dfEDGES["ylow"], dfEDGES["yhigh"]])
-    xerrEDGES = np.array([dfEDGES["xlow"], dfEDGES["xhigh"]])
-
-    # Adjust projections to agree with lcdm line
-    dflcdm = pd.read_csv(
-        "output/lambdacdm.dat",
-        header=None,
-        names=["k", "P(k)"],
-        skiprows=4,
-        delimiter="\s+",
-    )
-
-    dfEDGES["Y"] = [
-        1.05 * dflcdm["P(k)"][121] * (dflcdm["k"][121] ** 3) / (2 * np.pi ** 2),
-        dflcdm["P(k)"][129] * (dflcdm["k"][129] ** 3) / (2 * np.pi ** 2),
-    ]
-    dfHERA["Y"] = [
-        1.05 * dflcdm["P(k)"][121] * (dflcdm["k"][121] ** 3) / (2 * np.pi ** 2),
-        dflcdm["P(k)"][128] * (dflcdm["k"][128] ** 3) / (2 * np.pi ** 2),
-        dflcdm["P(k)"][130] * (dflcdm["k"][130] ** 3) / (2 * np.pi ** 2),
-    ]
-
-    plt.plot(
-        dflcdm["k"],
-        dflcdm["P(k)"] * (dflcdm["k"] ** 3) / (2 * np.pi ** 2),
-        "k",
-        label=r"$\Lambda_{CDM}$",
-    )
+def _plot_observations():
 
     plt.errorbar(
-        dfBOSS["k"],
-        dfBOSS["P(k)"] * (dfBOSS["k"]) ** 3 / (2 * np.pi ** 2),
+        dfBOSS["X"],
+        dfBOSS["Y"] * (dfBOSS["X"]) ** 3 / (2 * np.pi**2),
         yerr=yerrBOSSdimless,
+        xerr=xerrBOSS,
         marker="o",
         ms=5,
         color="mediumpurple",
@@ -266,7 +185,7 @@ def plot_observations(Tr, Ar, best_fit_a, mwarm, save=False):
     )
     plt.errorbar(
         dfDES["X"],
-        dfDES["Y"] * (dfDES["X"] ** 3) / (2 * np.pi ** 2),
+        dfDES["Y"] * (dfDES["X"] ** 3) / (2 * np.pi**2),
         yerr=yerrDESdimless,
         xerr=xerrDES,
         marker="o",
@@ -301,22 +220,49 @@ def plot_observations(Tr, Ar, best_fit_a, mwarm, save=False):
         label=r"HERA 21-cm proj.",
     )
 
+
+def plot_observations(Tr, Ar, best_fit_a, mwarm, save=False):
+    path = "observation_data/"
+
+    mwarm_path = "output/warm" + mwarm + ".dat"
+
+    try:
+        dfWarm = pd.read_csv(
+            mwarm_path,
+            header=None,
+            names=["k", "P(k)"],
+            skiprows=4,
+            delimiter="\s+",
+        )
+    except FileNotFoundError:
+        print("ERROR: No file found for that warm dm mass")
+        return
+
+    plt.plot(
+        dflcdm["k"],
+        dflcdm["P(k)"] * (dflcdm["k"] ** 3) / (2 * np.pi**2),
+        "k",
+        label=r"$\Lambda_{CDM}$",
+    )
+
+    _plot_observations()
+
     plt.plot(
         kk,
-        pk_dd_interp((Tr, Ar, kk)) * (kk ** 3) / (2 * np.pi ** 2),
+        pk_dd_interp((Tr, Ar, kk)) * (kk**3) / (2 * np.pi**2),
         "b",
         label="Kinetic Recoupling",
     )
     plt.plot(
         kk[-200:],
-        pk_sd_interp((best_fit_a, kk[-200:])) * (kk[-200:] ** 3) / (2 * np.pi ** 2),
+        pk_sd_interp((best_fit_a, kk[-200:])) * (kk[-200:] ** 3) / (2 * np.pi**2),
         "g-.",
         label="Single Decoupling",
     )
 
     plt.plot(
         dfWarm["k"],
-        dfWarm["P(k)"] * (dfWarm["k"] ** 3) / (2 * np.pi ** 2),
+        dfWarm["P(k)"] * (dfWarm["k"] ** 3) / (2 * np.pi**2),
         "r--",
         label="Warm DM, m={} keV".format(mwarm.split("k")[0]),
     )
@@ -335,7 +281,7 @@ def plot_observations(Tr, Ar, best_fit_a, mwarm, save=False):
         plot_dir = "Figures/"
         filename = "Power_spectrum{:.1e}{:.1e}.pdf".format(Tr, Ar)
         plt.savefig(plot_dir + filename)
-        plt.clf() 
+        plt.clf()
     else:
         plt.show()
 
@@ -494,9 +440,9 @@ def lhs221NonInt(tau, idx):
     return (
         3 * phi_ddot_arr[idx](tau)
         - delta_chi_ddot_arr[idx](tau)
-        - cx2_chi_arr[idx](tau) * k ** 2 * delta_chi_arr[idx](tau)
+        - cx2_chi_arr[idx](tau) * k**2 * delta_chi_arr[idx](tau)
         + a_prime_arr[idx](tau) / a_arr[idx](tau) * theta_chi_arr[idx](tau)
-        - k ** 2 * psi_arr[idx](tau)
+        - k**2 * psi_arr[idx](tau)
     ) / (
         3 * phi_dot_arr[idx](tau) - delta_chi_dot_arr[idx](tau) - theta_dr_arr[idx](tau)
     )
@@ -616,23 +562,24 @@ def plot_delta_power_spectrum():
 
 def plot_delta_power_spectrum_dimless():
 
-    lines = ["-", "--", "-."]
     for i, A_rec in reversed(list(enumerate(A_recs))):
         plt.plot(
             kk,
-            Pk_arr[i] * kk ** 3 / (2 * np.pi ** 2),
-            ls=lines[i % len(lines)],
-            label="A_rec = " + scientific_format(A_rec),
+            Pk_arr[i] * kk**3 / (2 * np.pi**2),
+            ls="-",
+            label="$A_{\mathrm{rec}}$ = " + scientific_format_less(A_rec),
         )
 
-    plt.plot(kk, Pks_no_rec * kk ** 3 / (2 * np.pi ** 2), "--", label="No Rec")
+    plt.plot(kk, Pks_no_rec * kk**3 / (2 * np.pi**2), "--", label="No Rec")
+    h = 0.67556
     plt.yscale("log")
     plt.xscale("log")
-    plt.xlabel("k")
-    plt.ylabel("$\Delta^2_m(k)$")
-    plt.title("Dimensionless Matter Power Spectrum - $\delta$ recoupling")
-    plt.xlim(0.89, 1e2)
+    plt.ylabel("$\Delta^2(k)$")
+    plt.xlim(0.6, 1e2)
     plt.ylim(1e-3, 3e1)
+
+    _plot_observations()
+
     plt.legend()
     plot_dir = "Figures/"
     filename = "delta_power_spectrum_dimless.pdf"
@@ -643,50 +590,63 @@ def plot_delta_power_spectrum_dimless():
 def plot_delta_power_spectra_both(inline=False):
     lines = ["-", "--", "-."]
 
-    plt.figure(1, figsize=(8, 8))
+    plt.figure(1, figsize=(10, 8))
     plt.subplot(211)
 
     for i, A_rec in reversed(list(enumerate(A_recs))):
         plt.plot(
             kk,
-            Pk_arr[i] * kk ** 3 / (2 * np.pi ** 2),
-            ls=lines[i % len(lines)],
-            label="A_rec = " + scientific_format_less(A_rec),
+            Pk_arr[i] * kk**3 / (2 * np.pi**2),
+            # ls=lines[i % len(lines)],
+            ls="-",
+            label="$A_{\mathrm{rec}}$ = " + scientific_format_less(A_rec),
         )
 
-    plt.plot(kk, Pks_no_rec * kk ** 3 / (2 * np.pi ** 2), "--", label="No Rec")
-    k_damp = 1.4467
+    plt.plot(kk, Pks_no_rec * kk**3 / (2 * np.pi**2), "--", label="No Rec")
+    # k_damp = 1.4467
     h = 0.67556
-    plt.axvline(x=k_damp / h, color="k", linestyle="--", label="$k_\mathrm{damp}$")
+    # plt.axvline(x=k_damp / h, color="k", linestyle=":", label="$k_\mathrm{damp}$")
     plt.yscale("log")
     plt.xscale("log")
-    plt.ylabel("$\Delta^2_m(k)$")
-    plt.title("Dimensionless Matter Power Spectrum - $\delta$ recoupling")
-    plt.xlim(0.9, 1e2)
+    plt.ylabel("$\Delta^2(k)$")
+    # plt.title("Dimensionless Matter Power Spectrum - $\delta$ recoupling")
+    plt.xlim(0.6, 1e2)
     plt.ylim(1e-3, 3e1)
-    # plt.legend()
+
+    _plot_observations()
+
+    # plt.plot(
+    #     kk[-200:],
+    #     pk_sd_interp((1e5, kk[-200:])) * (kk[-200:] ** 3) / (2 * np.pi**2),
+    #     ls="-.",
+    #     label="Single Decoupling",
+    # )
+
+    plt.legend()
 
     plt.subplot(212)
 
     for i, A_rec in reversed(list(enumerate(A_recs))):
         plt.plot(
             kk,
-            Pk_arr[i] / Pks_no_rec,
-            ls=lines[i % len(lines)],
+            -np.log10(1 - (Pk_arr[i] / Pks_no_rec)),
+            # ls=lines[i % len(lines)],
+            ls="-",
             label="A_rec = " + scientific_format_less(A_rec),
         )
 
-    plt.plot(kk, Pks_no_rec / Pks_no_rec, "--", label="No Rec")
-    plt.axvline(x=k_damp / h, color="k", linestyle="--", label="$k_\mathrm{damp}$")
+    plt.plot(kk, -np.log10(1 - (Pks_no_rec / Pks_no_rec)), "--", label="No Rec")
+    # plt.axvline(x=k_damp / h, color="k", linestyle=":", label="$k_\mathrm{damp}$")
     plt.yscale("log")
     plt.xscale("log")
-    plt.xlabel("k [h/Mpc]")
-    plt.ylabel("$P(k)/P(k)_0$")
-    plt.title("Ratio Compared to No Recoupling")
-    plt.xlim(0.9, 1e2)
-    plt.ylim(1e-3, 2)
+    plt.xlabel("$k$ [$\mathrm{h}$ $\mathrm{Mpc}^{-1}$]")
+    # plt.ylabel("$P(k)/P_0(k)$")
+    plt.ylabel("$\mathrm{Log}_{10}(1 - \Delta/\Delta_0)$")
+    # plt.title("Ratio Compared to No Recoupling")
+    plt.xlim(0.6, 1e2)
+    plt.ylim(1e-5, 2e0)
 
-    plt.legend()
+    # plt.legend()
     if inline:
         # plt.show()
         pass
@@ -924,7 +884,8 @@ def plot_varied_recoupling_grid_collapsed(Tr0, Ar0, Trs, Ars, save=True):
         axes[i].set_ylim(7e-1, 5e2)
         axes[i].set_xticks([1e1, 1e2])
         axes[i].set_title(
-            "$T_\mathrm{rec}$=%s eV " % (scientific_format(Tr * ktoev)), fontsize=12,
+            "$T_\mathrm{rec}$=%s eV " % (scientific_format(Tr * ktoev)),
+            fontsize=12,
         )
         axes[i].legend(loc="upper left")
     fig.supxlabel("$k [Mpc^{-1}$]")
@@ -972,7 +933,8 @@ def plot_varied_recoupling_grid_collapsed(Tr0, Ar0, Trs, Ars, save=True):
         axes[i].legend(loc="upper left")
 
         axes[i].set_title(
-            "$T_\mathrm{rec}$=%s eV" % (scientific_format(Tr * ktoev)), fontsize=12,
+            "$T_\mathrm{rec}$=%s eV" % (scientific_format(Tr * ktoev)),
+            fontsize=12,
         )
     fig.supxlabel("$z$")
     fig.supylabel("$\Gamma_{\mathrm{DM-DR}} / \mathcal{H}$")

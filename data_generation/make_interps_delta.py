@@ -33,7 +33,7 @@ T_recs_sorted = np.flip(sorted(T_recs))
 
 pks_dd_sorted = [x for _, x in sorted(zip(T_recs, pks_dd))]
 
-# print(np.log10(np.min(T_recs_unique)), np.log10(np.max(T_recs_unique)))
+print(np.log10(np.min(T_recs_unique)), np.log10(np.max(T_recs_unique)))
 # print(np.log10(np.min(A_recs_unique)), np.log10(np.max(A_recs_unique)))
 
 # populate pk grid such that pk is a function of T_rec
