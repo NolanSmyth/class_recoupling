@@ -34,8 +34,8 @@ def best_sd_fit_dimless(T_rec, A_rec, a_idm_dr_arr):
         l2 = np.sum(
             [
                 (
-                    pk_dd_interp((T_rec, A_rec, k)) * (k ** 3) / (2 * np.pi ** 2)
-                    - pk_sd_interp((a, k)) * (k ** 3) / (2 * np.pi ** 2)
+                    pk_dd_interp((T_rec, A_rec, k)) * (k**3) / (2 * np.pi**2)
+                    - pk_sd_interp((a, k)) * (k**3) / (2 * np.pi**2)
                 )
                 ** 2
                 for k in kk[-200:]
